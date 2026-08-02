@@ -2,7 +2,7 @@
 
 Area Bulldozer is an area deletion tool for **Cities: Skylines II**. It allows multiple objects to be selected and removed at once using an adjustable circular or square selection area.
 
-![Area Bulldozer thumbnail](Properties/Thumbnail.png)
+![Area Bulldozer thumbnail](AreaBulldozer/Properties/Thumbnail.jpg)
 
 ## Features
 
