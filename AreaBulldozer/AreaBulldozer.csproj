@@ -1,0 +1,152 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<Configurations>Debug;Release</Configurations>
+
+		<AssemblyName>AreaBulldozer</AssemblyName>
+		<RootNamespace>AreaBulldozer</RootNamespace>
+
+		<!-- Keep synchronized with Mod.ModVersion and PublishConfiguration.xml. -->
+		<Version>1.0.0</Version>
+		<AssemblyVersion>1.0.0.0</AssemblyVersion>
+		<FileVersion>1.0.0.0</FileVersion>
+
+		<!--
+		The file where mod information required for publishing
+		the mod on PDX Mods is stored.
+		-->
+		<PublishConfigurationPath>
+			Properties\PublishConfiguration.xml
+		</PublishConfigurationPath>
+
+		<!-- Do not let Visual Studio scan the npm dependency tree. -->
+		<DefaultItemExcludes>UI\node_modules\**;$(DefaultItemExcludes)</DefaultItemExcludes>
+
+		<!-- The UI is built automatically together with the C# project. -->
+		<UIProjectDirectory>$(MSBuildProjectDirectory)\UI</UIProjectDirectory>
+		<EnableAreaBulldozerUIBuild Condition="'$(EnableAreaBulldozerUIBuild)' == ''">true</EnableAreaBulldozerUIBuild>
+	</PropertyGroup>
+
+	<!-- Imports must be after the PropertyGroup block -->
+	<Import Project="$([System.Environment]::GetEnvironmentVariable('CSII_TOOLPATH', 'EnvironmentVariableTarget.User'))\Mod.props" />
+	<Import Project="$([System.Environment]::GetEnvironmentVariable('CSII_TOOLPATH', 'EnvironmentVariableTarget.User'))\Mod.targets" />
+
+	<ItemGroup>
+		<Reference Include="Game">
+			<Private>false</Private>
+		</Reference>
+
+		<Reference Include="Colossal.Core">
+			<Private>false</Private>
+		</Reference>
+
+		<Reference Include="Colossal.Logging">
+			<Private>false</Private>
+		</Reference>
+
+		<Reference Include="Colossal.IO.AssetDatabase">
+			<Private>false</Private>
+		</Reference>
+
+		<Reference Include="Colossal.UI">
+			<Private>false</Private>
+		</Reference>
+
+		<Reference Include="Colossal.UI.Binding">
+			<Private>false</Private>
+		</Reference>
+
+		<Reference Include="Colossal.Localization">
+			<Private>false</Private>
+		</Reference>
+
+		<Reference Include="Unity.InputSystem">
+			<Private>false</Private>
+		</Reference>
+
+		<Reference Include="UnityEngine.CoreModule">
+			<Private>false</Private>
+		</Reference>
+
+		<Reference Include="Unity.Burst">
+			<Private>false</Private>
+		</Reference>
+
+		<Reference Include="Unity.Collections">
+			<Private>false</Private>
+		</Reference>
+
+		<Reference Include="Unity.Entities">
+			<Private>false</Private>
+		</Reference>
+
+		<Reference Include="Unity.Mathematics">
+			<Private>false</Private>
+		</Reference>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Reference Update="System">
+			<Private>false</Private>
+		</Reference>
+
+		<Reference Update="System.Core">
+			<Private>false</Private>
+		</Reference>
+
+		<Reference Update="System.Data">
+			<Private>false</Private>
+		</Reference>
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="$(ModPropsFile)" Link="Properties\Mod.props" />
+
+		<None Include="$(ModTargetsFile)" Link="Properties\Mod.targets" />
+	</ItemGroup>
+
+	<!--
+	Restore UI packages only after package.json changes. The marker is created
+	only after npm install completed successfully, so a failed or partial npm
+
+	installation can never incorrectly skip the next restore.
+	-->
+	<Target
+		Name="RestoreAreaBulldozerUI"
+		Condition="'$(EnableAreaBulldozerUIBuild)' == 'true'"
+		Inputs="$(UIProjectDirectory)\package.json"
+		Outputs="$(UIProjectDirectory)\node_modules\.area-bulldozer-restored">
+
+		<Message
+			Text="Restoring Area Bulldozer UI dependencies..."
+			Importance="high" />
+
+		<Exec
+			Command="npm install --no-audit --no-fund"
+			WorkingDirectory="$(UIProjectDirectory)" />
+
+		<Touch
+			Files="$(UIProjectDirectory)\node_modules\.area-bulldozer-restored"
+			AlwaysCreate="true" />
+	</Target>
+
+	<!-- Builds AreaBulldozer.mjs and AreaBulldozer.css after every C# build. -->
+	<Target
+		Name="BuildAreaBulldozerUI"
+		AfterTargets="AfterBuild"
+		DependsOnTargets="RestoreAreaBulldozerUI"
+		Condition="'$(EnableAreaBulldozerUIBuild)' == 'true'">
+
+		<Message
+			Text="Building Area Bulldozer UI..."
+			Importance="high" />
+
+		<Exec
+			Command="npm run build"
+			WorkingDirectory="$(UIProjectDirectory)"
+			ConsoleToMSBuild="true"
+			StandardOutputImportance="high"
+			StandardErrorImportance="high" />
+	</Target>
+
+</Project>
