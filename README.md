@@ -125,7 +125,7 @@ Area Bulldozer is an independent mod and can generally be used alongside other b
 Area Bulldozer was inspired by the work of other Cities: Skylines II mod developers, especially:
 
 - [Better Bulldozer](https://github.com/yenyang/BetterBulldozer) by yenyang
-- [Radius Delete Mod](https://github.com/kurupted/Cities2_RadiusDeleteMod) by kurupted
+- [Radius Delete Mod](https://github.com/kurupted/Cities2_RadiusDeleteMod) by gnznroses
 
 Special thanks to both developers for their work and their contributions to the Cities: Skylines II modding community.
 
