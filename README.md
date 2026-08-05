@@ -141,6 +141,17 @@ When reporting a problem, include:
 - Steps that reproduce the problem
 - The relevant game or mod log output
 
+## Changes
+
+- Reworked the square selection outline to use continuous line segments.
+- Improved square corners for cleaner, closed edges.
+- Added continuous outlines for selected surfaces and spaces.
+- Added a configurable selection line thickness setting.
+- Selection outlines now keep a consistent thickness regardless of their size.
+- Large-selection confirmation now changes only the outline color.
+- Added English and German localization for the new setting.
+- Improved overlay rendering efficiency.
+
 ## License
 
 Copyright (c) 2026 franky0078
