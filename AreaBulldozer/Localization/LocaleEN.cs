@@ -74,6 +74,9 @@ namespace AreaBulldozer.Localization
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.MarkerBackgroundDarkness)), "Background darkness" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.MarkerBackgroundDarkness)), "Sets the game-view dimming strength in percent." },
 
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.SelectionLineThickness)), "Selection line thickness" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.SelectionLineThickness)), "Sets a fixed outline thickness for the circular and square selection shapes. The thickness no longer changes with the selection size." },
+
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DeleteBuildingSubObjects)), "Include building sub-objects" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.DeleteBuildingSubObjects)), "Allows the selected object types when they belong to a building. The matching object filter must also be enabled. Sub-objects may regenerate after building updates." },
 

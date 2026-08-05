@@ -74,6 +74,9 @@ namespace AreaBulldozer.Localization
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.MarkerBackgroundDarkness)), "Abdunkelungsstärke" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.MarkerBackgroundDarkness)), "Legt die Abdunkelung der Spielansicht in Prozent fest." },
 
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.SelectionLineThickness)), "Linienstärke der Auswahl" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.SelectionLineThickness)), "Legt eine feste Linienstärke für die kreisförmige und quadratische Auswahl fest. Die Linienstärke ändert sich nicht mehr mit der Auswahlgröße." },
+
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DeleteBuildingSubObjects)), "Gebäude-Unterobjekte einschließen" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.DeleteBuildingSubObjects)), "Erlaubt die ausgewählten Objektarten auch dann, wenn sie zu einem Gebäude gehören. Der passende Objektfilter muss ebenfalls aktiviert sein. Unterobjekte können nach Gebäudeaktualisierungen erneut erscheinen." },
 

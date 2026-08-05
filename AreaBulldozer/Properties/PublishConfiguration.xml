@@ -4,7 +4,7 @@
 	Leave it empty for the first publication.
 	After the first publication, enter the assigned Paradox Mods ID here.
 	-->
-	<ModId Value="" />
+	<ModId Value="153684" />
 
 	<!-- Name displayed to players -->
 	<DisplayName Value="Area Bulldozer" />
@@ -133,11 +133,11 @@
 	<Tag Value="Code Mod" />
 	
 	<!--Optional discussion link.-->
-	<ForumLink Value="https://..." />
+	<ForumLink Value="https://forum.paradoxplaza.com/forum/threads/mod-area-bulldozer-area-deletion-tool-with-object-filters.1937211/" />
 	
 
 	<!-- Mod version -->
-	<ModVersion Value="1.0.0" />
+	<ModVersion Value="1.1.0" />
 
 	<!--
 	Recommended game version.
@@ -166,20 +166,17 @@
 
 	<!-- Initial release changelog -->
 	<ChangeLog>
-		## Version 1.0.0
+		## Version 1.1.0
 
-		- Initial public release
-		- Added circular and square area selection
-		- Added adjustable selection size and square rotation
-		- Added object category filters
-		- Added advanced prop and marker filters
-		- Added marker visualization and optional background darkening
-		- Added configurable safety settings
-		- Added compact and scalable in-game interface
-		- Added optional universal mod menu integration
-		- Added optional movable launcher button
-		- Added configurable keyboard shortcut
-		- Added English and German localization
+		- Reworked the square selection outline to use proper line segments instead of many small circles.
+		- Improved square corners by slightly extending the line segments to create cleaner, closed edges.
+		- Reworked surface and area outlines to use continuous line segments.
+		- Added small corner markers to improve the visual connection between area-outline segments.
+		- Added a new Selection line thickness setting under Display and launcher.
+		- The circle and square selection outlines now keep a consistent thickness regardless of the selected area size.
+		- Large-selection confirmation now changes only the outline color to yellow and no longer increases the line thickness.
+		- Added English and German localization for the new line-thickness setting.
+		- Reduced the number of overlay drawing operations, improving the efficiency of square and surface-outline rendering.
 	</ChangeLog>
 
 	<!--Optional external links for your own mod.-->

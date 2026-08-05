@@ -1,15 +1,10 @@
-using Game;
-using Game.Common;
-using Game.Objects;
-using Game.Prefabs;
+using Colossal.Mathematics;
 using Game.Rendering;
-using Game.Tools;
 using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
-using UnityEngine.InputSystem;
 
 namespace AreaBulldozer.Tools
 {
@@ -26,26 +21,35 @@ namespace AreaBulldozer.Tools
                 m_OverlayRenderSystem.GetBuffer(
                     out JobHandle overlayDependencies);
 
-            NativeArray<float3> surfacePreviewPoints =
-                BuildSurfacePreviewPoints();
+            NativeArray<float3> surfaceOutlineSegmentPoints =
+                BuildSurfaceOutlineSegmentPoints();
 
-            NativeArray<float3> squareBrushPreviewPoints =
-                BuildSquareBrushPreviewPoints();
+            NativeArray<float3> squareBrushCorners =
+                BuildSquareBrushPreviewCorners();
+
+            float selectionLineWidth =
+                math.clamp(
+                    Mod.Settings?.SelectionLineThickness ?? 65,
+                    25,
+                    150) /
+                100f;
 
             ToolRadiusJob radiusJob =
-                new ToolRadiusJob
+                new()
                 {
                     OverlayBuffer = overlayBuffer,
                     Position = CurrentPosition,
                     Radius = CurrentRadius,
+                    SelectionLineWidth =
+                        selectionLineWidth,
                     UseSquareBrush =
-                        this.UseSquareBrush,
+                        UseSquareBrush,
                     ConfirmationPending =
                         m_LargeSelectionConfirmationPending,
-                    SurfacePreviewPoints =
-                        surfacePreviewPoints,
-                    SquareBrushPreviewPoints =
-                        squareBrushPreviewPoints
+                    SurfaceOutlineSegmentPoints =
+                        surfaceOutlineSegmentPoints,
+                    SquareBrushCorners =
+                        squareBrushCorners
                 };
 
             JobHandle jobHandle =
@@ -60,8 +64,12 @@ namespace AreaBulldozer.Tools
             return jobHandle;
         }
 
+        // ------------------------------------------------------------
+        // Eckpunkte der quadratischen Auswahl
+        // ------------------------------------------------------------
+
         private NativeArray<float3>
-            BuildSquareBrushPreviewPoints()
+            BuildSquareBrushPreviewCorners()
         {
             if (!UseSquareBrush ||
                 !HasValidPosition)
@@ -71,9 +79,7 @@ namespace AreaBulldozer.Tools
                     Allocator.TempJob);
             }
 
-            const int maximumPreviewPoints = 4096;
             const float verticalOffset = 0.12f;
-            const float pointSpacing = 0.55f;
 
             float halfSize =
                 CurrentRadius;
@@ -83,14 +89,17 @@ namespace AreaBulldozer.Tools
 
             float2[] localCorners =
             {
-                new float2(-halfSize, -halfSize),
-                new float2( halfSize, -halfSize),
-                new float2( halfSize,  halfSize),
-                new float2(-halfSize,  halfSize)
+                new(-halfSize, -halfSize),
+                new( halfSize, -halfSize),
+                new( halfSize,  halfSize),
+                new(-halfSize,  halfSize)
             };
 
-            float3[] corners =
-                new float3[4];
+            NativeArray<float3> corners =
+                new(
+                    4,
+                    Allocator.TempJob,
+                    NativeArrayOptions.UninitializedMemory);
 
             for (int index = 0;
                  index < localCorners.Length;
@@ -108,93 +117,29 @@ namespace AreaBulldozer.Tools
                         center.z + rotatedOffset.y);
             }
 
-            List<float3> points =
-                new();
-
-            for (int edgeIndex = 0;
-                 edgeIndex < corners.Length &&
-                 points.Count < maximumPreviewPoints;
-                 edgeIndex++)
-            {
-                int nextEdgeIndex =
-                    edgeIndex + 1 <
-                    corners.Length
-                        ? edgeIndex + 1
-                        : 0;
-
-                float3 start =
-                    corners[edgeIndex];
-
-                float3 end =
-                    corners[nextEdgeIndex];
-
-                float edgeLength =
-                    math.distance(
-                        new float2(
-                            start.x,
-                            start.z),
-                        new float2(
-                            end.x,
-                            end.z));
-
-                int stepCount =
-                    math.clamp(
-                        (int)math.ceil(
-                            edgeLength /
-                            pointSpacing),
-                        1,
-                        1024);
-
-                for (int step = 0;
-                     step < stepCount &&
-                     points.Count <
-                         maximumPreviewPoints;
-                     step++)
-                {
-                    float interpolation =
-                        step /
-                        (float)stepCount;
-
-                    points.Add(
-                        math.lerp(
-                            start,
-                            end,
-                            interpolation));
-                }
-            }
-
-            NativeArray<float3> result =
-                new(
-                    points.Count,
-                    Allocator.TempJob,
-                    NativeArrayOptions.UninitializedMemory);
-
-            for (int index = 0;
-                 index < points.Count;
-                 index++)
-            {
-                result[index] =
-                    points[index];
-            }
-
-            return result;
+            return corners;
         }
 
-        private NativeArray<float3> BuildSurfacePreviewPoints()
+        // ------------------------------------------------------------
+        // Liniensegmente für die Umrandung ausgewählter Flächen..
+        // ------------------------------------------------------------
+
+        private NativeArray<float3>
+            BuildSurfaceOutlineSegmentPoints()
         {
-            const int maximumPreviewPoints = 12288;
-            const float pointSpacing = 0.55f;
+            const int maximumOutlineSegments = 12288;
             const float verticalOffset = 0.18f;
 
-            List<float3> points =
+            List<float3> segmentPoints =
                 new();
 
-            if (m_HighlightedEntities != null)
+            if (m_HighlightedEntities is not null)
             {
                 foreach (Entity entity in
                          m_HighlightedEntities)
                 {
-                    if (points.Count >= maximumPreviewPoints)
+                    if (segmentPoints.Count >=
+                        maximumOutlineSegments * 2)
                     {
                         break;
                     }
@@ -221,7 +166,8 @@ namespace AreaBulldozer.Tools
 
                     for (int index = 0;
                          index < nodes.Length &&
-                         points.Count < maximumPreviewPoints;
+                         segmentPoints.Count <
+                             maximumOutlineSegments * 2;
                          index++)
                     {
                         int nextIndex =
@@ -241,55 +187,53 @@ namespace AreaBulldozer.Tools
                             continue;
                         }
 
-                        float edgeLength =
-                            math.distance(
-                                new float2(start.x, start.z),
-                                new float2(end.x, end.z));
+                        start.y += verticalOffset;
+                        end.y += verticalOffset;
 
-                        int stepCount =
-                            math.clamp(
-                                (int)math.ceil(
-                                    edgeLength / pointSpacing),
-                                1,
-                                512);
-
-                        for (int step = 0;
-                             step < stepCount &&
-                             points.Count < maximumPreviewPoints;
-                             step++)
-                        {
-                            float interpolation =
-                                step / (float)stepCount;
-
-                            float3 point =
-                                math.lerp(
-                                    start,
-                                    end,
-                                    interpolation);
-
-                            point.y += verticalOffset;
-                            points.Add(point);
-                        }
+                        segmentPoints.Add(start);
+                        segmentPoints.Add(end);
                     }
                 }
             }
 
             NativeArray<float3> result =
                 new(
-                    points.Count,
+                    segmentPoints.Count,
                     Allocator.TempJob,
                     NativeArrayOptions.UninitializedMemory);
 
             for (int index = 0;
-                 index < points.Count;
+                 index < segmentPoints.Count;
                  index++)
             {
                 result[index] =
-                    points[index];
+                    segmentPoints[index];
             }
 
             return result;
         }
+
+        // ------------------------------------------------------------
+        // Verlängert ein Liniensegment an beiden Enden.
+        // ------------------------------------------------------------
+
+        private static Line3.Segment CreateExtendedSegment(
+            float3 start,
+            float3 end,
+            float extension)
+        {
+            float3 direction =
+                math.normalizesafe(
+                    end - start);
+
+            return new Line3.Segment(
+                start - direction * extension,
+                end + direction * extension);
+        }
+
+        // ------------------------------------------------------------
+        // Rendering-Job
+        // ------------------------------------------------------------
 
         private struct ToolRadiusJob : IJob
         {
@@ -297,14 +241,18 @@ namespace AreaBulldozer.Tools
 
             public float3 Position;
             public float Radius;
+            public float SelectionLineWidth;
+
             public bool UseSquareBrush;
             public bool ConfirmationPending;
 
             [DeallocateOnJobCompletion]
-            public NativeArray<float3> SurfacePreviewPoints;
+            public NativeArray<float3>
+                SurfaceOutlineSegmentPoints;
 
             [DeallocateOnJobCompletion]
-            public NativeArray<float3> SquareBrushPreviewPoints;
+            public NativeArray<float3>
+                SquareBrushCorners;
 
             public void Execute()
             {
@@ -314,11 +262,12 @@ namespace AreaBulldozer.Tools
                         Radius);
 
                 float lineWidth =
-                    math.max(
+                    math.clamp(
+                        SelectionLineWidth,
                         0.25f,
-                        radius / 20f);
+                        1.5f);
 
-                UnityEngine.Color circleColor =
+                UnityEngine.Color selectionColor =
                     ConfirmationPending
                         ? new UnityEngine.Color(
                             1f,
@@ -331,81 +280,129 @@ namespace AreaBulldozer.Tools
                             0.1f,
                             1f);
 
-                if (ConfirmationPending)
-                {
-                    lineWidth *= 1.5f;
-                }
-
                 UnityEngine.Color surfaceOutlineColor =
-                    new UnityEngine.Color(
+                    new(
                         0.08f,
                         0.86f,
                         1f,
                         1f);
 
-                UnityEngine.Color surfaceFillColor =
-                    new UnityEngine.Color(
-                        0.18f,
-                        0.78f,
-                        1f,
-                        0.42f);
-
-                for (int index = 0;
-                     index < SurfacePreviewPoints.Length;
-                     index++)
-                {
-                    OverlayBuffer.DrawCircle(
-                        surfaceOutlineColor,
-                        surfaceFillColor,
-                        0.12f,
-                        0f,
-                        new float2(
-                            0f,
-                            1f),
-                        SurfacePreviewPoints[index],
-                        0.75f);
-                }
+                DrawSurfaceOutlines(
+                    surfaceOutlineColor);
 
                 if (UseSquareBrush)
                 {
-                    const float squarePointDiameter = 0.75f;
-
-                    for (int index = 0;
-                         index <
-                            SquareBrushPreviewPoints.Length;
-                         index++)
-                    {
-                        OverlayBuffer.DrawCircle(
-                            circleColor,
-                            circleColor,
-                            0.08f,
-                            0f,
-                            new float2(
-                                0f,
-                                1f),
-                            SquareBrushPreviewPoints[index],
-                            squarePointDiameter);
-                    }
+                    DrawSquare(
+                        selectionColor,
+                        lineWidth);
 
                     return;
                 }
 
                 OverlayBuffer.DrawCircle(
-                    circleColor,
-
+                    selectionColor,
                     default,
-
                     lineWidth,
-
                     0f,
-
                     new float2(
                         0f,
                         1f),
-
                     Position,
-
                     radius * 2f);
+            }
+
+            // --------------------------------------------------------
+            // Umrandungen ausgewählter Flächen
+            // --------------------------------------------------------
+
+            private void DrawSurfaceOutlines(
+                UnityEngine.Color outlineColor)
+            {
+                const float surfaceLineWidth = 0.45f;
+                const float cornerDiameter = 0.58f;
+                const float cornerBorderWidth = 0.05f;
+
+                for (int index = 0;
+                     index + 1 <
+                         SurfaceOutlineSegmentPoints.Length;
+                     index += 2)
+                {
+                    float3 start =
+                        SurfaceOutlineSegmentPoints[index];
+
+                    float3 end =
+                        SurfaceOutlineSegmentPoints[index + 1];
+
+                    OverlayBuffer.DrawLine(
+                        outlineColor,
+                        new Line3.Segment(
+                            start,
+                            end),
+                        surfaceLineWidth);
+
+                    OverlayBuffer.DrawCircle(
+                        outlineColor,
+                        outlineColor,
+                        cornerBorderWidth,
+                        0f,
+                        new float2(
+                            0f,
+                            1f),
+                        start,
+                        cornerDiameter);
+                }
+            }
+
+            // --------------------------------------------------------
+            // Quadrat aus vier verlängerten Linien
+            // --------------------------------------------------------
+
+            private void DrawSquare(
+                UnityEngine.Color selectionColor,
+                float lineWidth)
+            {
+                if (SquareBrushCorners.Length != 4)
+                {
+                    return;
+                }
+
+                float cornerOverlap =
+                    math.clamp(
+                        lineWidth * 0.5f,
+                        0.15f,
+                        1f);
+
+                OverlayBuffer.DrawLine(
+                    selectionColor,
+                    CreateExtendedSegment(
+                        SquareBrushCorners[0],
+                        SquareBrushCorners[1],
+                        cornerOverlap),
+                    lineWidth);
+
+                OverlayBuffer.DrawLine(
+                    selectionColor,
+                    CreateExtendedSegment(
+                        SquareBrushCorners[1],
+                        SquareBrushCorners[2],
+                        cornerOverlap),
+                    lineWidth);
+
+                OverlayBuffer.DrawLine(
+                    selectionColor,
+                    CreateExtendedSegment(
+                        SquareBrushCorners[2],
+                        SquareBrushCorners[3],
+                        cornerOverlap),
+                    lineWidth);
+
+                OverlayBuffer.DrawLine(
+                    selectionColor,
+                    CreateExtendedSegment(
+                        SquareBrushCorners[3],
+                        SquareBrushCorners[0],
+                        cornerOverlap),
+                    lineWidth);
             }
         }
     }

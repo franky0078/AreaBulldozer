@@ -48,7 +48,6 @@ namespace AreaBulldozer
         [SettingsUIHidden]
         public bool DeleteTrees { get; set; }
 
-
         [SettingsUIHidden]
         public bool DeleteBuildings { get; set; }
 
@@ -124,6 +123,13 @@ namespace AreaBulldozer
 
         [SettingsUIHidden]
         public int BrushRadius { get; set; }
+
+        [SettingsUISlider(
+            min = 25,
+            max = 150,
+            step = 5)]
+        [SettingsUISection(kSection, kToolGroup)]
+        public int SelectionLineThickness { get; set; }
 
         [SettingsUISlider(
             min = 75,
@@ -215,13 +221,15 @@ namespace AreaBulldozer
             DimMarkerBackground = true;
             MarkerBackgroundDarkness = 40;
 
-            // Riskier scopes remain disabled by default.
             DeleteBuildingSubObjects = false;
             DeleteNetworkSubObjects = false;
             ProtectOwnedObjects = true;
 
             UseSquareBrush = false;
             BrushRadius = 30;
+
+            SelectionLineThickness = 65;
+
             UIScale = 100;
 
             UseUniversalModMenu = false;
