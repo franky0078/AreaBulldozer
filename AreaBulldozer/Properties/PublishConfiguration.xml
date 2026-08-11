@@ -108,6 +108,36 @@
 
 		Area Bulldozer is an independent implementation and is not officially affiliated with these mods or their developers.
 
+		## Planned Version 1.3.0
+
+		### Compact user interface
+
+		* Add a new compact interface layout for Area Bulldozer.
+		* Reduce unused spacing and overall panel size.
+		* Arrange frequently used controls more efficiently.
+		* Keep object-filter controls quickly accessible.
+		* Improve usability on lower resolutions and higher UI scaling values.
+
+		### Interface style option
+
+		Add a new option for selecting the preferred Area Bulldozer interface:
+
+		* Compact
+		* Classic
+
+		The Classic interface keeps the current Area Bulldozer layout for users who prefer the existing design.
+
+		The selected interface style will be saved with the mod settings and restored automatically.
+
+		### Additional UI improvements
+
+		* Improve spacing and alignment of tool controls.
+		* Reduce the vertical space required by the object filters.
+		* Keep circle/square selection and size controls easily accessible.
+		* Keep advanced and safety-related settings outside the main compact interface where possible.
+		* Preserve UI scaling support for both interface styles.
+
+
 		## Feedback and bug reports
 
 		When reporting a problem, please include:
@@ -119,15 +149,14 @@
 	</LongDescription>
 
 	<!-- Thumbnail -->
-	<Thumbnail Value="Properties/Thumbnail.png" />
+	<Thumbnail Value="Properties/Thumbnail.jpg" />
 
-	<!--
-	Add screenshots only when the image files actually exist.
+	<Screenshot Value="Properties/Screenshot01.jpg" />
+	<Screenshot Value="Properties/Screenshot02.jpg" />
+	<Screenshot Value="Properties/Screenshot03.jpg" />
+	<Screenshot Value="Properties/Screenshot04.jpg" />
+	<Screenshot Value="Properties/Screenshot05.jpg" />
 
-	Example:
-	<Screenshot Value="Properties/Screenshot01.png" />
-	<Screenshot Value="Properties/Screenshot02.png" />
-	-->
 
 	<!-- Add supported Paradox Mods tags here if required.-->
 	<Tag Value="Code Mod" />
@@ -137,7 +166,7 @@
 	
 
 	<!-- Mod version -->
-	<ModVersion Value="1.1.0" />
+	<ModVersion Value="1.2.0" />
 
 	<!--
 	Recommended game version.
@@ -166,17 +195,18 @@
 
 	<!-- Initial release changelog -->
 	<ChangeLog>
-		## Version 1.1.0
-
-		- Reworked the square selection outline to use proper line segments instead of many small circles.
-		- Improved square corners by slightly extending the line segments to create cleaner, closed edges.
-		- Reworked surface and area outlines to use continuous line segments.
-		- Added small corner markers to improve the visual connection between area-outline segments.
-		- Added a new Selection line thickness setting under Display and launcher.
-		- The circle and square selection outlines now keep a consistent thickness regardless of the selected area size.
-		- Large-selection confirmation now changes only the outline color to yellow and no longer increases the line thickness.
-		- Added English and German localization for the new line-thickness setting.
-		- Reduced the number of overlay drawing operations, improving the efficiency of square and surface-outline rendering.
+		Version 1.2.0
+		
+		
+		- Added continuous deletion by holding the left mouse button and moving the selection area.
+		- Added brush-style deletion for faster clearing of larger areas.
+		- Added adaptive movement thresholds and controlled update intervals for improved performance.
+		- Added visual tool-state feedback:
+		- Red = ready
+		- Green = deleting
+		- Yellow = confirmation required
+		- Large-selection confirmation remains protected and cannot be automatically confirmed by holding the mouse button.
+		- Continuous deletion automatically stops when interacting with the user interface.
 	</ChangeLog>
 
 	<!--Optional external links for your own mod.-->

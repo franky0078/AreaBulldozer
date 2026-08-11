@@ -83,11 +83,41 @@ Using several deletion tools at the same time may cause overlapping controls or 
 Area Bulldozer was inspired by the work of other Cities: Skylines II mod developers, especially:
 
 - Better Bulldozer by yenyang
-- Radius Delete Mod by kurupted
+- Radius Delete Mod by gnznroses
 
 Special thanks to both developers for their work and their contributions to the Cities: Skylines II modding community.
 
 Area Bulldozer is an independent implementation and is not officially affiliated with these mods or their developers.
+
+## Planned Version 1.3.0
+
+### Compact user interface
+
+* Add a new compact interface layout for Area Bulldozer.
+* Reduce unused spacing and overall panel size.
+* Arrange frequently used controls more efficiently.
+* Keep object-filter controls quickly accessible.
+* Improve usability on lower resolutions and higher UI scaling values.
+
+### Interface style option
+
+Add a new option for selecting the preferred Area Bulldozer interface:
+
+* Compact
+* Classic
+
+The Classic interface keeps the current Area Bulldozer layout for users who prefer the existing design.
+
+The selected interface style will be saved with the mod settings and restored automatically.
+
+### Additional UI improvements
+
+* Improve spacing and alignment of tool controls.
+* Reduce the vertical space required by the object filters.
+* Keep circle/square selection and size controls easily accessible.
+* Keep advanced and safety-related settings outside the main compact interface where possible.
+* Preserve UI scaling support for both interface styles.
+
 
 ## Feedback and bug reports
 

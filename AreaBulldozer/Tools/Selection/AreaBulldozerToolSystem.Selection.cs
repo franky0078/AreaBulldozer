@@ -8,9 +8,6 @@ namespace AreaBulldozer.Tools
 {
     public partial class AreaBulldozerToolSystem
     {
-        // ------------------------------------------------------------
-        // Auswahl und Löschen
-        // ------------------------------------------------------------
 
         private void DeleteSelectedObjects()
         {

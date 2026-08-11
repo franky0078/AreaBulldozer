@@ -10,10 +10,8 @@ namespace AreaBulldozer.Tools
 {
     public partial class AreaBulldozerToolSystem
     {
-        // ------------------------------------------------------------
-        // Auswahlform
-        // ------------------------------------------------------------
 
+        // Auswahlform
         private JobHandle DrawToolShape(
             JobHandle inputDeps)
         {
@@ -46,6 +44,8 @@ namespace AreaBulldozer.Tools
                         UseSquareBrush,
                     ConfirmationPending =
                         m_LargeSelectionConfirmationPending,
+                    DeleteActive =
+                        IsDeleteVisualFeedbackActive,
                     SurfaceOutlineSegmentPoints =
                         surfaceOutlineSegmentPoints,
                     SquareBrushCorners =
@@ -64,10 +64,7 @@ namespace AreaBulldozer.Tools
             return jobHandle;
         }
 
-        // ------------------------------------------------------------
         // Eckpunkte der quadratischen Auswahl
-        // ------------------------------------------------------------
-
         private NativeArray<float3>
             BuildSquareBrushPreviewCorners()
         {
@@ -120,9 +117,6 @@ namespace AreaBulldozer.Tools
             return corners;
         }
 
-        // ------------------------------------------------------------
-        // Liniensegmente für die Umrandung ausgewählter Flächen..
-        // ------------------------------------------------------------
 
         private NativeArray<float3>
             BuildSurfaceOutlineSegmentPoints()
@@ -213,10 +207,8 @@ namespace AreaBulldozer.Tools
             return result;
         }
 
-        // ------------------------------------------------------------
-        // Verlängert ein Liniensegment an beiden Enden.
-        // ------------------------------------------------------------
 
+        // Verlängert ein Liniensegment an beiden Enden.
         private static Line3.Segment CreateExtendedSegment(
             float3 start,
             float3 end,
@@ -231,10 +223,6 @@ namespace AreaBulldozer.Tools
                 end + direction * extension);
         }
 
-        // ------------------------------------------------------------
-        // Rendering-Job
-        // ------------------------------------------------------------
-
         private struct ToolRadiusJob : IJob
         {
             public OverlayRenderSystem.Buffer OverlayBuffer;
@@ -245,6 +233,7 @@ namespace AreaBulldozer.Tools
 
             public bool UseSquareBrush;
             public bool ConfirmationPending;
+            public bool DeleteActive;
 
             [DeallocateOnJobCompletion]
             public NativeArray<float3>
@@ -267,18 +256,35 @@ namespace AreaBulldozer.Tools
                         0.25f,
                         1.5f);
 
-                UnityEngine.Color selectionColor =
-                    ConfirmationPending
-                        ? new UnityEngine.Color(
+                UnityEngine.Color selectionColor;
+
+                if (ConfirmationPending)
+                {
+                    selectionColor =
+                        new UnityEngine.Color(
                             1f,
                             0.85f,
                             0.1f,
-                            1f)
-                        : new UnityEngine.Color(
+                            1f);
+                }
+                else if (DeleteActive)
+                {
+                    selectionColor =
+                        new UnityEngine.Color(
+                            0.12f,
+                            0.95f,
+                            0.22f,
+                            1f);
+                }
+                else
+                {
+                    selectionColor =
+                        new UnityEngine.Color(
                             1f,
                             0.25f,
                             0.1f,
                             1f);
+                }
 
                 UnityEngine.Color surfaceOutlineColor =
                     new(
@@ -310,10 +316,6 @@ namespace AreaBulldozer.Tools
                     Position,
                     radius * 2f);
             }
-
-            // --------------------------------------------------------
-            // Umrandungen ausgewählter Flächen
-            // --------------------------------------------------------
 
             private void DrawSurfaceOutlines(
                 UnityEngine.Color outlineColor)
@@ -352,10 +354,6 @@ namespace AreaBulldozer.Tools
                         cornerDiameter);
                 }
             }
-
-            // --------------------------------------------------------
-            // Quadrat aus vier verlängerten Linien
-            // --------------------------------------------------------
 
             private void DrawSquare(
                 UnityEngine.Color selectionColor,

@@ -143,14 +143,17 @@ When reporting a problem, include:
 
 ## Changes
 
-- Reworked the square selection outline to use continuous line segments.
-- Improved square corners for cleaner, closed edges.
-- Added continuous outlines for selected surfaces and spaces.
-- Added a configurable selection line thickness setting.
-- Selection outlines now keep a consistent thickness regardless of their size.
-- Large-selection confirmation now changes only the outline color.
-- Added English and German localization for the new setting.
-- Improved overlay rendering efficiency.
+Version 1.2.0
+
+- Added continuous deletion by holding the left mouse button and moving the selection area.
+- Added brush-style deletion for faster clearing of larger areas.
+- Added adaptive movement thresholds and controlled update intervals for improved performance.
+- Added visual tool-state feedback:
+- Red = ready
+- Green = deleting
+- Yellow = confirmation required
+- Large-selection confirmation remains protected and cannot be automatically confirmed by holding the mouse button.
+- Continuous deletion automatically stops when interacting with the user interface.
 
 ## License
 

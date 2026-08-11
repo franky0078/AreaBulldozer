@@ -769,12 +769,7 @@ namespace AreaBulldozer.Tools
             UpdateSquareRotationInput();
             UpdateSelectionPreviewIfNeeded();
 
-            if (!m_IsPointerOverUI &&
-                m_ApplyAction != null &&
-                m_ApplyAction.WasPressedThisFrame())
-            {
-                DeleteSelectedObjects();
-            }
+            UpdateContinuousDeleteInput();
 
             return DrawToolShape(inputDeps);
         }
