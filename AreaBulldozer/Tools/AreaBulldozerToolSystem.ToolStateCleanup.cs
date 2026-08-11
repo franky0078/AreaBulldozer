@@ -6,10 +6,6 @@ namespace AreaBulldozer.Tools
 {
     public partial class AreaBulldozerToolSystem
     {
-        // ------------------------------------------------------------
-        // Vorherigen Werkzeugzustand bereinigen
-        // ------------------------------------------------------------
-
         private ToolClearSystem m_ToolClearSystem;
         private EntityQuery m_PreExistingHighlightedQuery;
 

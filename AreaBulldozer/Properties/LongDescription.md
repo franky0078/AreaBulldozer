@@ -36,23 +36,12 @@ Additional filters are available for:
 - Spawn locations
 - Asset lanes and sublanes
 
+
 ## Marker visibility
 
 Activity locations, spawn locations and other normally hidden markers can be highlighted while using the tool.
-
 An optional background-darkening effect can improve marker visibility. The darkening strength can be configured in the mod options.
 
-## Safety options
-
-Area Bulldozer includes additional safety settings for potentially sensitive objects:
-
-- Include or exclude building sub-objects
-- Include or exclude network sub-objects
-- Protect objects assigned to another owner
-- Require confirmation for large selections
-- Configure the large-selection confirmation threshold
-
-Please check the enabled filters carefully before deleting objects from your city.
 
 ## How to use
 
@@ -66,17 +55,11 @@ Please check the enabled filters carefully before deleting objects from your cit
 
 The floating launcher button can optionally be moved by holding Ctrl and the left mouse button. Release the mouse button to save its new position.
 
+
 ## Configuration
 
 Permanent behavior and safety settings are available under the Area Bulldozer section in the game options.
 
-The tool interface contains the settings needed during normal use, while safety, display and keyboard settings remain available in the mod options.
-
-## Compatibility
-
-Area Bulldozer is an independent mod and can generally be used alongside other bulldozer or deletion-related mods.
-
-Using several deletion tools at the same time may cause overlapping controls or unexpected behavior. Only one deletion tool should be active at a time.
 
 ## Credits and inspiration
 
@@ -98,26 +81,7 @@ Area Bulldozer is an independent implementation and is not officially affiliated
 * Arrange frequently used controls more efficiently.
 * Keep object-filter controls quickly accessible.
 * Improve usability on lower resolutions and higher UI scaling values.
-
-### Interface style option
-
-Add a new option for selecting the preferred Area Bulldozer interface:
-
-* Compact
-* Classic
-
-The Classic interface keeps the current Area Bulldozer layout for users who prefer the existing design.
-
-The selected interface style will be saved with the mod settings and restored automatically.
-
-### Additional UI improvements
-
-* Improve spacing and alignment of tool controls.
-* Reduce the vertical space required by the object filters.
-* Keep circle/square selection and size controls easily accessible.
-* Keep advanced and safety-related settings outside the main compact interface where possible.
-* Preserve UI scaling support for both interface styles.
-
+		
 
 ## Feedback and bug reports
 

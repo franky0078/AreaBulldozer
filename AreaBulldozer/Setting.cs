@@ -66,9 +66,6 @@ namespace AreaBulldozer
         [SettingsUIHidden]
         public bool DeleteStaticObjects { get; set; }
 
-        // ------------------------------------------------------------
-        // Prop- und Markerfilter der Werkzeug-UI
-        // ------------------------------------------------------------
 
         [SettingsUIHidden]
         public bool DeleteGeneralProps { get; set; }
@@ -101,10 +98,6 @@ namespace AreaBulldozer
         [SettingsUISection(kSection, kToolGroup)]
         public int MarkerBackgroundDarkness { get; set; }
 
-        // ------------------------------------------------------------
-        // Sicherheit – nur in den normalen Mod-Optionen
-        // ------------------------------------------------------------
-
         [SettingsUISection(kSection, kSubObjectGroup)]
         public bool DeleteBuildingSubObjects { get; set; }
 
@@ -114,9 +107,6 @@ namespace AreaBulldozer
         [SettingsUISection(kSection, kSubObjectGroup)]
         public bool ProtectOwnedObjects { get; set; }
 
-        // ------------------------------------------------------------
-        // Darstellung und Bedienung
-        // ------------------------------------------------------------
 
         [SettingsUIHidden]
         public bool UseSquareBrush { get; set; }
@@ -172,10 +162,6 @@ namespace AreaBulldozer
             step = 50)]
         [SettingsUISection(kSection, kSubObjectGroup)]
         public int LargeSelectionThreshold { get; set; }
-
-        // ------------------------------------------------------------
-        // Tastenkürzel
-        // ------------------------------------------------------------
 
         [SettingsUIKeyboardBinding(
             BindingKeyboard.B,

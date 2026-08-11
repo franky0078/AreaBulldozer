@@ -4,10 +4,6 @@ namespace AreaBulldozer.Tools
 {
     public partial class AreaBulldozerToolSystem
     {
-        // ------------------------------------------------------------
-        // Sichtbarkeit unsichtbarer Marker
-        // ------------------------------------------------------------
-
         private RenderingSystem m_RenderingSystem;
 
         private bool m_ControlsMarkerVisibility;

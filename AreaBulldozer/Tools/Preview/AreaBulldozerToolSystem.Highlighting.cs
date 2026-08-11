@@ -15,37 +15,14 @@ namespace AreaBulldozer.Tools
 {
     public partial class AreaBulldozerToolSystem
     {
-        // ------------------------------------------------------------
-        // Hervorhebung
-        // ------------------------------------------------------------
+        private readonly List<Entity> m_HighlightAddBuffer =
+            new();
 
-        private bool TryAddHighlight(
-            Entity entity)
-        {
-            if (!IsEntityUsable(entity))
-            {
-                return false;
-            }
+        private readonly List<Entity> m_HighlightRemoveBuffer =
+            new();
 
-            if (EntityManager.HasComponent<Game.Areas.Area>(
-                    entity))
-            {
-                return true;
-            }
-
-            if (EntityManager.HasComponent<Highlighted>(
-                    entity))
-            {
-                return false;
-            }
-
-            EntityManager.AddComponent<Highlighted>(
-                entity);
-
-            MarkHighlightVisualsUpdated(entity);
-
-            return true;
-        }
+        private readonly List<Entity> m_HighlightNotOwnedBuffer =
+            new();
 
         private void AddEntityToNextPreview(
             Entity entity)
@@ -57,17 +34,7 @@ namespace AreaBulldozer.Tools
                 return;
             }
 
-            if (m_HighlightedEntities != null &&
-                m_HighlightedEntities.Contains(entity))
-            {
-                m_NextHighlightedEntities.Add(entity);
-                return;
-            }
-
-            if (TryAddHighlight(entity))
-            {
-                m_NextHighlightedEntities.Add(entity);
-            }
+            m_NextHighlightedEntities.Add(entity);
         }
 
         private void AddBuildingPreviewHierarchy(
@@ -134,102 +101,183 @@ namespace AreaBulldozer.Tools
             }
         }
 
-        private void RemoveOwnedHighlight(
-            Entity entity)
+        private void ApplyPreviewHighlightDiff()
         {
-            if (entity == Entity.Null ||
-                !EntityManager.Exists(entity))
+            if (m_HighlightedEntities == null ||
+                m_NextHighlightedEntities == null)
             {
                 return;
             }
 
-            if (EntityManager.HasComponent<Game.Areas.Area>(
-                    entity))
+            m_HighlightAddBuffer.Clear();
+            m_HighlightRemoveBuffer.Clear();
+            m_HighlightNotOwnedBuffer.Clear();
+
+            foreach (Entity entity in m_NextHighlightedEntities)
             {
-                return;
+                if (m_HighlightedEntities.Contains(entity))
+                {
+                    continue;
+                }
+
+                if (!EntityManager.Exists(entity))
+                {
+                    m_HighlightNotOwnedBuffer.Add(entity);
+                    continue;
+                }
+
+                if (EntityManager.HasComponent<Game.Areas.Area>(
+                        entity))
+                {
+                    continue;
+                }
+
+                if (EntityManager.HasComponent<Highlighted>(
+                        entity))
+                {
+                    // Fremde Hervorhebung: nicht übernehmen.
+                    m_HighlightNotOwnedBuffer.Add(entity);
+                    continue;
+                }
+
+                m_HighlightAddBuffer.Add(entity);
             }
 
-            if (!EntityManager.HasComponent<Highlighted>(
-                    entity))
+            foreach (Entity entity in m_HighlightNotOwnedBuffer)
             {
-                return;
+                m_NextHighlightedEntities.Remove(entity);
             }
 
-            EntityManager.RemoveComponent<Highlighted>(
-                entity);
+            foreach (Entity entity in m_HighlightedEntities)
+            {
+                if (m_NextHighlightedEntities.Contains(entity))
+                {
+                    continue;
+                }
 
-            MarkHighlightVisualsUpdated(entity);
+                if (!EntityManager.Exists(entity) ||
+                    EntityManager.HasComponent<Game.Areas.Area>(
+                        entity) ||
+                    !EntityManager.HasComponent<Highlighted>(
+                        entity))
+                {
+                    continue;
+                }
+
+                m_HighlightRemoveBuffer.Add(entity);
+            }
+
+            ApplyHighlightComponentChanges(
+                m_HighlightAddBuffer,
+                m_HighlightRemoveBuffer);
+
+            HashSet<Entity> previousSet =
+                m_HighlightedEntities;
+
+            m_HighlightedEntities =
+                m_NextHighlightedEntities;
+
+            m_NextHighlightedEntities =
+                previousSet;
+
+            m_NextHighlightedEntities.Clear();
         }
 
-        private void RemoveHighlightBeforeDeletion(
-            Entity entity)
+        private void ApplyHighlightComponentChanges(
+            List<Entity> entitiesToHighlight,
+            List<Entity> entitiesToUnhighlight)
         {
-            if (entity == Entity.Null ||
-                !EntityManager.Exists(entity))
+            if (entitiesToHighlight != null)
+            {
+                foreach (Entity entity in entitiesToHighlight)
+                {
+                    if (entity == Entity.Null ||
+                        !EntityManager.Exists(entity))
+                    {
+                        continue;
+                    }
+
+                    if (!EntityManager.HasComponent<Highlighted>(
+                            entity))
+                    {
+                        EntityManager.AddComponent<Highlighted>(
+                            entity);
+                    }
+
+                    if (!EntityManager.HasComponent<BatchesUpdated>(
+                            entity))
+                    {
+                        EntityManager.AddComponent<BatchesUpdated>(
+                            entity);
+                    }
+                }
+            }
+
+            if (entitiesToUnhighlight != null)
+            {
+                foreach (Entity entity in entitiesToUnhighlight)
+                {
+                    if (entity == Entity.Null ||
+                        !EntityManager.Exists(entity))
+                    {
+                        continue;
+                    }
+
+                    if (EntityManager.HasComponent<Highlighted>(
+                            entity))
+                    {
+                        EntityManager.RemoveComponent<Highlighted>(
+                            entity);
+                    }
+
+                    if (!EntityManager.HasComponent<BatchesUpdated>(
+                            entity))
+                    {
+                        EntityManager.AddComponent<BatchesUpdated>(
+                            entity);
+                    }
+                }
+            }
+        }
+
+        private void RemoveHighlightsBeforeDeletion(
+            HashSet<Entity> entities)
+        {
+            if (entities == null ||
+                entities.Count == 0)
             {
                 return;
             }
 
-            if (EntityManager.HasComponent<Game.Areas.Area>(
-                    entity))
+            m_HighlightRemoveBuffer.Clear();
+
+            foreach (Entity entity in entities)
             {
                 m_HighlightedEntities?.Remove(entity);
                 m_NextHighlightedEntities?.Remove(entity);
-                return;
-            }
 
-            if (EntityManager.HasComponent<Highlighted>(
-                    entity))
-            {
-                EntityManager.RemoveComponent<Highlighted>(
-                    entity);
-
-                MarkHighlightVisualsUpdated(entity);
-            }
-
-            m_HighlightedEntities?.Remove(entity);
-            m_NextHighlightedEntities?.Remove(entity);
-        }
-
-
-        private void MarkHighlightVisualsUpdated(
-            Entity entity)
-        {
-            if (!EntityManager.Exists(entity))
-            {
-                return;
-            }
-
-            if (EntityManager.HasComponent<Game.Areas.Area>(
-                    entity))
-            {
-                if (!EntityManager.HasComponent<Updated>(
-                        entity))
+                if (entity == Entity.Null ||
+                    !EntityManager.Exists(entity))
                 {
-                    EntityManager.AddComponent<Updated>(
-                        entity);
+                    continue;
                 }
 
-                return;
+                if (EntityManager.HasComponent<Game.Areas.Area>(
+                        entity))
+                {
+                    continue;
+                }
+
+                if (EntityManager.HasComponent<Highlighted>(
+                        entity))
+                {
+                    m_HighlightRemoveBuffer.Add(entity);
+                }
             }
 
-            MarkBatchesUpdated(entity);
-        }
-
-        private void MarkBatchesUpdated(
-            Entity entity)
-        {
-            if (!EntityManager.Exists(entity))
-            {
-                return;
-            }
-
-            if (!EntityManager.HasComponent<BatchesUpdated>(
-                    entity))
-            {
-                EntityManager.AddComponent<BatchesUpdated>(
-                    entity);
-            }
+            ApplyHighlightComponentChanges(
+                null,
+                m_HighlightRemoveBuffer);
         }
 
         private void ClearSelectionPreview(
@@ -240,11 +288,27 @@ namespace AreaBulldozer.Tools
                 return;
             }
 
+            m_HighlightRemoveBuffer.Clear();
+
             foreach (Entity entity in
                      m_HighlightedEntities)
             {
-                RemoveOwnedHighlight(entity);
+                if (entity == Entity.Null ||
+                    !EntityManager.Exists(entity) ||
+                    EntityManager.HasComponent<Game.Areas.Area>(
+                        entity) ||
+                    !EntityManager.HasComponent<Highlighted>(
+                        entity))
+                {
+                    continue;
+                }
+
+                m_HighlightRemoveBuffer.Add(entity);
             }
+
+            ApplyHighlightComponentChanges(
+                null,
+                m_HighlightRemoveBuffer);
 
             m_HighlightedEntities.Clear();
             m_NextHighlightedEntities?.Clear();
@@ -274,56 +338,8 @@ namespace AreaBulldozer.Tools
             m_LastPreviewSquareRotationRadians =
                 -1000f;
 
-            m_LastDeleteTrees =
-                false;
-
-            m_LastDeleteBuildings =
-                false;
-
-            m_LastDeleteRoads =
-                false;
-
-            m_LastDeletePaths =
-                false;
-
-            m_LastDeleteRailways =
-                false;
-
-            m_LastDeleteSurfaces =
-                false;
-
-            m_LastDeleteStaticObjects =
-                false;
-
-            m_LastDeleteGeneralProps =
-                false;
-
-            m_LastDeleteStreetLights =
-                false;
-
-            m_LastDeleteQuantityObjects =
-                false;
-
-            m_LastDeleteBrandingObjects =
-                false;
-
-            m_LastDeleteActivityLocations =
-                false;
-
-            m_LastDeleteSpawnLocations =
-                false;
-
-            m_LastDeleteMarkerNetworks =
-                false;
-
-            m_LastDeleteBuildingSubObjects =
-                false;
-
-            m_LastDeleteNetworkSubObjects =
-                false;
-
-            m_LastProtectOwnedObjects =
-                false;
+            m_LastFilterSnapshot =
+                default;
         }
 
         private void CleanupPendingDeletions()

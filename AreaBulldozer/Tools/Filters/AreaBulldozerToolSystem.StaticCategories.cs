@@ -7,19 +7,6 @@ namespace AreaBulldozer.Tools
 {
     public partial class AreaBulldozerToolSystem
     {
-        // ------------------------------------------------------------
-        // Statische Objektkategorien
-        // ------------------------------------------------------------
-
-        private enum StaticObjectCategory
-        {
-            None,
-            GeneralProp,
-            StreetLight,
-            QuantityObject,
-            BrandingObject,
-            ActivityLocation
-        }
 
         private StaticObjectCategory GetStaticObjectCategory(
             Entity entity)
@@ -67,11 +54,11 @@ namespace AreaBulldozer.Tools
             return StaticObjectCategory.GeneralProp;
         }
 
-        private bool IsStaticCategoryEnabled(
-            StaticObjectCategory category)
+        private static bool IsStaticCategoryEnabled(
+            StaticObjectCategory category,
+            in FilterSnapshot filters)
         {
-            if (Mod.Settings == null ||
-                !Mod.Settings.DeleteStaticObjects)
+            if (!filters.DeleteStaticObjects)
             {
                 return false;
             }
@@ -79,19 +66,19 @@ namespace AreaBulldozer.Tools
             return category switch
             {
                 StaticObjectCategory.GeneralProp =>
-                    Mod.Settings.DeleteGeneralProps,
+                    filters.DeleteGeneralProps,
 
                 StaticObjectCategory.StreetLight =>
-                    Mod.Settings.DeleteStreetLights,
+                    filters.DeleteStreetLights,
 
                 StaticObjectCategory.QuantityObject =>
-                    Mod.Settings.DeleteQuantityObjects,
+                    filters.DeleteQuantityObjects,
 
                 StaticObjectCategory.BrandingObject =>
-                    Mod.Settings.DeleteBrandingObjects,
+                    filters.DeleteBrandingObjects,
 
                 StaticObjectCategory.ActivityLocation =>
-                    Mod.Settings.DeleteActivityLocations,
+                    filters.DeleteActivityLocations,
 
                 _ => false
             };

@@ -6,9 +6,6 @@ namespace AreaBulldozer.Tools
 {
     public partial class AreaBulldozerToolSystem
     {
-        // ------------------------------------------------------------
-        // Vorschau
-        // ------------------------------------------------------------
 
         private void UpdateSelectionPreviewIfNeeded()
         {
@@ -19,67 +16,14 @@ namespace AreaBulldozer.Tools
                 return;
             }
 
+            FilterSnapshot filters =
+                FilterSnapshot.FromSettings(
+                    Mod.Settings);
+
             bool useSquareBrush =
                 Mod.Settings.UseSquareBrush;
 
-            bool deleteTrees =
-                Mod.Settings.DeleteTrees;
-
-            bool deleteBuildings =
-                Mod.Settings.DeleteBuildings;
-
-            bool deleteRoads =
-                Mod.Settings.DeleteRoads;
-
-            bool deletePaths =
-                Mod.Settings.DeletePaths;
-
-            bool deleteRailways =
-                Mod.Settings.DeleteRailways;
-
-            bool deleteSurfaces =
-                Mod.Settings.DeleteSurfaces;
-
-            bool deleteStaticObjects =
-                Mod.Settings.DeleteStaticObjects;
-
-            bool deleteGeneralProps =
-                Mod.Settings.DeleteGeneralProps;
-
-            bool deleteStreetLights =
-                Mod.Settings.DeleteStreetLights;
-
-            bool deleteQuantityObjects =
-                Mod.Settings.DeleteQuantityObjects;
-
-            bool deleteBrandingObjects =
-                Mod.Settings.DeleteBrandingObjects;
-
-            bool deleteActivityLocations =
-                Mod.Settings.DeleteActivityLocations;
-
-            bool deleteSpawnLocations =
-                Mod.Settings.DeleteSpawnLocations;
-
-            bool deleteMarkerNetworks =
-                Mod.Settings.DeleteMarkerNetworks;
-
-            bool deleteBuildingSubObjects =
-                Mod.Settings.DeleteBuildingSubObjects;
-
-            bool deleteNetworkSubObjects =
-                Mod.Settings.DeleteNetworkSubObjects;
-
-            bool protectOwnedObjects =
-                Mod.Settings.ProtectOwnedObjects;
-
-            if (!deleteTrees &&
-                !deleteBuildings &&
-                !deleteRoads &&
-                !deletePaths &&
-                !deleteRailways &&
-                !deleteSurfaces &&
-                !deleteStaticObjects)
+            if (!filters.HasAnyPrimaryFilter)
             {
                 ClearSelectionPreview();
                 return;
@@ -110,39 +54,8 @@ namespace AreaBulldozer.Tools
             bool filtersChanged =
                 useSquareBrush !=
                     m_LastUseSquareBrush ||
-                deleteTrees != m_LastDeleteTrees ||
-                deleteBuildings !=
-                    m_LastDeleteBuildings ||
-                deleteRoads !=
-                    m_LastDeleteRoads ||
-                deletePaths !=
-                    m_LastDeletePaths ||
-                deleteRailways !=
-                    m_LastDeleteRailways ||
-                deleteSurfaces !=
-                    m_LastDeleteSurfaces ||
-                deleteStaticObjects !=
-                    m_LastDeleteStaticObjects ||
-                deleteGeneralProps !=
-                    m_LastDeleteGeneralProps ||
-                deleteStreetLights !=
-                    m_LastDeleteStreetLights ||
-                deleteQuantityObjects !=
-                    m_LastDeleteQuantityObjects ||
-                deleteBrandingObjects !=
-                    m_LastDeleteBrandingObjects ||
-                deleteActivityLocations !=
-                    m_LastDeleteActivityLocations ||
-                deleteSpawnLocations !=
-                    m_LastDeleteSpawnLocations ||
-                deleteMarkerNetworks !=
-                    m_LastDeleteMarkerNetworks ||
-                deleteBuildingSubObjects !=
-                    m_LastDeleteBuildingSubObjects ||
-                deleteNetworkSubObjects !=
-                    m_LastDeleteNetworkSubObjects ||
-                protectOwnedObjects !=
-                    m_LastProtectOwnedObjects;
+                filters !=
+                    m_LastFilterSnapshot;
 
             float2 currentPosition =
                 new float2(
@@ -184,15 +97,7 @@ namespace AreaBulldozer.Tools
             CancelLargeSelectionConfirmation();
 
             UpdateSelectionPreview(
-                deleteTrees,
-                deleteBuildings,
-                deleteRoads,
-                deletePaths,
-                deleteRailways,
-                deleteSurfaces,
-                deleteStaticObjects,
-                deleteSpawnLocations,
-                deleteMarkerNetworks);
+                in filters);
 
             m_LastPreviewPosition =
                 CurrentPosition;
@@ -206,56 +111,8 @@ namespace AreaBulldozer.Tools
             m_LastPreviewSquareRotationRadians =
                 SquareRotationRadians;
 
-            m_LastDeleteTrees =
-                deleteTrees;
-
-            m_LastDeleteBuildings =
-                deleteBuildings;
-
-            m_LastDeleteRoads =
-                deleteRoads;
-
-            m_LastDeletePaths =
-                deletePaths;
-
-            m_LastDeleteRailways =
-                deleteRailways;
-
-            m_LastDeleteSurfaces =
-                deleteSurfaces;
-
-            m_LastDeleteStaticObjects =
-                deleteStaticObjects;
-
-            m_LastDeleteGeneralProps =
-                deleteGeneralProps;
-
-            m_LastDeleteStreetLights =
-                deleteStreetLights;
-
-            m_LastDeleteQuantityObjects =
-                deleteQuantityObjects;
-
-            m_LastDeleteBrandingObjects =
-                deleteBrandingObjects;
-
-            m_LastDeleteActivityLocations =
-                deleteActivityLocations;
-
-            m_LastDeleteSpawnLocations =
-                deleteSpawnLocations;
-
-            m_LastDeleteMarkerNetworks =
-                deleteMarkerNetworks;
-
-            m_LastDeleteBuildingSubObjects =
-                deleteBuildingSubObjects;
-
-            m_LastDeleteNetworkSubObjects =
-                deleteNetworkSubObjects;
-
-            m_LastProtectOwnedObjects =
-                protectOwnedObjects;
+            m_LastFilterSnapshot =
+                filters;
 
             m_NextPreviewUpdateTime =
                 currentTime +
@@ -263,15 +120,7 @@ namespace AreaBulldozer.Tools
         }
 
         private void UpdateSelectionPreview(
-            bool includeVegetation,
-            bool includeBuildings,
-            bool includeRoads,
-            bool includePaths,
-            bool includeRailways,
-            bool includeSurfaces,
-            bool includeStaticObjects,
-            bool includeSpawnLocations,
-            bool includeMarkerNetworks)
+            in FilterSnapshot filters)
         {
             if (m_HighlightedEntities == null ||
                 m_NextHighlightedEntities == null)
@@ -297,7 +146,7 @@ namespace AreaBulldozer.Tools
             HashSet<Entity> selectedBuildings =
                 new();
 
-            if (includeBuildings)
+            if (filters.DeleteBuildings)
             {
                 foreach (
                     SpatialCandidate candidate
@@ -305,7 +154,7 @@ namespace AreaBulldozer.Tools
                 {
                     if (!candidate.IsBuilding ||
                         !IsCandidateInsideSelection(
-                            candidate,
+                            in candidate,
                             selectionCenter,
                             radius) ||
                         !IsEntityUsable(candidate.Entity) ||
@@ -330,71 +179,71 @@ namespace AreaBulldozer.Tools
 
                 if (candidate.IsBuilding)
                 {
-                    if (!includeBuildings)
+                    if (!filters.DeleteBuildings)
                     {
                         continue;
                     }
                 }
                 else if (candidate.IsRoad)
                 {
-                    if (!includeRoads)
+                    if (!filters.DeleteRoads)
                     {
                         continue;
                     }
                 }
                 else if (candidate.IsPedestrianPath)
                 {
-                    if (!includePaths)
+                    if (!filters.DeletePaths)
                     {
                         continue;
                     }
                 }
                 else if (candidate.IsRailway)
                 {
-                    if (!includeRailways)
+                    if (!filters.DeleteRailways)
                     {
                         continue;
                     }
                 }
                 else if (candidate.IsSurfaceArea)
                 {
-                    if (!includeSurfaces)
+                    if (!filters.DeleteSurfaces)
                     {
                         continue;
                     }
                 }
                 else if (candidate.IsStaticObject)
                 {
-                    if (!includeStaticObjects ||
-                        !IsStaticCategoryEnabled(
-                            candidate.StaticCategory))
+                    if (!IsStaticCategoryEnabled(
+                            candidate.StaticCategory,
+                            in filters))
                     {
                         continue;
                     }
                 }
                 else if (candidate.IsSpawnLocation)
                 {
-                    if (!includeStaticObjects ||
-                        !includeSpawnLocations)
+                    if (!filters.DeleteStaticObjects ||
+                        !filters.DeleteSpawnLocations)
                     {
                         continue;
                     }
                 }
                 else if (candidate.IsAssetLane)
                 {
-                    if (!includeStaticObjects ||
-                        !includeMarkerNetworks)
+                    if (!filters.DeleteStaticObjects ||
+                        !filters.DeleteMarkerNetworks)
                     {
                         continue;
                     }
                 }
-                else if (!includeVegetation)
+                else if (!filters.DeleteTrees)
                 {
                     continue;
                 }
 
                 if (!IsCandidateInsideSelection(
-                        candidate,
+                        in candidate,
                         selectionCenter,
                         radius))
                 {
@@ -429,7 +278,9 @@ namespace AreaBulldozer.Tools
                     !candidate.IsRoad &&
                     !candidate.IsPedestrianPath &&
                     !candidate.IsRailway &&
-                    IsCandidateOwnedObjectProtected(candidate))
+                    IsCandidateOwnedObjectProtected(
+                        in candidate,
+                        in filters))
                 {
                     continue;
                 }
@@ -443,27 +294,7 @@ namespace AreaBulldozer.Tools
                 AddEntityToNextPreview(entity);
             }
 
-            foreach (
-                Entity entity
-                in m_HighlightedEntities)
-            {
-                if (!m_NextHighlightedEntities.Contains(
-                        entity))
-                {
-                    RemoveOwnedHighlight(entity);
-                }
-            }
-
-            HashSet<Entity> previousSet =
-                m_HighlightedEntities;
-
-            m_HighlightedEntities =
-                m_NextHighlightedEntities;
-
-            m_NextHighlightedEntities =
-                previousSet;
-
-            m_NextHighlightedEntities.Clear();
+            ApplyPreviewHighlightDiff();
         }
     }
 }

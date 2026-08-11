@@ -1,16 +1,17 @@
-@font-face {
-  font-family: "AreaBulldozer Noto";
-  src: url("coui://GameUI/Fonts/NotoSans-Regular.ttf") format("truetype");
-  font-style: normal;
-  font-weight: 400;
-}
-
-@font-face {
-  font-family: "AreaBulldozer Noto";
-  src: url("coui://GameUI/Fonts/NotoSans-Bold.ttf") format("truetype");
-  font-style: normal;
-  font-weight: 700;
-}
+/*
+ * Schriften: bewusst KEIN @font-face mit coui://-URL.
+ *
+ * Der frühere Verweis auf coui://GameUI/Fonts/NotoSans-*.ttf war kein
+ * gültiger Host-Pfad ("ResourceHandler: Invalid host locations map"
+ * im UI.log) und hat nie geladen – dargestellt wurde immer schon die
+ * Fallback-Familie "Noto Sans", die das Spiel selbst registriert und
+ * die Umlaute (ä, ö, ü) enthält. Wir referenzieren sie direkt.
+ *
+ * Wichtig: NICHT "inherit" verwenden – je nach Einhängepunkt des
+ * Moduls löst inherit auf Coherents internen Default auf, dem
+ * Umlaut-Glyphen fehlen können (fehlende Glyphen werden leer
+ * gerendert).
+ */
 
 .host,
 .host * {
@@ -20,7 +21,7 @@
 .host,
 .host button,
 .host input {
-  font-family: "AreaBulldozer Noto", "Noto Sans", sans-serif !important;
+  font-family: "Noto Sans", sans-serif !important;
 }
 
 .host {
@@ -864,7 +865,7 @@
 .modMenuButton,
 .modMenuButton * {
   box-sizing: border-box;
-  font-family: "AreaBulldozer Noto", "Noto Sans", sans-serif !important;
+  font-family: "Noto Sans", sans-serif !important;
 }
 
 .modMenuButton {

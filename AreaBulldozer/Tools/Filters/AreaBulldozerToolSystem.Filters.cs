@@ -16,9 +16,6 @@ namespace AreaBulldozer.Tools
 {
     public partial class AreaBulldozerToolSystem
     {
-        // ------------------------------------------------------------
-        // Entity-Prüfungen
-        // ------------------------------------------------------------
 
         private bool IsEntityUsable(
             Entity entity)
@@ -67,21 +64,10 @@ namespace AreaBulldozer.Tools
                 circleCenter) <= radiusSquared;
         }
 
-        /// <summary>
-        /// Returns true when an entity belongs to a scope that is not
-        /// explicitly enabled in the settings.
-        ///
-        /// Type filters still apply separately. For example, owned trees
-        /// require both DeleteTrees and the matching sub-object scope.
-        /// </summary>
         private bool IsOwnedObjectProtected(
-            Entity entity)
+            Entity entity,
+            in FilterSnapshot filters)
         {
-            if (Mod.Settings == null)
-            {
-                return true;
-            }
-
             OwnerScope scope =
                 ResolveOwnerScope(entity);
 
@@ -89,28 +75,18 @@ namespace AreaBulldozer.Tools
             {
                 OwnerScope.None => false,
                 OwnerScope.Building =>
-                    !Mod.Settings.DeleteBuildingSubObjects,
+                    !filters.DeleteBuildingSubObjects,
                 OwnerScope.Network =>
-                    !Mod.Settings.DeleteNetworkSubObjects,
+                    !filters.DeleteNetworkSubObjects,
                 OwnerScope.Other =>
-                    Mod.Settings.ProtectOwnedObjects,
+                    filters.ProtectOwnedObjects,
                 _ => true
             };
         }
 
-        /// <summary>
-        /// Common visible props are deliberately controlled by the explicit
-        /// prop-category filters themselves, even when they belong to a
-        /// building or network. Without this exception, nearly all street
-        /// furniture and asset decorations appear unselectable with the
-        /// default safety settings.
-        ///
-        /// Sensitive activity locations, spawn points, asset lanes,
-        /// vegetation, and surfaces continue to use the configured owner-scope
-        /// protection from the options menu.
-        /// </summary>
         private bool IsCandidateOwnedObjectProtected(
-            SpatialCandidate candidate)
+            in SpatialCandidate candidate,
+            in FilterSnapshot filters)
         {
             if (candidate.IsStaticObject &&
                 candidate.StaticCategory !=
@@ -120,22 +96,16 @@ namespace AreaBulldozer.Tools
             }
 
             return IsOwnedObjectProtected(
-                candidate.Entity);
+                candidate.Entity,
+                in filters);
         }
 
-        /// <summary>
-        /// Resolves the effective owner scope. Nested owner chains are
-        /// followed because road props can belong to a lane whose owner is
-        /// the actual network edge.
-        /// </summary>
         private OwnerScope ResolveOwnerScope(
             Entity entity)
         {
             Entity current = entity;
             bool hadOwner = false;
 
-            // Eight levels are more than enough for normal asset hierarchies
-            // and prevent an accidental owner cycle from looping forever.
             for (int depth = 0; depth < 8; depth++)
             {
                 if (current == Entity.Null ||
@@ -387,12 +357,40 @@ namespace AreaBulldozer.Tools
                        owner.m_Owner);
         }
 
+        private static bool IsPrefabDerivedFrom(
+            PrefabBase prefabBase,
+            string typeName)
+        {
+            for (System.Type type = prefabBase?.GetType();
+                 type != null;
+                 type = type.BaseType)
+            {
+                if (type.Name == typeName)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         private static bool IsPedestrianPathPrefab(
             PrefabBase prefabBase)
         {
-            if (prefabBase == null ||
-                (!(prefabBase is NetPrefab) &&
-                 !(prefabBase is RoadPrefab)))
+            if (prefabBase == null)
+            {
+                return false;
+            }
+
+            if (IsPrefabDerivedFrom(
+                    prefabBase,
+                    "PathwayPrefab"))
+            {
+                return true;
+            }
+
+            if (!(prefabBase is NetPrefab) &&
+                !(prefabBase is RoadPrefab))
             {
                 return false;
             }
@@ -446,14 +444,25 @@ namespace AreaBulldozer.Tools
         private static bool IsRailwayTrackPrefab(
             PrefabBase prefabBase)
         {
-            if (prefabBase == null ||
-                (!(prefabBase is NetPrefab) &&
-                 !(prefabBase is RoadPrefab)))
+            if (prefabBase == null)
             {
                 return false;
             }
 
             if (IsPedestrianPathPrefab(prefabBase))
+            {
+                return false;
+            }
+
+            if (IsPrefabDerivedFrom(
+                    prefabBase,
+                    "TrackPrefab"))
+            {
+                return true;
+            }
+
+            if (!(prefabBase is NetPrefab) &&
+                !(prefabBase is RoadPrefab))
             {
                 return false;
             }
@@ -511,8 +520,7 @@ namespace AreaBulldozer.Tools
                 return false;
             }
 
-            // First protection layer:
-            // Never select an entity used as an actual building.
+            // First protection layer
             if (EntityManager.HasComponent<
                     Game.Buildings.Building>(entity))
             {
@@ -526,8 +534,7 @@ namespace AreaBulldozer.Tools
                 return false;
             }
 
-            // Second protection layer:
-            // BuildingPrefab also covers derived building-prefab types.
+            // Second protection layer
             if (prefabBase is BuildingPrefab)
             {
                 return false;

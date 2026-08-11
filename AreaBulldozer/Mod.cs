@@ -13,7 +13,7 @@ namespace AreaBulldozer
 {
     public class Mod : IMod
     {
-        public const string ModVersion = "1.2.0";
+        public const string ModVersion = "1.2.1";
 
         public static readonly ILog Log = LogManager
             .GetLogger(
@@ -38,35 +38,28 @@ namespace AreaBulldozer
                 Log.Info($"Current mod asset: {asset.path}");
             }
 
-            // --------------------------------------------------------
-            // Einstellungen
-            // --------------------------------------------------------
 
+            // Einstellungen
             Settings = new Setting(this);
 
             Settings.RegisterInOptionsUI();
             Settings.RegisterKeyBindings();
 
-            // Englische Lokalisierung
             GameManager.instance.localizationManager.AddSource(
                 "en-US",
                 new LocaleEN(Settings));
 
-            // Deutsche Lokalisierung
             GameManager.instance.localizationManager.AddSource(
                 "de-DE",
                 new LocaleDE(Settings));
 
-            // Gespeicherte Einstellungen laden
             AssetDatabase.global.LoadSettings(
                 nameof(AreaBulldozer),
                 Settings,
                 new Setting(this));
 
-            // --------------------------------------------------------
+            
             // Tastenkürzel
-            // --------------------------------------------------------
-
             m_ActivateToolAction =
                 Settings.GetAction(ActivateToolActionName);
 
@@ -86,10 +79,7 @@ namespace AreaBulldozer
                     "Area Bulldozer activation action was not found.");
             }
 
-            // --------------------------------------------------------
             // Tool-System
-            // --------------------------------------------------------
-
             updateSystem.UpdateAt<AreaBulldozerToolSystem>(
                 SystemUpdatePhase.ToolUpdate);
 

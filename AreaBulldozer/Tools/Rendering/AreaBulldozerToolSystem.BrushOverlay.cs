@@ -103,7 +103,7 @@ namespace AreaBulldozer.Tools
                  index++)
             {
                 float2 rotatedOffset =
-                    RotateSquareLocalToWorld(
+                    SelectionGeometry.RotateLocalToWorld(
                         localCorners[index],
                         SquareRotationRadians);
 
@@ -208,7 +208,7 @@ namespace AreaBulldozer.Tools
         }
 
 
-        // Verlängert ein Liniensegment an beiden Enden.
+        // Verlängert das Liniensegment an beiden Enden.
         private static Line3.Segment CreateExtendedSegment(
             float3 start,
             float3 end,

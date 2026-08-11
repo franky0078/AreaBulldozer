@@ -11,34 +11,27 @@ namespace AreaBulldozer.Tools
 {
     public partial class AreaBulldozerToolSystem
     {
-        // ------------------------------------------------------------
-        // Räumlicher Vorschauindex
-        // ------------------------------------------------------------
 
         private const float kSpatialCellSize = 64f;
+        private const float kSpatialRefreshCheckInterval = 2f;
 
-        private enum SpatialCandidateKind
-        {
-            Vegetation,
-            Building,
-            Road,
-            PedestrianPath,
-            Railway,
-            SurfaceArea,
-            StaticObject,
-            SpawnLocation,
-            AssetLane
-        }
+        // Der Pinsel still stehen
+        private const float kSpatialRefreshIdleSeconds = 0.6f;
 
-        private Dictionary<
-            long,
-            List<SpatialCandidate>> m_SpatialBuckets;
+        // Mindestabstand zwischen zwei Refresh-Neuaufbauten, damit eine
+        private const float kSpatialRefreshMinRebuildInterval = 5f;
 
-        private List<SpatialCandidate>
-            m_SpatialCandidateBuffer;
+        private float3 m_SpatialRefreshProbePosition;
+        private float m_SpatialRefreshProbeRotation;
+        private float m_SpatialLastBrushActivityTime;
+        private float m_SpatialLastRefreshRebuildTime;
+
+        private SpatialCandidateIndex m_SpatialIndex;
 
         private bool m_SpatialIndexReady;
         private int m_SpatialIndexedObjectCount;
+        private int m_SpatialSourceEntityCount = -1;
+        private float m_NextSpatialRefreshCheckTime;
 
         private int m_SpatialBuildingCount;
         private int m_SpatialRoadCount;
@@ -72,104 +65,11 @@ namespace AreaBulldozer.Tools
         private int m_SpatialRejectedNetworkLaneOwnerCount;
         private int m_SpatialMissingLanePrefabCount;
 
-        private readonly struct SpatialCandidate
-        {
-            public SpatialCandidate(
-                Entity entity,
-                float2 position,
-                SpatialCandidateKind kind,
-                StaticObjectCategory staticCategory)
-                : this(
-                    entity,
-                    position,
-                    position,
-                    kind,
-                    staticCategory,
-                    false)
-            {
-            }
-
-            public SpatialCandidate(
-                Entity entity,
-                float2 position,
-                float2 endPosition,
-                SpatialCandidateKind kind,
-                StaticObjectCategory staticCategory,
-                bool isSegment)
-            {
-                Entity = entity;
-                Position = position;
-                EndPosition = endPosition;
-                Kind = kind;
-                StaticCategory = staticCategory;
-                IsSegment = isSegment;
-            }
-
-            public Entity Entity
-            {
-                get;
-            }
-
-            public float2 Position
-            {
-                get;
-            }
-
-            public float2 EndPosition
-            {
-                get;
-            }
-
-            public SpatialCandidateKind Kind
-            {
-                get;
-            }
-
-            public StaticObjectCategory StaticCategory
-            {
-                get;
-            }
-
-            public bool IsSegment
-            {
-                get;
-            }
-
-            public bool IsVegetation =>
-                Kind == SpatialCandidateKind.Vegetation;
-
-            public bool IsBuilding =>
-                Kind == SpatialCandidateKind.Building;
-
-            public bool IsRoad =>
-                Kind == SpatialCandidateKind.Road;
-
-            public bool IsPedestrianPath =>
-                Kind == SpatialCandidateKind.PedestrianPath;
-
-            public bool IsRailway =>
-                Kind == SpatialCandidateKind.Railway;
-
-            public bool IsSurfaceArea =>
-                Kind == SpatialCandidateKind.SurfaceArea;
-
-            public bool IsStaticObject =>
-                Kind == SpatialCandidateKind.StaticObject;
-
-            public bool IsSpawnLocation =>
-                Kind == SpatialCandidateKind.SpawnLocation;
-
-            public bool IsAssetLane =>
-                Kind == SpatialCandidateKind.AssetLane;
-        }
-
         private void InitializeSpatialIndex()
         {
-            m_SpatialBuckets =
-                new();
-
-            m_SpatialCandidateBuffer =
-                new();
+            m_SpatialIndex =
+                new SpatialCandidateIndex(
+                    kSpatialCellSize);
 
             m_SpatialRejectedPathPrefabSamples =
                 new();
@@ -185,8 +85,7 @@ namespace AreaBulldozer.Tools
         {
             ClearSpatialIndex();
 
-            m_SpatialBuckets = null;
-            m_SpatialCandidateBuffer = null;
+            m_SpatialIndex = null;
             m_SpatialRejectedPathPrefabSamples = null;
             m_SpatialRejectedRailwayPrefabSamples = null;
         }
@@ -196,10 +95,10 @@ namespace AreaBulldozer.Tools
             m_SpatialIndexReady = false;
         }
 
-        private void RebuildSpatialIndex()
+        private void RebuildSpatialIndex(
+            bool logDetails = true)
         {
-            if (m_SpatialBuckets == null ||
-                m_SpatialCandidateBuffer == null)
+            if (m_SpatialIndex == null)
             {
                 InitializeSpatialIndex();
             }
@@ -218,8 +117,7 @@ namespace AreaBulldozer.Tools
                 SpatialCandidateKind.Building);
 
             AddRoadEdgesToSpatialIndex();
-            AddPedestrianPathsToSpatialIndex();
-            AddRailwayTracksToSpatialIndex();
+            AddPathAndRailwayEdgesToSpatialIndex();
             AddSurfaceAreasToSpatialIndex();
 
             AddQueryToSpatialIndex(
@@ -236,10 +134,28 @@ namespace AreaBulldozer.Tools
 
             m_SpatialIndexReady = true;
 
+            m_SpatialSourceEntityCount =
+                ComputeSpatialSourceEntityCount();
+
+            m_NextSpatialRefreshCheckTime =
+                UnityEngine.Time.unscaledTime +
+                kSpatialRefreshCheckInterval;
+
+            if (!logDetails)
+            {
+                Mod.Log.Info(
+                    $"Spatial preview index refreshed: " +
+                    $"{m_SpatialIndexedObjectCount} objects in " +
+                    $"{m_SpatialIndex.CellCount} cells, " +
+                    $"{stopwatch.ElapsedMilliseconds} ms.");
+
+                return;
+            }
+
             Mod.Log.Info(
                 $"Spatial preview index built: " +
                 $"{m_SpatialIndexedObjectCount} objects in " +
-                $"{m_SpatialBuckets.Count} cells, " +
+                $"{m_SpatialIndex.CellCount} cells, " +
                 $"{stopwatch.ElapsedMilliseconds} ms. " +
                 $"Buildings: {m_SpatialBuildingCount}, " +
                 $"roads: {m_SpatialRoadCount}, " +
@@ -322,21 +238,108 @@ namespace AreaBulldozer.Tools
             }
         }
 
-        private void ClearSpatialIndex()
+        private int ComputeSpatialSourceEntityCount()
         {
-            if (m_SpatialBuckets != null)
-            {
-                foreach (
-                    List<SpatialCandidate> bucket
-                    in m_SpatialBuckets.Values)
-                {
-                    bucket.Clear();
-                }
+            return
+                m_PlantQuery.CalculateEntityCount() +
+                m_BuildingQuery.CalculateEntityCount() +
+                m_RoadEdgeQuery.CalculateEntityCount() +
+                m_NetEdgeQuery.CalculateEntityCount() +
+                m_SurfaceAreaQuery.CalculateEntityCount() +
+                m_StaticObjectQuery.CalculateEntityCount() +
+                m_SpawnLocationQuery.CalculateEntityCount() +
+                m_SubLaneOwnerQuery.CalculateEntityCount();
+        }
 
-                m_SpatialBuckets.Clear();
+
+        private void RefreshSpatialIndexIfNeeded()
+        {
+            if (!m_SpatialIndexReady)
+            {
+                return;
             }
 
-            m_SpatialCandidateBuffer?.Clear();
+            float currentTime =
+                UnityEngine.Time.unscaledTime;
+
+            bool brushMoved =
+                math.distancesq(
+                    CurrentPosition,
+                    m_SpatialRefreshProbePosition) > 0.01f;
+
+            bool brushRotated =
+                math.abs(
+                    SquareRotationRadians -
+                    m_SpatialRefreshProbeRotation) >
+                math.radians(0.05f);
+
+            if (brushMoved ||
+                brushRotated)
+            {
+                m_SpatialRefreshProbePosition =
+                    CurrentPosition;
+
+                m_SpatialRefreshProbeRotation =
+                    SquareRotationRadians;
+
+                m_SpatialLastBrushActivityTime =
+                    currentTime;
+            }
+
+            if (currentTime < m_NextSpatialRefreshCheckTime)
+            {
+                return;
+            }
+
+            m_NextSpatialRefreshCheckTime =
+                currentTime +
+                kSpatialRefreshCheckInterval;
+
+            bool applyHeld =
+                m_ApplyAction != null &&
+                m_ApplyAction.ReadValue<float>() >= 0.5f;
+
+            if (applyHeld ||
+                m_ContinuousDeleteActive ||
+                m_LargeSelectionConfirmationPending)
+            {
+                return;
+            }
+
+            if (currentTime -
+                m_SpatialLastBrushActivityTime <
+                kSpatialRefreshIdleSeconds)
+            {
+                return;
+            }
+
+            if (currentTime -
+                m_SpatialLastRefreshRebuildTime <
+                kSpatialRefreshMinRebuildInterval)
+            {
+                return;
+            }
+
+            int currentCount =
+                ComputeSpatialSourceEntityCount();
+
+            if (currentCount == m_SpatialSourceEntityCount)
+            {
+                return;
+            }
+
+            m_SpatialLastRefreshRebuildTime =
+                currentTime;
+
+            RebuildSpatialIndex(
+                logDetails: false);
+
+            m_LastPreviewRadius = -1f;
+        }
+
+        private void ClearSpatialIndex()
+        {
+            m_SpatialIndex?.Clear();
 
             ResetSpatialIndexCounters();
             m_SpatialIndexReady = false;
@@ -503,18 +506,21 @@ namespace AreaBulldozer.Tools
             }
         }
 
-        private void AddPedestrianPathsToSpatialIndex()
+        private void AddPathAndRailwayEdgesToSpatialIndex()
         {
-            NativeArray<Entity> pathEdges =
-                m_PathEdgeQuery.ToEntityArray(
+            NativeArray<Entity> netEdges =
+                m_NetEdgeQuery.ToEntityArray(
                     Allocator.Temp);
 
             m_SpatialPathQueryCount =
-                pathEdges.Length;
+                netEdges.Length;
+
+            m_SpatialRailwayQueryCount =
+                netEdges.Length;
 
             try
             {
-                foreach (Entity entity in pathEdges)
+                foreach (Entity entity in netEdges)
                 {
                     if (!IsEntityUsable(entity) ||
                         (m_PendingDeletion != null &&
@@ -523,10 +529,22 @@ namespace AreaBulldozer.Tools
                         continue;
                     }
 
-                    if (!IsMainPedestrianPathEdgeEntity(entity))
+                    bool isPedestrianPath =
+                        IsMainPedestrianPathEdgeEntity(entity);
+
+                    bool isRailway =
+                        !isPedestrianPath &&
+                        IsMainRailwayEdgeEntity(entity);
+
+                    if (!isPedestrianPath &&
+                        !isRailway)
                     {
                         m_SpatialRejectedPathCount++;
+                        m_SpatialRejectedRailwayCount++;
+
                         AddRejectedPathPrefabSample(entity);
+                        AddRejectedRailwayPrefabSample(entity);
+
                         continue;
                     }
 
@@ -535,7 +553,15 @@ namespace AreaBulldozer.Tools
                             out float3 startPosition,
                             out float3 endPosition))
                     {
-                        m_SpatialPathEndpointFailureCount++;
+                        if (isPedestrianPath)
+                        {
+                            m_SpatialPathEndpointFailureCount++;
+                        }
+                        else
+                        {
+                            m_SpatialRailwayEndpointFailureCount++;
+                        }
+
                         continue;
                     }
 
@@ -548,14 +574,16 @@ namespace AreaBulldozer.Tools
                             new(
                                 endPosition.x,
                                 endPosition.z),
-                            SpatialCandidateKind.PedestrianPath,
+                            isPedestrianPath
+                                ? SpatialCandidateKind.PedestrianPath
+                                : SpatialCandidateKind.Railway,
                             StaticObjectCategory.None,
                             true));
                 }
             }
             finally
             {
-                pathEdges.Dispose();
+                netEdges.Dispose();
             }
         }
 
@@ -580,62 +608,6 @@ namespace AreaBulldozer.Tools
             {
                 m_SpatialRejectedPathPrefabSamples.Add(
                     prefabName);
-            }
-        }
-
-        private void AddRailwayTracksToSpatialIndex()
-        {
-            NativeArray<Entity> railwayEdges =
-                m_RailEdgeQuery.ToEntityArray(
-                    Allocator.Temp);
-
-            m_SpatialRailwayQueryCount =
-                railwayEdges.Length;
-
-            try
-            {
-                foreach (Entity entity in railwayEdges)
-                {
-                    if (!IsEntityUsable(entity) ||
-                        (m_PendingDeletion != null &&
-                         m_PendingDeletion.Contains(entity)))
-                    {
-                        continue;
-                    }
-
-                    if (!IsMainRailwayEdgeEntity(entity))
-                    {
-                        m_SpatialRejectedRailwayCount++;
-                        AddRejectedRailwayPrefabSample(entity);
-                        continue;
-                    }
-
-                    if (!TryGetNetworkEndpointPositions(
-                            entity,
-                            out float3 startPosition,
-                            out float3 endPosition))
-                    {
-                        m_SpatialRailwayEndpointFailureCount++;
-                        continue;
-                    }
-
-                    AddSpatialCandidate(
-                        new(
-                            entity,
-                            new(
-                                startPosition.x,
-                                startPosition.z),
-                            new(
-                                endPosition.x,
-                                endPosition.z),
-                            SpatialCandidateKind.Railway,
-                            StaticObjectCategory.None,
-                            true));
-                }
-            }
-            finally
-            {
-                railwayEdges.Dispose();
             }
         }
 
@@ -914,7 +886,6 @@ namespace AreaBulldozer.Tools
                 return true;
             }
 
-            // Some asset containers are nested below the actual building.
             return ResolveOwnerScope(ownerEntity) ==
                    OwnerScope.Building;
         }
@@ -1009,70 +980,10 @@ namespace AreaBulldozer.Tools
         }
 
         private void AddSpatialCandidate(
-            SpatialCandidate candidate,
-            bool countEntity = true)
+            in SpatialCandidate candidate)
         {
-            float2 minimum =
-                math.min(
-                    candidate.Position,
-                    candidate.EndPosition);
-
-            float2 maximum =
-                math.max(
-                    candidate.Position,
-                    candidate.EndPosition);
-
-            int minCellX =
-                GetSpatialCellCoordinate(
-                    minimum.x);
-
-            int maxCellX =
-                GetSpatialCellCoordinate(
-                    maximum.x);
-
-            int minCellZ =
-                GetSpatialCellCoordinate(
-                    minimum.y);
-
-            int maxCellZ =
-                GetSpatialCellCoordinate(
-                    maximum.y);
-
-            for (
-                int cellZ = minCellZ;
-                cellZ <= maxCellZ;
-                cellZ++)
-            {
-                for (
-                    int cellX = minCellX;
-                    cellX <= maxCellX;
-                    cellX++)
-                {
-                    long key =
-                        GetSpatialCellKey(
-                            cellX,
-                            cellZ);
-
-                    if (!m_SpatialBuckets.TryGetValue(
-                            key,
-                            out List<SpatialCandidate> bucket))
-                    {
-                        bucket =
-                            new();
-
-                        m_SpatialBuckets.Add(
-                            key,
-                            bucket);
-                    }
-
-                    bucket.Add(candidate);
-                }
-            }
-
-            if (!countEntity)
-            {
-                return;
-            }
+            m_SpatialIndex.Add(
+                candidate);
 
             m_SpatialIndexedObjectCount++;
 
@@ -1123,73 +1034,13 @@ namespace AreaBulldozer.Tools
         {
             EnsureSpatialIndexReady();
 
-            m_SpatialCandidateBuffer.Clear();
-
-            int minCellX =
-                GetSpatialCellCoordinate(
-                    center.x - radius);
-
-            int maxCellX =
-                GetSpatialCellCoordinate(
-                    center.x + radius);
-
-            int minCellZ =
-                GetSpatialCellCoordinate(
-                    center.y - radius);
-
-            int maxCellZ =
-                GetSpatialCellCoordinate(
-                    center.y + radius);
-
-            for (
-                int cellZ = minCellZ;
-                cellZ <= maxCellZ;
-                cellZ++)
-            {
-                for (
-                    int cellX = minCellX;
-                    cellX <= maxCellX;
-                    cellX++)
-                {
-                    long key =
-                        GetSpatialCellKey(
-                            cellX,
-                            cellZ);
-
-                    if (!m_SpatialBuckets.TryGetValue(
-                            key,
-                            out List<SpatialCandidate> bucket))
-                    {
-                        continue;
-                    }
-
-                    m_SpatialCandidateBuffer.AddRange(
-                        bucket);
-                }
-            }
-
-            return m_SpatialCandidateBuffer;
-        }
-
-        private static int GetSpatialCellCoordinate(
-            float worldCoordinate)
-        {
-            return (int)math.floor(
-                worldCoordinate /
-                kSpatialCellSize);
-        }
-
-        private static long GetSpatialCellKey(
-            int cellX,
-            int cellZ)
-        {
-            return
-                ((long)cellX << 32) ^
-                (uint)cellZ;
+            return m_SpatialIndex.Query(
+                center,
+                radius);
         }
 
         private bool IsCandidateInsideSelection(
-            SpatialCandidate candidate,
+            in SpatialCandidate candidate,
             float2 selectionCenter,
             float selectionSize)
         {
@@ -1214,7 +1065,7 @@ namespace AreaBulldozer.Tools
         }
 
         private bool IsCandidateInsideCircle(
-            SpatialCandidate candidate,
+            in SpatialCandidate candidate,
             float2 circleCenter,
             float radiusSquared)
         {
@@ -1233,7 +1084,7 @@ namespace AreaBulldozer.Tools
                     circleCenter) <= radiusSquared;
             }
 
-            return IsSegmentInsideCircle(
+            return SelectionGeometry.IsSegmentInsideCircle(
                 candidate.Position,
                 candidate.EndPosition,
                 circleCenter,
@@ -1241,7 +1092,7 @@ namespace AreaBulldozer.Tools
         }
 
         private bool IsCandidateInsideSquare(
-            SpatialCandidate candidate,
+            in SpatialCandidate candidate,
             float2 squareCenter,
             float halfSize,
             float rotationRadians)
@@ -1257,14 +1108,14 @@ namespace AreaBulldozer.Tools
 
             if (!candidate.IsSegment)
             {
-                return IsPointInsideSquare(
+                return SelectionGeometry.IsPointInsideSquare(
                     candidate.Position,
                     squareCenter,
                     halfSize,
                     rotationRadians);
             }
 
-            return IsSegmentInsideSquare(
+            return SelectionGeometry.IsSegmentInsideSquare(
                 candidate.Position,
                 candidate.EndPosition,
                 squareCenter,
@@ -1294,11 +1145,11 @@ namespace AreaBulldozer.Tools
                         : 0;
 
                 float2 start =
-                    GetAreaNodePosition(
+                    SelectionGeometry.GetAreaNodePosition(
                         nodes[index]);
 
                 float2 end =
-                    GetAreaNodePosition(
+                    SelectionGeometry.GetAreaNodePosition(
                         nodes[nextIndex]);
 
                 if (!math.all(math.isfinite(start)) ||
@@ -1307,7 +1158,7 @@ namespace AreaBulldozer.Tools
                     return false;
                 }
 
-                if (IsSegmentInsideCircle(
+                if (SelectionGeometry.IsSegmentInsideCircle(
                         start,
                         end,
                         circleCenter,
@@ -1317,7 +1168,7 @@ namespace AreaBulldozer.Tools
                 }
             }
 
-            return IsPointInsidePolygon(
+            return SelectionGeometry.IsPointInsidePolygon(
                 nodes,
                 circleCenter);
         }
@@ -1345,11 +1196,11 @@ namespace AreaBulldozer.Tools
                         : 0;
 
                 float2 start =
-                    GetAreaNodePosition(
+                    SelectionGeometry.GetAreaNodePosition(
                         nodes[index]);
 
                 float2 end =
-                    GetAreaNodePosition(
+                    SelectionGeometry.GetAreaNodePosition(
                         nodes[nextIndex]);
 
                 if (!math.all(math.isfinite(start)) ||
@@ -1358,7 +1209,7 @@ namespace AreaBulldozer.Tools
                     return false;
                 }
 
-                if (IsPointInsideSquare(
+                if (SelectionGeometry.IsPointInsideSquare(
                         start,
                         squareCenter,
                         halfSize,
@@ -1367,7 +1218,7 @@ namespace AreaBulldozer.Tools
                     return true;
                 }
 
-                if (IsSegmentInsideSquare(
+                if (SelectionGeometry.IsSegmentInsideSquare(
                         start,
                         end,
                         squareCenter,
@@ -1378,7 +1229,7 @@ namespace AreaBulldozer.Tools
                 }
             }
 
-            if (IsPointInsidePolygon(
+            if (SelectionGeometry.IsPointInsidePolygon(
                     nodes,
                     squareCenter))
             {
@@ -1387,33 +1238,33 @@ namespace AreaBulldozer.Tools
 
             float2 corner0 =
                 squareCenter +
-                RotateSquareLocalToWorld(
+                SelectionGeometry.RotateLocalToWorld(
                     new float2(-halfSize, -halfSize),
                     rotationRadians);
 
             float2 corner1 =
                 squareCenter +
-                RotateSquareLocalToWorld(
+                SelectionGeometry.RotateLocalToWorld(
                     new float2(halfSize, -halfSize),
                     rotationRadians);
 
             float2 corner2 =
                 squareCenter +
-                RotateSquareLocalToWorld(
+                SelectionGeometry.RotateLocalToWorld(
                     new float2(halfSize, halfSize),
                     rotationRadians);
 
             float2 corner3 =
                 squareCenter +
-                RotateSquareLocalToWorld(
+                SelectionGeometry.RotateLocalToWorld(
                     new float2(-halfSize, halfSize),
                     rotationRadians);
 
             return
-                IsPointInsidePolygon(nodes, corner0) ||
-                IsPointInsidePolygon(nodes, corner1) ||
-                IsPointInsidePolygon(nodes, corner2) ||
-                IsPointInsidePolygon(nodes, corner3);
+                SelectionGeometry.IsPointInsidePolygon(nodes, corner0) ||
+                SelectionGeometry.IsPointInsidePolygon(nodes, corner1) ||
+                SelectionGeometry.IsPointInsidePolygon(nodes, corner2) ||
+                SelectionGeometry.IsPointInsidePolygon(nodes, corner3);
         }
 
         private bool TryGetAreaNodes(
@@ -1436,270 +1287,6 @@ namespace AreaBulldozer.Tools
                     true);
 
             return nodes.Length >= 3;
-        }
-
-        private static float2 GetAreaNodePosition(
-            Game.Areas.Node node)
-        {
-            return new float2(
-                node.m_Position.x,
-                node.m_Position.z);
-        }
-
-        private static bool IsPointInsidePolygon(
-            DynamicBuffer<Game.Areas.Node> nodes,
-            float2 point)
-        {
-            bool isInside = false;
-
-            for (int index = 0;
-                 index < nodes.Length;
-                 index++)
-            {
-                int nextIndex =
-                    index + 1 < nodes.Length
-                        ? index + 1
-                        : 0;
-
-                float2 start =
-                    GetAreaNodePosition(
-                        nodes[index]);
-
-                float2 end =
-                    GetAreaNodePosition(
-                        nodes[nextIndex]);
-
-                if (!math.all(math.isfinite(start)) ||
-                    !math.all(math.isfinite(end)))
-                {
-                    return false;
-                }
-
-                bool crossesHorizontalRay =
-                    (start.y > point.y) !=
-                    (end.y > point.y);
-
-                if (!crossesHorizontalRay)
-                {
-                    continue;
-                }
-
-                float verticalDifference =
-                    end.y - start.y;
-
-                if (math.abs(verticalDifference) <
-                    0.0001f)
-                {
-                    continue;
-                }
-
-                float intersectionX =
-                    start.x +
-                    (point.y - start.y) *
-                    (end.x - start.x) /
-                    verticalDifference;
-
-                if (point.x < intersectionX)
-                {
-                    isInside =
-                        !isInside;
-                }
-            }
-
-            return isInside;
-        }
-
-        private static float2 RotateSquareLocalToWorld(
-            float2 localOffset,
-            float rotationRadians)
-        {
-            float sine =
-                math.sin(rotationRadians);
-
-            float cosine =
-                math.cos(rotationRadians);
-
-            return new float2(
-                cosine * localOffset.x -
-                sine * localOffset.y,
-                sine * localOffset.x +
-                cosine * localOffset.y);
-        }
-
-        private static float2 RotateSquareWorldToLocal(
-            float2 worldOffset,
-            float rotationRadians)
-        {
-            float sine =
-                math.sin(rotationRadians);
-
-            float cosine =
-                math.cos(rotationRadians);
-
-            return new float2(
-                cosine * worldOffset.x +
-                sine * worldOffset.y,
-                -sine * worldOffset.x +
-                cosine * worldOffset.y);
-        }
-
-        private static bool IsPointInsideSquare(
-            float2 point,
-            float2 squareCenter,
-            float halfSize,
-            float rotationRadians)
-        {
-            float2 localPoint =
-                RotateSquareWorldToLocal(
-                    point - squareCenter,
-                    rotationRadians);
-
-            float2 offset =
-                math.abs(localPoint);
-
-            return
-                offset.x <= halfSize &&
-                offset.y <= halfSize;
-        }
-
-        private static bool IsSegmentInsideSquare(
-            float2 start,
-            float2 end,
-            float2 squareCenter,
-            float halfSize,
-            float rotationRadians)
-        {
-            float2 localStart =
-                RotateSquareWorldToLocal(
-                    start - squareCenter,
-                    rotationRadians);
-
-            float2 localEnd =
-                RotateSquareWorldToLocal(
-                    end - squareCenter,
-                    rotationRadians);
-
-            float2 minimum =
-                new float2(-halfSize, -halfSize);
-
-            float2 maximum =
-                new float2(halfSize, halfSize);
-
-            if (math.all(localStart >= minimum) &&
-                math.all(localStart <= maximum) ||
-                math.all(localEnd >= minimum) &&
-                math.all(localEnd <= maximum))
-            {
-                return true;
-            }
-
-            float2 direction =
-                localEnd -
-                localStart;
-
-            float minimumInterpolation = 0f;
-            float maximumInterpolation = 1f;
-
-            return
-                ClipSegmentAxis(
-                    localStart.x,
-                    direction.x,
-                    minimum.x,
-                    maximum.x,
-                    ref minimumInterpolation,
-                    ref maximumInterpolation) &&
-                ClipSegmentAxis(
-                    localStart.y,
-                    direction.y,
-                    minimum.y,
-                    maximum.y,
-                    ref minimumInterpolation,
-                    ref maximumInterpolation);
-        }
-
-        private static bool ClipSegmentAxis(
-            float start,
-            float direction,
-            float minimum,
-            float maximum,
-            ref float minimumInterpolation,
-            ref float maximumInterpolation)
-        {
-            if (math.abs(direction) <
-                0.0001f)
-            {
-                return
-                    start >= minimum &&
-                    start <= maximum;
-            }
-
-            float inverseDirection =
-                1f /
-                direction;
-
-            float first =
-                (minimum - start) *
-                inverseDirection;
-
-            float second =
-                (maximum - start) *
-                inverseDirection;
-
-            if (first > second)
-            {
-                float temporary =
-                    first;
-
-                first =
-                    second;
-
-                second =
-                    temporary;
-            }
-
-            minimumInterpolation =
-                math.max(
-                    minimumInterpolation,
-                    first);
-
-            maximumInterpolation =
-                math.min(
-                    maximumInterpolation,
-                    second);
-
-            return
-                minimumInterpolation <=
-                maximumInterpolation;
-        }
-
-        private static bool IsSegmentInsideCircle(
-            float2 start,
-            float2 end,
-            float2 circleCenter,
-            float radiusSquared)
-        {
-            float2 segment =
-                end - start;
-
-            float segmentLengthSquared =
-                math.lengthsq(segment);
-
-            float interpolation =
-                segmentLengthSquared > 0.0001f
-                    ? math.saturate(
-                        math.dot(
-                            circleCenter - start,
-                            segment) /
-                        segmentLengthSquared)
-                    : 0f;
-
-            float2 nearestPoint =
-                start +
-                segment * interpolation;
-
-            return math.distancesq(
-                nearestPoint,
-                circleCenter) <= radiusSquared;
         }
     }
 }

@@ -28,8 +28,8 @@ namespace AreaBulldozer.Tools
         private EntityQuery m_PlantQuery;
         private EntityQuery m_BuildingQuery;
         private EntityQuery m_RoadEdgeQuery;
-        private EntityQuery m_PathEdgeQuery;
-        private EntityQuery m_RailEdgeQuery;
+
+        private EntityQuery m_NetEdgeQuery;
         private EntityQuery m_SurfaceAreaQuery;
         private EntityQuery m_StaticObjectQuery;
         private EntityQuery m_SpawnLocationQuery;
@@ -53,24 +53,7 @@ namespace AreaBulldozer.Tools
         private bool m_LastUseSquareBrush;
         private float m_LastPreviewSquareRotationRadians;
 
-
-        private bool m_LastDeleteTrees;
-        private bool m_LastDeleteBuildings;
-        private bool m_LastDeleteRoads;
-        private bool m_LastDeletePaths;
-        private bool m_LastDeleteRailways;
-        private bool m_LastDeleteSurfaces;
-        private bool m_LastDeleteStaticObjects;
-        private bool m_LastDeleteGeneralProps;
-        private bool m_LastDeleteStreetLights;
-        private bool m_LastDeleteQuantityObjects;
-        private bool m_LastDeleteBrandingObjects;
-        private bool m_LastDeleteActivityLocations;
-        private bool m_LastDeleteSpawnLocations;
-        private bool m_LastDeleteMarkerNetworks;
-        private bool m_LastDeleteBuildingSubObjects;
-        private bool m_LastDeleteNetworkSubObjects;
-        private bool m_LastProtectOwnedObjects;
+        private FilterSnapshot m_LastFilterSnapshot;
 
         private bool m_LargeSelectionConfirmationPending;
         private float3 m_LargeSelectionConfirmationPosition;
@@ -79,23 +62,7 @@ namespace AreaBulldozer.Tools
         private float m_LargeSelectionConfirmationSquareRotationRadians;
         private float m_LargeSelectionConfirmationExpiresAt;
 
-        private bool m_ConfirmationDeleteTrees;
-        private bool m_ConfirmationDeleteBuildings;
-        private bool m_ConfirmationDeleteRoads;
-        private bool m_ConfirmationDeletePaths;
-        private bool m_ConfirmationDeleteRailways;
-        private bool m_ConfirmationDeleteSurfaces;
-        private bool m_ConfirmationDeleteStaticObjects;
-        private bool m_ConfirmationDeleteGeneralProps;
-        private bool m_ConfirmationDeleteStreetLights;
-        private bool m_ConfirmationDeleteQuantityObjects;
-        private bool m_ConfirmationDeleteBrandingObjects;
-        private bool m_ConfirmationDeleteActivityLocations;
-        private bool m_ConfirmationDeleteSpawnLocations;
-        private bool m_ConfirmationDeleteMarkerNetworks;
-        private bool m_ConfirmationDeleteBuildingSubObjects;
-        private bool m_ConfirmationDeleteNetworkSubObjects;
-        private bool m_ConfirmationProtectOwnedObjects;
+        private FilterSnapshot m_ConfirmationFilterSnapshot;
 
         private int m_ConfirmationObjectCount;
         private int m_ConfirmationVegetationCount;
@@ -281,24 +248,7 @@ namespace AreaBulldozer.Tools
                     }
                 });
 
-            m_PathEdgeQuery = GetEntityQuery(
-                new EntityQueryDesc
-                {
-                    All = new ComponentType[]
-                    {
-                        ComponentType.ReadOnly<Game.Net.Edge>(),
-                        ComponentType.ReadOnly<PrefabRef>()
-                    },
-
-                    None = new ComponentType[]
-                    {
-                        ComponentType.ReadOnly<Deleted>(),
-                        ComponentType.ReadOnly<Temp>(),
-                        ComponentType.ReadOnly<Overridden>()
-                    }
-                });
-
-            m_RailEdgeQuery = GetEntityQuery(
+            m_NetEdgeQuery = GetEntityQuery(
                 new EntityQueryDesc
                 {
                     All = new ComponentType[]
@@ -475,7 +425,7 @@ namespace AreaBulldozer.Tools
             }
             catch
             {
-                // Loggingl Tool initialization must continue.
+                // Logging failed. Tool initialization must continue.
             }
         }
 
@@ -747,6 +697,7 @@ namespace AreaBulldozer.Tools
             JobHandle inputDeps)
         {
             CleanupPendingDeletions();
+            RefreshSpatialIndexIfNeeded();
             UpdateLargeSelectionConfirmationState();
             UpdateMarkerVisibility();
 

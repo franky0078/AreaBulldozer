@@ -15,9 +15,6 @@ namespace AreaBulldozer.Tools
 {
     public partial class AreaBulldozerToolSystem
     {
-        // ------------------------------------------------------------
-        // Bestätigung großer Auswahlen
-        // ------------------------------------------------------------
 
         private void BeginLargeSelectionConfirmation(
             HashSet<Entity> selectedEntities,
@@ -51,56 +48,9 @@ namespace AreaBulldozer.Tools
                 UnityEngine.Time.unscaledTime +
                 kLargeSelectionConfirmationTimeout;
 
-            m_ConfirmationDeleteTrees =
-                Mod.Settings.DeleteTrees;
-
-            m_ConfirmationDeleteBuildings =
-                Mod.Settings.DeleteBuildings;
-
-            m_ConfirmationDeleteRoads =
-                Mod.Settings.DeleteRoads;
-
-            m_ConfirmationDeletePaths =
-                Mod.Settings.DeletePaths;
-
-            m_ConfirmationDeleteRailways =
-                Mod.Settings.DeleteRailways;
-
-            m_ConfirmationDeleteSurfaces =
-                Mod.Settings.DeleteSurfaces;
-
-            m_ConfirmationDeleteStaticObjects =
-                Mod.Settings.DeleteStaticObjects;
-
-            m_ConfirmationDeleteGeneralProps =
-                Mod.Settings.DeleteGeneralProps;
-
-            m_ConfirmationDeleteStreetLights =
-                Mod.Settings.DeleteStreetLights;
-
-            m_ConfirmationDeleteQuantityObjects =
-                Mod.Settings.DeleteQuantityObjects;
-
-            m_ConfirmationDeleteBrandingObjects =
-                Mod.Settings.DeleteBrandingObjects;
-
-            m_ConfirmationDeleteActivityLocations =
-                Mod.Settings.DeleteActivityLocations;
-
-            m_ConfirmationDeleteSpawnLocations =
-                Mod.Settings.DeleteSpawnLocations;
-
-            m_ConfirmationDeleteMarkerNetworks =
-                Mod.Settings.DeleteMarkerNetworks;
-
-            m_ConfirmationDeleteBuildingSubObjects =
-                Mod.Settings.DeleteBuildingSubObjects;
-
-            m_ConfirmationDeleteNetworkSubObjects =
-                Mod.Settings.DeleteNetworkSubObjects;
-
-            m_ConfirmationProtectOwnedObjects =
-                Mod.Settings.ProtectOwnedObjects;
+            m_ConfirmationFilterSnapshot =
+                FilterSnapshot.FromSettings(
+                    Mod.Settings);
 
             m_ConfirmationEntities ??=
                 new();
@@ -259,40 +209,9 @@ namespace AreaBulldozer.Tools
             }
 
             bool filtersMatch =
-                Mod.Settings.DeleteTrees ==
-                    m_ConfirmationDeleteTrees &&
-                Mod.Settings.DeleteBuildings ==
-                    m_ConfirmationDeleteBuildings &&
-                Mod.Settings.DeleteRoads ==
-                    m_ConfirmationDeleteRoads &&
-                Mod.Settings.DeletePaths ==
-                    m_ConfirmationDeletePaths &&
-                Mod.Settings.DeleteRailways ==
-                    m_ConfirmationDeleteRailways &&
-                Mod.Settings.DeleteSurfaces ==
-                    m_ConfirmationDeleteSurfaces &&
-                Mod.Settings.DeleteStaticObjects ==
-                    m_ConfirmationDeleteStaticObjects &&
-                Mod.Settings.DeleteGeneralProps ==
-                    m_ConfirmationDeleteGeneralProps &&
-                Mod.Settings.DeleteStreetLights ==
-                    m_ConfirmationDeleteStreetLights &&
-                Mod.Settings.DeleteQuantityObjects ==
-                    m_ConfirmationDeleteQuantityObjects &&
-                Mod.Settings.DeleteBrandingObjects ==
-                    m_ConfirmationDeleteBrandingObjects &&
-                Mod.Settings.DeleteActivityLocations ==
-                    m_ConfirmationDeleteActivityLocations &&
-                Mod.Settings.DeleteSpawnLocations ==
-                    m_ConfirmationDeleteSpawnLocations &&
-                Mod.Settings.DeleteMarkerNetworks ==
-                    m_ConfirmationDeleteMarkerNetworks &&
-                Mod.Settings.DeleteBuildingSubObjects ==
-                    m_ConfirmationDeleteBuildingSubObjects &&
-                Mod.Settings.DeleteNetworkSubObjects ==
-                    m_ConfirmationDeleteNetworkSubObjects &&
-                Mod.Settings.ProtectOwnedObjects ==
-                    m_ConfirmationProtectOwnedObjects;
+                FilterSnapshot.FromSettings(
+                    Mod.Settings) ==
+                m_ConfirmationFilterSnapshot;
 
             if (!filtersMatch)
             {
@@ -411,6 +330,9 @@ namespace AreaBulldozer.Tools
 
             m_LargeSelectionConfirmationExpiresAt =
                 0f;
+
+            m_ConfirmationFilterSnapshot =
+                default;
 
             m_ConfirmationObjectCount =
                 0;

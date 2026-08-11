@@ -76,50 +76,6 @@ Permanent settings are available under the Area Bulldozer section in the game op
 - Activate or deactivate Area Bulldozer
 - Reset the configured key binding
 
-## Browser UI preview
-
-The interface can be previewed without starting the game.
-
-Open a command prompt in the `UI` directory and run:
-
-```cmd
-npm install
-npm run preview
-```
-
-The preview simulates the UI bindings and is intended for testing layout, scaling, colors, scrolling, sliders and filter buttons. Actual object selection and deletion can only be tested in the game.
-
-## Building from source
-
-### Requirements
-
-- Cities: Skylines II
-- Cities: Skylines II official modding toolchain
-- .NET SDK required by the current game toolchain
-- Node.js and npm
-- Visual Studio or another compatible .NET development environment
-
-### Build steps
-
-1. Clone or download the repository.
-2. Ensure the Cities: Skylines II modding environment variables are configured.
-3. Open `AreaBulldozer.csproj`.
-4. Build or rebuild the project.
-
-The project automatically restores the UI dependencies and runs the UI build. The generated DLL, JavaScript module and stylesheet are copied to the Cities: Skylines II user mod directory.
-
-Expected generated files include:
-
-```text
-AreaBulldozer.dll
-AreaBulldozer.mjs
-AreaBulldozer.css
-```
-
-## Compatibility
-
-Area Bulldozer is an independent mod and can generally be used alongside other bulldozer or deletion-related mods. Using multiple deletion tools at the same time may cause overlapping controls or unexpected behavior. Only one deletion tool should be active at a time.
-
 ## Credits and inspiration
 
 Area Bulldozer was inspired by the work of other Cities: Skylines II mod developers, especially:
@@ -143,17 +99,10 @@ When reporting a problem, include:
 
 ## Changes
 
-Version 1.2.0
+Version 1.2.1
 
-- Added continuous deletion by holding the left mouse button and moving the selection area.
-- Added brush-style deletion for faster clearing of larger areas.
-- Added adaptive movement thresholds and controlled update intervals for improved performance.
-- Added visual tool-state feedback:
-- Red = ready
-- Green = deleting
-- Yellow = confirmation required
-- Large-selection confirmation remains protected and cannot be automatically confirmed by holding the mouse button.
-- Continuous deletion automatically stops when interacting with the user interface.
+- performance improvements for large selections
+- code cleanup and optimizations
 
 ## License
 

@@ -24,40 +24,11 @@ namespace AreaBulldozer.Tools
                 return;
             }
 
-            bool deleteTrees =
-                Mod.Settings.DeleteTrees;
+            FilterSnapshot filters =
+                FilterSnapshot.FromSettings(
+                    Mod.Settings);
 
-            bool deleteBuildings =
-                Mod.Settings.DeleteBuildings;
-
-            bool deleteRoads =
-                Mod.Settings.DeleteRoads;
-
-            bool deletePaths =
-                Mod.Settings.DeletePaths;
-
-            bool deleteRailways =
-                Mod.Settings.DeleteRailways;
-
-            bool deleteSurfaces =
-                Mod.Settings.DeleteSurfaces;
-
-            bool deleteStaticObjects =
-                Mod.Settings.DeleteStaticObjects;
-
-            bool deleteSpawnLocations =
-                Mod.Settings.DeleteSpawnLocations;
-
-            bool deleteMarkerNetworks =
-                Mod.Settings.DeleteMarkerNetworks;
-
-            if (!deleteTrees &&
-                !deleteBuildings &&
-                !deleteRoads &&
-                !deletePaths &&
-                !deleteRailways &&
-                !deleteSurfaces &&
-                !deleteStaticObjects)
+            if (!filters.HasAnyPrimaryFilter)
             {
                 Mod.Log.Info(
                     "Area Bulldozer: all object filters are disabled.");
@@ -130,7 +101,7 @@ namespace AreaBulldozer.Tools
             HashSet<Entity> selectedBuildings =
                 new();
 
-            if (deleteBuildings)
+            if (filters.DeleteBuildings)
             {
                 foreach (
                     SpatialCandidate candidate
@@ -159,65 +130,65 @@ namespace AreaBulldozer.Tools
             {
                 if (candidate.IsBuilding)
                 {
-                    if (!deleteBuildings)
+                    if (!filters.DeleteBuildings)
                     {
                         continue;
                     }
                 }
                 else if (candidate.IsRoad)
                 {
-                    if (!deleteRoads)
+                    if (!filters.DeleteRoads)
                     {
                         continue;
                     }
                 }
                 else if (candidate.IsPedestrianPath)
                 {
-                    if (!deletePaths)
+                    if (!filters.DeletePaths)
                     {
                         continue;
                     }
                 }
                 else if (candidate.IsRailway)
                 {
-                    if (!deleteRailways)
+                    if (!filters.DeleteRailways)
                     {
                         continue;
                     }
                 }
                 else if (candidate.IsSurfaceArea)
                 {
-                    if (!deleteSurfaces)
+                    if (!filters.DeleteSurfaces)
                     {
                         continue;
                     }
                 }
                 else if (candidate.IsStaticObject)
                 {
-                    if (!deleteStaticObjects ||
-                        !IsStaticCategoryEnabled(
-                            candidate.StaticCategory))
+                    if (!IsStaticCategoryEnabled(
+                            candidate.StaticCategory,
+                            in filters))
                     {
                         continue;
                     }
                 }
                 else if (candidate.IsSpawnLocation)
                 {
-                    if (!deleteStaticObjects ||
-                        !deleteSpawnLocations)
+                    if (!filters.DeleteStaticObjects ||
+                        !filters.DeleteSpawnLocations)
                     {
                         continue;
                     }
                 }
                 else if (candidate.IsAssetLane)
                 {
-                    if (!deleteStaticObjects ||
-                        !deleteMarkerNetworks)
+                    if (!filters.DeleteStaticObjects ||
+                        !filters.DeleteMarkerNetworks)
                     {
                         continue;
                     }
                 }
-                else if (!deleteTrees)
+                else if (!filters.DeleteTrees)
                 {
                     continue;
                 }
@@ -261,7 +232,9 @@ namespace AreaBulldozer.Tools
                     !candidate.IsRoad &&
                     !candidate.IsPedestrianPath &&
                     !candidate.IsRailway &&
-                    IsCandidateOwnedObjectProtected(candidate))
+                    IsCandidateOwnedObjectProtected(
+                        in candidate,
+                        in filters))
                 {
                     if (candidate.IsSurfaceArea)
                     {
@@ -429,10 +402,10 @@ namespace AreaBulldozer.Tools
                 in entitiesToDelete)
             {
                 m_PendingDeletion.Add(entity);
-
-                RemoveHighlightBeforeDeletion(
-                    entity);
             }
+
+            RemoveHighlightsBeforeDeletion(
+                entitiesToDelete);
 
             ClearSelectionPreview(
                 resetPreviewState: false);
