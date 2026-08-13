@@ -165,6 +165,9 @@ namespace AreaBulldozer.Tools
 
         private void ResetContinuousDeleteState()
         {
+
+            FlushContinuousDeleteLog();
+
             m_ContinuousDeleteActive = false;
 
             m_LastContinuousDeletePosition =

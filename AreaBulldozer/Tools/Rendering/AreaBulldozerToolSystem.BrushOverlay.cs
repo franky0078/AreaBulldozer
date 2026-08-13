@@ -208,7 +208,7 @@ namespace AreaBulldozer.Tools
         }
 
 
-        // Verlängert das Liniensegment an beiden Enden.
+        // Verlängert ein Liniensegment an beiden Enden.
         private static Line3.Segment CreateExtendedSegment(
             float3 start,
             float3 end,

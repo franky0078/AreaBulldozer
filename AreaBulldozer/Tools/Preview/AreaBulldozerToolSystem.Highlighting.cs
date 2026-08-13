@@ -15,6 +15,7 @@ namespace AreaBulldozer.Tools
 {
     public partial class AreaBulldozerToolSystem
     {
+
         private readonly List<Entity> m_HighlightAddBuffer =
             new();
 
@@ -135,7 +136,6 @@ namespace AreaBulldozer.Tools
                 if (EntityManager.HasComponent<Highlighted>(
                         entity))
                 {
-                    // Fremde Hervorhebung: nicht übernehmen.
                     m_HighlightNotOwnedBuffer.Add(entity);
                     continue;
                 }
@@ -182,6 +182,7 @@ namespace AreaBulldozer.Tools
 
             m_NextHighlightedEntities.Clear();
         }
+
 
         private void ApplyHighlightComponentChanges(
             List<Entity> entitiesToHighlight,

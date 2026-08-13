@@ -17,6 +17,7 @@ namespace AreaBulldozer.Tools
     public partial class AreaBulldozerToolSystem
     {
 
+        // Entity-Prüfungen
         private bool IsEntityUsable(
             Entity entity)
         {
@@ -100,11 +101,13 @@ namespace AreaBulldozer.Tools
                 in filters);
         }
 
+
         private OwnerScope ResolveOwnerScope(
             Entity entity)
         {
             Entity current = entity;
             bool hadOwner = false;
+
 
             for (int depth = 0; depth < 8; depth++)
             {
@@ -357,6 +360,7 @@ namespace AreaBulldozer.Tools
                        owner.m_Owner);
         }
 
+
         private static bool IsPrefabDerivedFrom(
             PrefabBase prefabBase,
             string typeName)
@@ -388,6 +392,7 @@ namespace AreaBulldozer.Tools
             {
                 return true;
             }
+
 
             if (!(prefabBase is NetPrefab) &&
                 !(prefabBase is RoadPrefab))
@@ -520,7 +525,7 @@ namespace AreaBulldozer.Tools
                 return false;
             }
 
-            // First protection layer
+            // First protection layer:
             if (EntityManager.HasComponent<
                     Game.Buildings.Building>(entity))
             {
@@ -534,7 +539,7 @@ namespace AreaBulldozer.Tools
                 return false;
             }
 
-            // Second protection layer
+            // Second protection layer:
             if (prefabBase is BuildingPrefab)
             {
                 return false;

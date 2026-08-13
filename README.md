@@ -55,13 +55,6 @@ A normal left click only activates or deactivates the tool.
 
 Permanent settings are available under the Area Bulldozer section in the game options.
 
-### Display
-
-- Tool-window scale
-- Marker-background darkness
-- Universal mod menu integration
-- Movable floating launcher
-- Reset launcher position
 
 ### Safety
 
@@ -95,14 +88,14 @@ When reporting a problem, include:
 - The selected object filters
 - The selected safety settings
 - Steps that reproduce the problem
-- The relevant game or mod log output
 
 ## Changes
 
-Version 1.2.1
+Version 1.2.2
 
 - performance improvements for large selections
 - code cleanup and optimizations
+- fixed a rare crash during continuous deletion of large areas
 
 ## License
 

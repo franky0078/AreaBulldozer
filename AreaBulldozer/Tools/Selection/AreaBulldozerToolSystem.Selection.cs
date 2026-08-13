@@ -18,19 +18,17 @@ namespace AreaBulldozer.Tools
 
             if (Mod.Settings == null)
             {
-                Mod.Log.Warn(
+                SafeLogWarn(
                     "Area Bulldozer settings are not available.");
 
                 return;
             }
 
-            FilterSnapshot filters =
-                FilterSnapshot.FromSettings(
-                    Mod.Settings);
+            FilterSnapshot filters = FilterSnapshot.FromSettings(Mod.Settings);
 
             if (!filters.HasAnyPrimaryFilter)
             {
-                Mod.Log.Info(
+                SafeLogInfo(
                     "Area Bulldozer: all object filters are disabled.");
 
                 return;
@@ -41,7 +39,7 @@ namespace AreaBulldozer.Tools
 
             if (m_ToolOutputBarrier == null)
             {
-                Mod.Log.Error(
+                SafeLogError(
                     "ToolOutputBarrier is not available. " +
                     "Deletion was cancelled.");
 
@@ -325,12 +323,15 @@ namespace AreaBulldozer.Tools
             if (entitiesToDelete.Count == 0)
             {
                 CancelLargeSelectionConfirmation();
-
-                Mod.Log.Info(
-                    $"Area Bulldozer: no removable objects " +
-                    $"inside {selectionDescription}. " +
-                    $"{protectedTotal} protected " +
-                    $"sub-objects ignored.");
+.
+                if (!m_ContinuousDeleteActive)
+                {
+                    SafeLogInfo(
+                        $"Area Bulldozer: no removable objects " +
+                        $"inside {selectionDescription}. " +
+                        $"{protectedTotal} protected " +
+                        $"sub-objects ignored.");
+                }
 
                 return;
             }
@@ -384,7 +385,7 @@ namespace AreaBulldozer.Tools
                     return;
                 }
 
-                Mod.Log.Info(
+                SafeLogInfo(
                     $"Area Bulldozer: large selection " +
                     $"confirmed. " +
                     $"{entitiesToDelete.Count} objects " +
@@ -490,11 +491,28 @@ namespace AreaBulldozer.Tools
                 queuedCount++;
             }
 
-            Mod.Log.Info(
-                $"Area Bulldozer: marked {queuedCount} " +
-                $"objects for deletion inside " +
-                $"{selectionDescription}. " +
-                $"Vegetation: {vegetationCount}, " +
+            if (m_ContinuousDeleteActive)
+            {
+                AccumulateContinuousDeleteStats(
+                    queuedCount,
+                    vegetationCount,
+                    buildingCount,
+                    roadCount,
+                    pathCount,
+                    railwayCount,
+                    surfaceCount,
+                    staticObjectCount,
+                    spawnLocationCount,
+                    markerNetworkCount,
+                    deletedRoadNodes.Count,
+                    updatedRoadNodes.Count,
+                    updatedConnectedRoadEdges.Count,
+                    protectedTotal);
+
+                return;
+            }
+
+            SafeLogInfo(
                 $"buildings: {buildingCount}, " +
                 $"roads: {roadCount}, " +
                 $"pedestrian paths: {pathCount}, " +

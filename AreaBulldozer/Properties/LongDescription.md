@@ -56,10 +56,6 @@ An optional background-darkening effect can improve marker visibility. The darke
 The floating launcher button can optionally be moved by holding Ctrl and the left mouse button. Release the mouse button to save its new position.
 
 
-## Configuration
-
-Permanent behavior and safety settings are available under the Area Bulldozer section in the game options.
-
 
 ## Credits and inspiration
 
@@ -90,4 +86,3 @@ When reporting a problem, please include:
 - A detailed description of what happened
 - The selected object filters
 - The selected safety settings
-- The relevant game or mod log output

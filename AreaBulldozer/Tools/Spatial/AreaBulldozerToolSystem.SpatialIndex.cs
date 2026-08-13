@@ -12,14 +12,17 @@ namespace AreaBulldozer.Tools
     public partial class AreaBulldozerToolSystem
     {
 
+        // Räumlicher Vorschauindex
         private const float kSpatialCellSize = 64f;
+
+        // Prüfintervall für die automatische Index-Aktualisierung
         private const float kSpatialRefreshCheckInterval = 2f;
 
-        // Der Pinsel still stehen
+        // Stillstand Pinsel für Neuberechnung
         private const float kSpatialRefreshIdleSeconds = 0.6f;
 
-        // Mindestabstand zwischen zwei Refresh-Neuaufbauten, damit eine
-        private const float kSpatialRefreshMinRebuildInterval = 5f;
+        // Mindestabstand zwischen zwei Refresh-Neuaufbauten
+        private const float kSpatialRefreshMinRebuildInterval = 15f;
 
         private float3 m_SpatialRefreshProbePosition;
         private float m_SpatialRefreshProbeRotation;
@@ -143,7 +146,7 @@ namespace AreaBulldozer.Tools
 
             if (!logDetails)
             {
-                Mod.Log.Info(
+                SafeLogInfo(
                     $"Spatial preview index refreshed: " +
                     $"{m_SpatialIndexedObjectCount} objects in " +
                     $"{m_SpatialIndex.CellCount} cells, " +
@@ -152,7 +155,7 @@ namespace AreaBulldozer.Tools
                 return;
             }
 
-            Mod.Log.Info(
+            SafeLogInfo(
                 $"Spatial preview index built: " +
                 $"{m_SpatialIndexedObjectCount} objects in " +
                 $"{m_SpatialIndex.CellCount} cells, " +
@@ -211,7 +214,7 @@ namespace AreaBulldozer.Tools
                 m_SpatialRejectedPathPrefabSamples != null &&
                 m_SpatialRejectedPathPrefabSamples.Count > 0)
             {
-                Mod.Log.Info(
+                SafeLogInfo(
                     "Pedestrian-path diagnostic prefab samples: " +
                     string.Join(
                         ", ",
@@ -222,7 +225,7 @@ namespace AreaBulldozer.Tools
                 m_SpatialRejectedRailwayPrefabSamples != null &&
                 m_SpatialRejectedRailwayPrefabSamples.Count > 0)
             {
-                Mod.Log.Info(
+                SafeLogInfo(
                     "Railway diagnostic prefab samples: " +
                     string.Join(
                         ", ",
@@ -250,7 +253,6 @@ namespace AreaBulldozer.Tools
                 m_SpawnLocationQuery.CalculateEntityCount() +
                 m_SubLaneOwnerQuery.CalculateEntityCount();
         }
-
 
         private void RefreshSpatialIndexIfNeeded()
         {

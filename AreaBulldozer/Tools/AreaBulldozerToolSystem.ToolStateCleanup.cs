@@ -6,6 +6,7 @@ namespace AreaBulldozer.Tools
 {
     public partial class AreaBulldozerToolSystem
     {
+  
         private ToolClearSystem m_ToolClearSystem;
         private EntityQuery m_PreExistingHighlightedQuery;
 

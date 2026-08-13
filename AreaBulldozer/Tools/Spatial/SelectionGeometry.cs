@@ -3,7 +3,12 @@ using Unity.Mathematics;
 
 namespace AreaBulldozer.Tools
 {
-
+    /// <summary>
+    /// Reine Geometrie der Auswahlprüfung: Punkt/Segment gegen Kreis
+    /// und rotiertes Quadrat, Punkt-in-Polygon. Alle Methoden sind
+    /// statisch und zustandsfrei und damit unabhängig vom Werkzeug
+    /// (und ohne Spiel-Laufzeit) testbar.
+    /// </summary>
     internal static class SelectionGeometry
     {
         public static float2 RotateLocalToWorld(

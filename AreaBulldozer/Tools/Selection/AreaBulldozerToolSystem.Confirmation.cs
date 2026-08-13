@@ -95,7 +95,7 @@ namespace AreaBulldozer.Tools
             m_ConfirmationMarkerNetworkCount =
                 markerNetworkCount;
 
-            Mod.Log.Warn(
+            SafeLogWarn(
                 $"Area Bulldozer: {selectedEntities.Count} objects selected. " +
                 $"Click again within " +
                 $"{kLargeSelectionConfirmationTimeout:0} seconds " +
@@ -372,7 +372,7 @@ namespace AreaBulldozer.Tools
             if (!string.IsNullOrWhiteSpace(
                     logReason))
             {
-                Mod.Log.Info(logReason);
+                SafeLogInfo(logReason);
             }
         }
     }

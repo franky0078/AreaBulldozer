@@ -18,40 +18,43 @@ namespace AreaBulldozer.Tools
         private const float kPreviewMoveThreshold = 1.5f;
         private const float kPreviewUpdateInterval = 0.075f;
 
+
         private const int kDefaultLargeSelectionThreshold = 250;
         private const float kLargeSelectionConfirmationTimeout = 5f;
         private const float kLargeSelectionMoveTolerance = 2f;
 
+
         private OverlayRenderSystem m_OverlayRenderSystem;
         private ToolOutputBarrier m_ToolOutputBarrier;
+
 
         private EntityQuery m_PlantQuery;
         private EntityQuery m_BuildingQuery;
         private EntityQuery m_RoadEdgeQuery;
-
         private EntityQuery m_NetEdgeQuery;
         private EntityQuery m_SurfaceAreaQuery;
         private EntityQuery m_StaticObjectQuery;
         private EntityQuery m_SpawnLocationQuery;
         private EntityQuery m_SubLaneOwnerQuery;
 
-        private InputAction m_ApplyAction;
 
+        private InputAction m_ApplyAction;
         private bool m_IsPointerOverUI;
         private InputAction m_RotateSquareHoldAction;
         private InputAction m_RotateSquareDeltaAction;
 
+
         private HashSet<Entity> m_HighlightedEntities;
-
         private HashSet<Entity> m_NextHighlightedEntities;
-
         private HashSet<Entity> m_PendingDeletion;
+
 
         private float3 m_LastPreviewPosition;
         private float m_LastPreviewRadius;
         private float m_NextPreviewUpdateTime;
         private bool m_LastUseSquareBrush;
         private float m_LastPreviewSquareRotationRadians;
+
 
         private FilterSnapshot m_LastFilterSnapshot;
 
@@ -61,6 +64,7 @@ namespace AreaBulldozer.Tools
         private bool m_LargeSelectionConfirmationUseSquareBrush;
         private float m_LargeSelectionConfirmationSquareRotationRadians;
         private float m_LargeSelectionConfirmationExpiresAt;
+
 
         private FilterSnapshot m_ConfirmationFilterSnapshot;
 
@@ -425,7 +429,7 @@ namespace AreaBulldozer.Tools
             }
             catch
             {
-                // Logging failed. Tool initialization must continue.
+                // Logging failed.
             }
         }
 
@@ -545,6 +549,9 @@ namespace AreaBulldozer.Tools
 
             CancelLargeSelectionConfirmation();
 
+            FlushContinuousDeleteLog();
+            m_ContinuousDeleteActive = false;
+
             ClearSelectionPreview();
 
             CurrentPosition = float3.zero;
@@ -553,7 +560,7 @@ namespace AreaBulldozer.Tools
 
             MarkSpatialIndexStale();
 
-            Mod.Log.Info(
+            SafeLogInfo(
                 "Area Bulldozer tool deactivated.");
 
             base.OnStopRunning();
@@ -694,6 +701,23 @@ namespace AreaBulldozer.Tools
         }
 
         protected override JobHandle OnUpdate(
+            JobHandle inputDeps)
+        {
+            try
+            {
+                return OnToolUpdate(inputDeps);
+            }
+            catch (System.Exception exception)
+            {
+                SafeLogError(
+                    $"Area Bulldozer: recovered from an error in " +
+                    $"OnUpdate: {exception}");
+
+                return inputDeps;
+            }
+        }
+
+        private JobHandle OnToolUpdate(
             JobHandle inputDeps)
         {
             CleanupPendingDeletions();

@@ -3,6 +3,7 @@ using System;
 namespace AreaBulldozer.Tools
 {
 
+
     public readonly struct FilterSnapshot
         : IEquatable<FilterSnapshot>
     {
@@ -15,7 +16,6 @@ namespace AreaBulldozer.Tools
         public readonly bool DeleteRailways;
         public readonly bool DeleteSurfaces;
         public readonly bool DeleteStaticObjects;
-
 
         // Unterkategorien statischer Objekte und Marker
         public readonly bool DeleteGeneralProps;

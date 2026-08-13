@@ -7,6 +7,13 @@ namespace AreaBulldozer.Tools
 {
     public partial class AreaBulldozerToolSystem
     {
+        // ------------------------------------------------------------
+        // Statische Objektkategorien
+        //
+        // Das Kategorien-Enum selbst liegt in
+        // Tools/Filters/StaticObjectCategory.cs, damit auch der
+        // Spatial-Index-Kandidat darauf verweisen kann.
+        // ------------------------------------------------------------
 
         private StaticObjectCategory GetStaticObjectCategory(
             Entity entity)

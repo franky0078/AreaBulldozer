@@ -13,6 +13,7 @@ namespace AreaBulldozer.Tools
             List<SpatialCandidate>> m_Buckets =
             new();
 
+
         private readonly List<SpatialCandidate> m_QueryBuffer =
             new();
 

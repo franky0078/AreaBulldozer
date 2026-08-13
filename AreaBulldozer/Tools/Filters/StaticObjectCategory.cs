@@ -1,6 +1,5 @@
 namespace AreaBulldozer.Tools
 {
-
     internal enum StaticObjectCategory
     {
         None,

@@ -7,6 +7,7 @@ namespace AreaBulldozer.Tools
     public partial class AreaBulldozerToolSystem
     {
 
+        // Vorschau
         private void UpdateSelectionPreviewIfNeeded()
         {
             if (!HasValidPosition ||
