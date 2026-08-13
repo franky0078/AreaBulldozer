@@ -323,7 +323,7 @@ namespace AreaBulldozer.Tools
             if (entitiesToDelete.Count == 0)
             {
                 CancelLargeSelectionConfirmation();
-.
+
                 if (!m_ContinuousDeleteActive)
                 {
                     SafeLogInfo(
