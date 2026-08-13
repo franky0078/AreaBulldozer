@@ -68,6 +68,13 @@ Special thanks to both developers for their work and their contributions to the 
 
 Area Bulldozer is an independent implementation and is not officially affiliated with these mods or their developers.
 
+
+## Transparency note
+
+- Some parts of the code are built with AI assistance.
+- The UI elements were built entirely with AI assistance, and I also rely on AI for debugging and troubleshooting.
+
+
 ## Planned Version 1.3.0
 
 ### Compact user interface

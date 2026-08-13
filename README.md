@@ -4,6 +4,7 @@ Area Bulldozer is an area deletion tool for **Cities: Skylines II**. It allows m
 
 ![Area Bulldozer thumbnail](AreaBulldozer/Properties/Thumbnail.jpg)
 
+
 ## Features
 
 - Circular and square selection modes
@@ -28,6 +29,7 @@ Area Bulldozer is an area deletion tool for **Cities: Skylines II**. It allows m
 - Configurable keyboard shortcut
 - English and German localization
 
+
 ## Usage
 
 1. Activate Area Bulldozer using the launcher button, the universal mod menu or the configured keyboard shortcut.
@@ -40,6 +42,7 @@ Area Bulldozer is an area deletion tool for **Cities: Skylines II**. It allows m
 
 Check the enabled filters carefully before deleting objects from your city.
 
+
 ### Movable launcher button
 
 When the floating launcher is enabled and movement is allowed in the mod options:
@@ -50,6 +53,7 @@ When the floating launcher is enabled and movement is allowed in the mod options
 4. Release the left mouse button to save the position.
 
 A normal left click only activates or deactivates the tool.
+
 
 ## Mod options
 
@@ -64,10 +68,12 @@ Permanent settings are available under the Area Bulldozer section in the game op
 - Confirm large selections
 - Configure the large-selection threshold
 
+
 ### Key bindings
 
 - Activate or deactivate Area Bulldozer
 - Reset the configured key binding
+
 
 ## Credits and inspiration
 
@@ -80,6 +86,13 @@ Special thanks to both developers for their work and their contributions to the 
 
 Area Bulldozer is an independent implementation and is not officially affiliated with these mods or their developers.
 
+
+## Transparency note
+
+- Some parts of the code are built with AI assistance.
+- The UI elements were built entirely with AI assistance, and I also rely on AI for debugging and troubleshooting.
+
+
 ## Bug reports
 
 When reporting a problem, include:
@@ -89,6 +102,7 @@ When reporting a problem, include:
 - The selected safety settings
 - Steps that reproduce the problem
 
+
 ## Changes
 
 Version 1.2.2
@@ -96,6 +110,7 @@ Version 1.2.2
 - performance improvements for large selections
 - code cleanup and optimizations
 - fixed a rare crash during continuous deletion of large areas
+
 
 ## License
 
