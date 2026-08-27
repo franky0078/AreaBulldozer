@@ -90,7 +90,7 @@ Area Bulldozer is an independent implementation and is not officially affiliated
 ## Transparency note
 
 - Some parts of the code are built with AI assistance.
-- The UI elements were built entirely with AI assistance, and I also rely on AI for debugging and troubleshooting.
+- Some parts of the UI elements were built entirely with AI assistance, and I also rely on AI for debugging and troubleshooting.
 
 
 ## Bug reports
@@ -105,11 +105,13 @@ When reporting a problem, include:
 
 ## Changes
 
-Version 1.2.2
+Version 1.3.0
 
-- performance improvements for large selections
+Compact user interface
+
+- replaced the labelled tiles and sliders with compact icon buttons and tooltips
+- prop and marker detail filters use a distinct colour so they are easier to tell apart from the main filters
 - code cleanup and optimizations
-- fixed a rare crash during continuous deletion of large areas
 
 
 ## License

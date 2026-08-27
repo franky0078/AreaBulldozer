@@ -294,31 +294,9 @@ namespace AreaBulldozer.UISystems
             AddBooleanSettingTrigger(
                 AreaBulldozerUIBindingConstants.SetDeleteSurfaces,
                 (setting, value) => setting.DeleteSurfaces = value);
-            AddBinding(
-                new TriggerBinding<bool>(
-                    group,
-                    AreaBulldozerUIBindingConstants.SetDeleteStaticObjects,
-                    value => ChangeSetting(
-                        setting =>
-                        {
-                            setting.DeleteStaticObjects = value;
-
-                            if (value &&
-                                !setting.DeleteGeneralProps &&
-                                !setting.DeleteStreetLights &&
-                                !setting.DeleteQuantityObjects &&
-                                !setting.DeleteBrandingObjects &&
-                                !setting.DeleteActivityLocations &&
-                                !setting.DeleteSpawnLocations &&
-                                !setting.DeleteMarkerNetworks)
-                            {
-                                setting.DeleteGeneralProps = true;
-                                setting.DeleteStreetLights = true;
-                                setting.DeleteQuantityObjects = true;
-                                setting.DeleteBrandingObjects = true;
-                            }
-                        })));
-
+            AddBooleanSettingTrigger(
+                AreaBulldozerUIBindingConstants.SetDeleteStaticObjects,
+                (setting, value) => setting.DeleteStaticObjects = value);
             AddBooleanSettingTrigger(
                 AreaBulldozerUIBindingConstants.SetDeleteGeneralProps,
                 (setting, value) => setting.DeleteGeneralProps = value);

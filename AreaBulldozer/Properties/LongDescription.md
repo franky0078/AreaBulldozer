@@ -72,18 +72,7 @@ Area Bulldozer is an independent implementation and is not officially affiliated
 ## Transparency note
 
 - Some parts of the code are built with AI assistance.
-- The UI elements were built entirely with AI assistance, and I also rely on AI for debugging and troubleshooting.
-
-
-## Planned Version 1.3.0
-
-### Compact user interface
-
-* Add a new compact interface layout for Area Bulldozer.
-* Reduce unused spacing and overall panel size.
-* Arrange frequently used controls more efficiently.
-* Keep object-filter controls quickly accessible.
-* Improve usability on lower resolutions and higher UI scaling values.
+- Some parts of the UI elements were built entirely with AI assistance, and I also rely on AI for debugging and troubleshooting.
 		
 
 ## Feedback and bug reports

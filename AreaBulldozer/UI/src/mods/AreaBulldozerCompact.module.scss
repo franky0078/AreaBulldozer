@@ -1,0 +1,143 @@
+
+$buttonSize: 32rem;
+$iconSize: 21rem;
+
+.iconButton {
+    width: $buttonSize;
+    height: $buttonSize;
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin: 0 2rem;
+    border: 1rem solid rgba(190, 213, 232, 0.28);
+    border-radius: 4rem;
+    background-color: rgba(6, 15, 22, 0.6);
+    color: #e3eef8;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+    .iconButton:hover {
+        border-color: rgba(226, 240, 252, 0.7);
+        background-color: rgba(52, 82, 105, 0.75);
+    }
+
+/* Eine Regel im ganzen Panel: aktiv = gruen. */
+.iconButtonSelected {
+    border-color: rgba(84, 210, 126, 0.9);
+    background-color: rgba(30, 112, 62, 0.72);
+    color: #effff3;
+}
+
+    .iconButtonSelected:hover {
+        background-color: rgba(40, 137, 77, 0.85);
+    }
+
+
+.iconButtonMarkerSelected {
+    border-color: rgba(255, 189, 67, 0.9);
+    background-color: rgba(150, 96, 16, 0.75);
+    color: #ffe6b0;
+}
+
+    .iconButtonMarkerSelected:hover {
+        background-color: rgba(178, 116, 22, 0.88);
+    }
+
+    .iconButtonMarkerSelected .iconGraphic svg,
+    .iconButtonMarkerSelected .iconGraphic svg path,
+    .iconButtonMarkerSelected .iconGraphic svg circle,
+    .iconButtonMarkerSelected .iconGraphic svg rect,
+    .iconButtonMarkerSelected .iconGraphic svg line,
+    .iconButtonMarkerSelected .iconGraphic svg polyline,
+    .iconButtonMarkerSelected .iconGraphic svg polygon {
+        stroke: #ffe6b0 !important;
+    }
+
+.iconButtonDisabled,
+.iconButtonDisabled:hover {
+    border-color: rgba(160, 180, 196, 0.16);
+    background-color: rgba(6, 15, 22, 0.35);
+    color: rgba(190, 208, 222, 0.35);
+    cursor: default;
+}
+
+.iconGraphic {
+    width: $iconSize;
+    height: $iconSize;
+    display: block;
+    pointer-events: none;
+}
+
+    .iconGraphic svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+        overflow: visible;
+    }
+
+        .iconGraphic svg,
+        .iconGraphic svg path,
+        .iconGraphic svg circle,
+        .iconGraphic svg rect,
+        .iconGraphic svg line,
+        .iconGraphic svg polyline,
+        .iconGraphic svg polygon {
+            fill: none !important;
+            stroke: #d9e9f5 !important;
+        }
+
+.iconButton:hover .iconGraphic svg,
+.iconButton:hover .iconGraphic svg path,
+.iconButton:hover .iconGraphic svg circle,
+.iconButton:hover .iconGraphic svg rect,
+.iconButton:hover .iconGraphic svg line,
+.iconButton:hover .iconGraphic svg polyline,
+.iconButton:hover .iconGraphic svg polygon {
+    stroke: #ffffff !important;
+}
+
+.iconButtonSelected .iconGraphic svg,
+.iconButtonSelected .iconGraphic svg path,
+.iconButtonSelected .iconGraphic svg circle,
+.iconButtonSelected .iconGraphic svg rect,
+.iconButtonSelected .iconGraphic svg line,
+.iconButtonSelected .iconGraphic svg polyline,
+.iconButtonSelected .iconGraphic svg polygon {
+    stroke: #c8f7d5 !important;
+}
+
+.iconButtonDisabled .iconGraphic svg,
+.iconButtonDisabled .iconGraphic svg path,
+.iconButtonDisabled .iconGraphic svg circle,
+.iconButtonDisabled .iconGraphic svg rect,
+.iconButtonDisabled .iconGraphic svg line,
+.iconButtonDisabled .iconGraphic svg polyline,
+.iconButtonDisabled .iconGraphic svg polygon {
+    stroke: rgba(190, 208, 222, 0.35) !important;
+}
+
+.valueField {
+    min-width: 50rem;
+    height: $buttonSize;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 2rem;
+    padding: 0 6rem;
+    border: 1rem solid rgba(255, 190, 72, 0.3);
+    border-radius: 4rem;
+    background-color: rgba(4, 10, 15, 0.68);
+    color: #ffe09b;
+    font-size: 12rem;
+    line-height: 1;
+    font-weight: 700;
+    text-align: center;
+}
+
+.valueFieldNarrow {
+    min-width: 42rem;
+}
