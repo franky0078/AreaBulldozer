@@ -95,11 +95,15 @@ namespace AreaBulldozer.Localization
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.UIScale)), "Skalierung des Werkzeugfensters" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.UIScale)), "Skaliert das Area-Bulldozer-Fenster von 75 bis 125 Prozent. Kleinere Werte schaffen mehr Platz; größere Werte verbessern die Lesbarkeit auf hochauflösenden Monitoren." },
 
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.UseUniversalModMenu)), "Button im neuen Mod-Menü anzeigen" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.UseUniversalModMenu)), "Verschiebt den Area-Bulldozer-Startbutton in das universelle Mod-Menü des Spiels. Der separate schwebende Button wird dann ausgeblendet." },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.LauncherMode)), "Startort des Area Bulldozers" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.LauncherMode)), "Legt fest, ob Area Bulldozer über einen separaten Startbutton, im Werkzeugfenster des normalen Bulldozers oder über das universelle Mod-Menü gestartet wird." },
+
+                { "Options.AreaBulldozer.AreaBulldozer.Mod.AREABULLDOZERLAUNCHERMODE[Standalone]", "Separater Startbutton" },
+                { "Options.AreaBulldozer.AreaBulldozer.Mod.AREABULLDOZERLAUNCHERMODE[VanillaBulldozer]", "Beim normalen Bulldozer" },
+                { "Options.AreaBulldozer.AreaBulldozer.Mod.AREABULLDOZERLAUNCHERMODE[UniversalModMenu]", "Universelles Mod-Menü" },
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.LauncherButtonMovable)), "Schwebenden Button verschiebbar machen" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.LauncherButtonMovable)), "Erlaubt das Verschieben des separaten Startbuttons mit Strg + gedrückter linker Maustaste. Beim Loslassen wird die Position gespeichert. Ein normaler Linksklick aktiviert oder deaktiviert weiterhin nur das Werkzeug. Diese Einstellung wirkt nicht bei Verwendung des neuen Mod-Menüs." },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.LauncherButtonMovable)), "Erlaubt das Verschieben des separaten Startbuttons mit Strg + gedrückter linker Maustaste. Beim Loslassen wird die Position gespeichert. Diese Einstellung wirkt nur beim Startort 'Separater Startbutton'." },
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.ResetLauncherPosition)), "Buttonposition zurücksetzen" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.ResetLauncherPosition)), "Setzt den verschiebbaren Startbutton wieder an seine Standardposition oben links." },
@@ -127,6 +131,9 @@ namespace AreaBulldozer.Localization
                 { "AreaBulldozer.UI.ToggleTool", "Area Bulldozer umschalten" },
                 { "AreaBulldozer.UI.LauncherDragHint", "Strg + Linksklick halten und ziehen; loslassen zum Speichern" },
                 { "AreaBulldozer.UI.ModMenuOpen", "Werkzeug öffnen" },
+                { "AreaBulldozer.UI.VanillaLauncherTooltip", "Area Bulldozer öffnen und mehrere Objekte mit einer Kreis- oder Quadratauswahl entfernen." },
+                { "AreaBulldozer.UI.Navigation", "Navigation" },
+                { "AreaBulldozer.UI.BackToBulldozer", "Zurück zum normalen Bulldozer" },
                 { "AreaBulldozer.UI.Close", "Werkzeug schlie\u00DFen" },
                 { "AreaBulldozer.UI.Active", "Aktiv" },
                 { "AreaBulldozer.UI.Subtitle", "Mehrere Objekte in einem Bereich entfernen" },

@@ -95,11 +95,15 @@ namespace AreaBulldozer.Localization
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.UIScale)), "Tool window scale" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.UIScale)), "Scales the Area Bulldozer window from 75 to 125 percent. Lower values provide more space; higher values improve readability on high-resolution displays." },
 
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.UseUniversalModMenu)), "Show button in the new mod menu" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.UseUniversalModMenu)), "Moves the Area Bulldozer launcher into the game's universal mod menu. The separate floating button is hidden while this option is enabled." },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.LauncherMode)), "Area Bulldozer launcher location" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.LauncherMode)), "Chooses whether Area Bulldozer is started from a separate launcher, from the normal Bulldozer tool options, or from the universal mod menu." },
+
+                { "Options.AreaBulldozer.AreaBulldozer.Mod.AREABULLDOZERLAUNCHERMODE[Standalone]", "Standalone button" },
+                { "Options.AreaBulldozer.AreaBulldozer.Mod.AREABULLDOZERLAUNCHERMODE[VanillaBulldozer]", "Normal Bulldozer" },
+                { "Options.AreaBulldozer.AreaBulldozer.Mod.AREABULLDOZERLAUNCHERMODE[UniversalModMenu]", "Universal mod menu" },
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.LauncherButtonMovable)), "Make floating button movable" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.LauncherButtonMovable)), "Allows the separate launcher to be moved with Ctrl + left mouse button. Releasing the mouse button saves the position. A normal left click only toggles the tool. This option has no effect when the new mod menu is used." },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.LauncherButtonMovable)), "Allows the separate launcher to be moved with Ctrl + left mouse button. Releasing the mouse button saves the position. This option only applies when the launcher location is set to 'Standalone button'." },
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.ResetLauncherPosition)), "Reset button position" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.ResetLauncherPosition)), "Moves the draggable launcher back to its default position in the top-left corner." },
@@ -127,6 +131,9 @@ namespace AreaBulldozer.Localization
                 { "AreaBulldozer.UI.ToggleTool", "Toggle Area Bulldozer" },
                 { "AreaBulldozer.UI.LauncherDragHint", "Hold Ctrl + left mouse button to move; release to save" },
                 { "AreaBulldozer.UI.ModMenuOpen", "Open tool" },
+                { "AreaBulldozer.UI.VanillaLauncherTooltip", "Open Area Bulldozer and remove multiple objects with a circular or square selection." },
+                { "AreaBulldozer.UI.Navigation", "Navigation" },
+                { "AreaBulldozer.UI.BackToBulldozer", "Back to normal Bulldozer" },
                 { "AreaBulldozer.UI.Close", "Close tool" },
                 { "AreaBulldozer.UI.Active", "Active" },
                 { "AreaBulldozer.UI.Subtitle", "Remove multiple objects within one area" },

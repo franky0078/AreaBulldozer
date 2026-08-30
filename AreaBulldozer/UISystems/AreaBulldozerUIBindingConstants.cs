@@ -11,7 +11,12 @@ namespace AreaBulldozer.UISystems
         public const string UseSquareBrush = "useSquareBrush";
         public const string SquareRotationDegrees = "squareRotationDegrees";
         public const string UIScale = "uiScale";
+
+        public const string LauncherMode = "launcherMode";
+
+        // Legacy-Binding.
         public const string UseUniversalModMenu = "useUniversalModMenu";
+
         public const string LauncherButtonMovable = "launcherButtonMovable";
         public const string LauncherPositionX = "launcherPositionX";
         public const string LauncherPositionY = "launcherPositionY";

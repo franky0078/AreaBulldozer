@@ -116,9 +116,21 @@ namespace AreaBulldozer.UISystems
                     AreaBulldozerUIBindingConstants.UIScale,
                     () => math.clamp(Mod.Settings?.UIScale ?? 100, 75, 125)));
 
+            AddUpdateBinding(
+                new GetterValueBinding<int>(
+                    group,
+                    AreaBulldozerUIBindingConstants.LauncherMode,
+                    () => (int)(
+                        Mod.Settings?.LauncherMode ??
+                        AreaBulldozerLauncherMode.Standalone)));
+
             AddBooleanValueBinding(
                 AreaBulldozerUIBindingConstants.UseUniversalModMenu,
-                () => Mod.Settings?.UseUniversalModMenu ?? false);
+                () =>
+                    (Mod.Settings?.LauncherMode ??
+                     AreaBulldozerLauncherMode.Standalone) ==
+                    AreaBulldozerLauncherMode.UniversalModMenu);
+
             AddBooleanValueBinding(
                 AreaBulldozerUIBindingConstants.LauncherButtonMovable,
                 () => Mod.Settings?.LauncherButtonMovable ?? false);

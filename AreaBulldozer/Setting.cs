@@ -5,6 +5,13 @@ using Game.Settings;
 
 namespace AreaBulldozer
 {
+    public enum AreaBulldozerLauncherMode
+    {
+        Standalone = 0,
+        VanillaBulldozer = 1,
+        UniversalModMenu = 2
+    }
+
     [FileLocation(nameof(AreaBulldozer))]
     [SettingsUIGroupOrder(
         kToolGroup,
@@ -38,6 +45,8 @@ namespace AreaBulldozer
         public const string kToolGroup = "Tool";
         public const string kKeybindingGroup = "KeyBinding";
         public const string kAboutGroup = "About";
+
+        private AreaBulldozerLauncherMode m_LauncherMode;
 
         public Setting(IMod mod)
             : base(mod)
@@ -129,6 +138,23 @@ namespace AreaBulldozer
         public int UIScale { get; set; }
 
         [SettingsUISection(kSection, kToolGroup)]
+        public AreaBulldozerLauncherMode LauncherMode
+        {
+            get =>
+                UseUniversalModMenu
+                    ? AreaBulldozerLauncherMode.UniversalModMenu
+                    : m_LauncherMode;
+            set
+            {
+                m_LauncherMode = value;
+
+                // Kompatibilität mit der alten Einstellung:
+                UseUniversalModMenu = false;
+            }
+        }
+
+        // Alte Einstellung aus bisherigen Versionen.
+        [SettingsUIHidden]
         public bool UseUniversalModMenu { get; set; }
 
         [SettingsUISection(kSection, kToolGroup)]
@@ -218,7 +244,9 @@ namespace AreaBulldozer
 
             UIScale = 100;
 
+            LauncherMode = AreaBulldozerLauncherMode.Standalone;
             UseUniversalModMenu = false;
+
             LauncherButtonMovable = false;
             LauncherPositionX = 54;
             LauncherPositionY = 8;

@@ -1,0 +1,25 @@
+﻿.backButton {
+    width: 32rem;
+    height: 32rem;
+    flex: 0 0 32rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 2rem;
+    padding: 0;
+    cursor: pointer;
+}
+
+
+.backIcon {
+    width: 21rem;
+    height: 21rem;
+    display: block;
+    color: #e5f0f8;
+}
+
+
+.backButton:hover
+.backIcon {
+    color: #ffffff;
+}

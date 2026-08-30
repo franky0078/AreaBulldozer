@@ -1,0 +1,23 @@
+﻿.launchButton {
+    width: 32rem;
+    height: 32rem;
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 2rem;
+    padding: 0;
+    cursor: pointer;
+}
+
+.bulldozerIcon {
+    width: 24rem;
+    height: 18rem;
+    display: block;
+    fill: none !important;
+    stroke: #d9e9f5 !important;
+}
+
+.launchButton:hover .bulldozerIcon {
+    stroke: #ffffff !important;
+}

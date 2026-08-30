@@ -105,13 +105,10 @@ When reporting a problem, include:
 
 ## Changes
 
-Version 1.3.0
+Version 1.3.6
 
-Compact user interface
-
-- replaced the labelled tiles and sliders with compact icon buttons and tooltips
-- prop and marker detail filters use a distinct colour so they are easier to tell apart from the main filters
-- code cleanup and optimizations
+- recreated Startbutton (Standard Movablebutton, Universalbutton and Button in BulldozerTooltip)
+- added option to display the Startbutton only in the Bulldozer Tooltip 
 
 
 ## License
