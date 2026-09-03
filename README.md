@@ -111,11 +111,10 @@ When reporting a problem, include:
 
 ## Changes
 
-Version 1.4.3
+Version 1.4.5
 
-- Added an triangle selection shape with adjustable rotation.
-- Added a multi-point line/corridor selection with 2 to 15 control points.
-- Added optional diagnostic logging. Informational logging is disabled by default, while warnings and errors remain enabled.
+- Improved logging efficiency and cleaned up legacy straight-line code.
+- Added Straight and Curved multi-point modes
 
 
 ## License
