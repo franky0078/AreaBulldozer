@@ -13,7 +13,7 @@ namespace AreaBulldozer
 {
     public class Mod : IMod
     {
-        public const string ModVersion = "1.4.3";
+        public const string ModVersion = "1.4.5";
 
         public static readonly ILog Log = LogManager
             .GetLogger(

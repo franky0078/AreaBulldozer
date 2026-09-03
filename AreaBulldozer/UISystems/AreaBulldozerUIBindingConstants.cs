@@ -10,6 +10,8 @@ namespace AreaBulldozer.UISystems
         public const string UseSquareBrush = "useSquareBrush";
         public const string SelectionShape = "selectionShape";
         public const string LineWidth = "lineWidth";
+        public const string UseCurvedPolyline = "useCurvedPolyline";
+        public const string PolylineRounding = "polylineRounding";
         public const string SquareRotationDegrees = "squareRotationDegrees";
         public const string UIScale = "uiScale";
 
@@ -52,6 +54,8 @@ namespace AreaBulldozer.UISystems
         public const string SetUseSquareBrush = "setUseSquareBrush";
         public const string SetSelectionShape = "setSelectionShape";
         public const string SetLineWidth = "setLineWidth";
+        public const string SetUseCurvedPolyline = "setUseCurvedPolyline";
+        public const string SetPolylineRounding = "setPolylineRounding";
         public const string SetSquareRotationDegrees = "setSquareRotationDegrees";
         public const string SetLauncherPositionX = "setLauncherPositionX";
         public const string SetLauncherPositionY = "setLauncherPositionY";

@@ -3,7 +3,6 @@ using Unity.Mathematics;
 
 namespace AreaBulldozer.Tools
 {
-
     internal static class SelectionGeometry
     {
         private const float kEpsilon = 0.0001f;

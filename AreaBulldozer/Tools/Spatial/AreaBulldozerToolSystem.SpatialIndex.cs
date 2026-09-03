@@ -136,7 +136,8 @@ namespace AreaBulldozer.Tools
                 UnityEngine.Time.unscaledTime +
                 kSpatialRefreshCheckInterval;
 
-            // Avoid constructing the large diagnostic
+            // Avoid constructing the large diagnostic strings entirely when
+            // info logging is disabled. The index itself is already rebuilt.
             if (!Mod.DiagnosticLoggingEnabled)
             {
                 return;

@@ -49,6 +49,8 @@ namespace AreaBulldozer.Tools
         private AreaBulldozerSelectionShape m_LastPreviewSelectionShape;
         private float m_LastPreviewSquareRotationRadians;
         private int m_LastPreviewLineWidth;
+        private bool m_LastPreviewUseCurvedPolyline;
+        private int m_LastPreviewPolylineRounding;
 
         private FilterSnapshot m_LastFilterSnapshot;
 
@@ -171,11 +173,22 @@ namespace AreaBulldozer.Tools
             CurrentSelectionShape ==
             AreaBulldozerSelectionShape.Triangle;
 
+        // Legacy compatibility only.
         public bool UseLineBrush => false;
 
         public bool UsePolylineBrush =>
             CurrentSelectionShape ==
             AreaBulldozerSelectionShape.Polyline;
+
+        public bool UseCurvedPolyline =>
+            UsePolylineBrush &&
+            (Mod.Settings?.UseCurvedPolyline ?? false);
+
+        public int CurrentPolylineRounding =>
+            math.clamp(
+                Mod.Settings?.PolylineRounding ?? 50,
+                10,
+                100);
 
         private bool IsRotatableSelection =>
             UseSquareBrush ||
@@ -383,9 +396,6 @@ namespace AreaBulldozer.Tools
                         ComponentType.ReadOnly<Overridden>(),
                         ComponentType.ReadOnly<Plant>(),
                         ComponentType.ReadOnly<Tree>(),
-
-                        // Never treat actual building entities as
-                        // removable static props.
                         ComponentType.ReadOnly<
                             Game.Buildings.Building>()
                     }
@@ -592,7 +602,9 @@ namespace AreaBulldozer.Tools
                         AreaBulldozerSelectionShape.Triangle =>
                             $"equilateral triangle, corner radius: {CurrentRadius:0} m, rotation: {SquareRotationDegrees:0} degrees",
                         AreaBulldozerSelectionShape.Polyline =>
-                            $"multi-point line, width: {CurrentLineWidth} m, max points: {MaximumPolylinePoints}",
+                            UseCurvedPolyline
+                                ? $"multi-point line, curved, width: {CurrentLineWidth} m, rounding: {CurrentPolylineRounding}%, max points: {MaximumPolylinePoints}"
+                                : $"multi-point line, straight, width: {CurrentLineWidth} m, max points: {MaximumPolylinePoints}",
                         _ =>
                             $"circle, radius: {CurrentRadius:0} m"
                     };
@@ -720,6 +732,8 @@ namespace AreaBulldozer.Tools
             CancelLargeSelectionConfirmation();
             m_LastPreviewRadius = -1f;
             m_LastPreviewLineWidth = -1;
+            m_LastPreviewUseCurvedPolyline = !UseCurvedPolyline;
+            m_LastPreviewPolylineRounding = -1;
             m_NextPreviewUpdateTime = 0f;
         }
 

@@ -17,8 +17,8 @@ namespace AreaBulldozer
         Circle = 0,
         Square = 1,
         Triangle = 2,
-        LegacyLine = 3,
 
+        LegacyLine = 3,
         Polyline = 4
     }
 
@@ -125,7 +125,6 @@ namespace AreaBulldozer
         [SettingsUISection(kSection, kSubObjectGroup)]
         public bool ProtectOwnedObjects { get; set; }
 
-
         [SettingsUIHidden]
         public AreaBulldozerSelectionShape SelectionShape { get; set; }
 
@@ -137,6 +136,12 @@ namespace AreaBulldozer
 
         [SettingsUIHidden]
         public int LineWidth { get; set; }
+
+        [SettingsUIHidden]
+        public bool UseCurvedPolyline { get; set; }
+
+        [SettingsUIHidden]
+        public int PolylineRounding { get; set; }
 
         [SettingsUISlider(
             min = 25,
@@ -259,6 +264,8 @@ namespace AreaBulldozer
             UseSquareBrush = false;
             BrushRadius = 30;
             LineWidth = 10;
+            UseCurvedPolyline = false;
+            PolylineRounding = 50;
 
             SelectionLineThickness = 65;
 
@@ -274,6 +281,8 @@ namespace AreaBulldozer
             ConfirmLargeSelection = true;
             LargeSelectionThreshold = 250;
 
+            // Info/diagnostic logging is deliberately disabled by default.
+            // Warnings and errors are always written.
             EnableDiagnosticLogging = false;
         }
     }

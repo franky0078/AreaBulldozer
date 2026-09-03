@@ -29,7 +29,6 @@ namespace AreaBulldozer.Tools
 
             if (polylineHasNoStart)
             {
-                // The multi-point line
                 ClearSelectionPreview(
                     resetPreviewState: false);
 
@@ -38,6 +37,12 @@ namespace AreaBulldozer.Tools
 
                 m_LastPreviewLineWidth =
                     CurrentLineWidth;
+
+                m_LastPreviewUseCurvedPolyline =
+                    UseCurvedPolyline;
+
+                m_LastPreviewPolylineRounding =
+                    CurrentPolylineRounding;
 
                 m_LastPreviewPosition =
                     CurrentPosition;
@@ -77,6 +82,14 @@ namespace AreaBulldozer.Tools
                 CurrentLineWidth !=
                 m_LastPreviewLineWidth;
 
+            bool polylineCurveModeChanged =
+                UseCurvedPolyline !=
+                m_LastPreviewUseCurvedPolyline;
+
+            bool polylineRoundingChanged =
+                CurrentPolylineRounding !=
+                m_LastPreviewPolylineRounding;
+
             bool shapeChanged =
                 selectionShape !=
                 m_LastPreviewSelectionShape;
@@ -109,6 +122,8 @@ namespace AreaBulldozer.Tools
                 !radiusChanged &&
                 !rotationChanged &&
                 !lineWidthChanged &&
+                !polylineCurveModeChanged &&
+                !polylineRoundingChanged &&
                 !shapeChanged &&
                 !filtersChanged)
             {
@@ -118,6 +133,8 @@ namespace AreaBulldozer.Tools
             if (!radiusChanged &&
                 !rotationChanged &&
                 !lineWidthChanged &&
+                !polylineCurveModeChanged &&
+                !polylineRoundingChanged &&
                 !shapeChanged &&
                 !filtersChanged &&
                 currentTime <
@@ -129,7 +146,6 @@ namespace AreaBulldozer.Tools
             if (m_LargeSelectionConfirmationPending &&
                 !UsePolylineBrush)
             {
-                // Circle, square and triangle confirmations
                 CancelLargeSelectionConfirmation();
             }
 
@@ -150,6 +166,12 @@ namespace AreaBulldozer.Tools
 
             m_LastPreviewLineWidth =
                 CurrentLineWidth;
+
+            m_LastPreviewUseCurvedPolyline =
+                UseCurvedPolyline;
+
+            m_LastPreviewPolylineRounding =
+                CurrentPolylineRounding;
 
             m_LastFilterSnapshot =
                 filters;

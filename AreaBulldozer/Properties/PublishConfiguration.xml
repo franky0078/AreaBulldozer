@@ -129,6 +129,7 @@
 	<Screenshot Value="Properties/Screenshot04.jpg" />
 	<Screenshot Value="Properties/Screenshot05.jpg" />
 	<Screenshot Value="Properties/Screenshot06.jpg" />
+	<Screenshot Value="Properties/Screenshot07.jpg" />
 
 	<!-- Add supported Paradox Mods tags here if required.-->
 	<Tag Value="Code Mod" />
@@ -137,7 +138,7 @@
 	<ForumLink Value="https://forum.paradoxplaza.com/forum/threads/mod-area-bulldozer-area-deletion-tool-with-object-filters.1937211/" />
 
 	<!-- Mod version -->
-	<ModVersion Value="1.4.3" />
+	<ModVersion Value="1.4.5" />
 
 	<!--
 	Recommended game version.
@@ -165,11 +166,10 @@
 	-->
 
 	<ChangeLog>
-		Version 1.4.3
+		Version 1.4.5
 
-		- Added an triangle selection shape with adjustable rotation.
-		- Added a multi-point line/corridor selection with 2 to 15 control points.
-		- Added optional diagnostic logging. Informational logging is disabled by default, while warnings and errors remain enabled.
+		- Improved logging efficiency and cleaned up legacy straight-line code.
+		- Added Straight and Curved multi-point modes
 
 
 	</ChangeLog>

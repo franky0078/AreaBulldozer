@@ -7,7 +7,7 @@ namespace AreaBulldozer.Tools
         private static void SafeLogInfo(
             string message)
         {
-
+            // Diagnostic/info logging is optional and disabled by default.
             if (!Mod.DiagnosticLoggingEnabled)
             {
                 return;

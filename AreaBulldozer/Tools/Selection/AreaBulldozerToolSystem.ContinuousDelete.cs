@@ -52,7 +52,7 @@ namespace AreaBulldozer.Tools
 
         private void UpdateContinuousDeleteInput()
         {
-            // The multi-point line 
+
             if (UsePolylineBrush)
             {
                 ResetContinuousDeleteState();

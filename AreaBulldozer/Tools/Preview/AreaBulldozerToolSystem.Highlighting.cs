@@ -337,6 +337,12 @@ namespace AreaBulldozer.Tools
             m_LastPreviewLineWidth =
                 -1;
 
+            m_LastPreviewUseCurvedPolyline =
+                false;
+
+            m_LastPreviewPolylineRounding =
+                -1;
+
             m_LastPreviewSquareRotationRadians =
                 -1000f;
 

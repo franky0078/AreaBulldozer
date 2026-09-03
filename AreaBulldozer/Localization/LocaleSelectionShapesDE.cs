@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 namespace AreaBulldozer.Localization
 {
-
     public class LocaleSelectionShapesDE : IDictionarySource
     {
         private readonly Setting m_Setting;
@@ -24,12 +23,20 @@ namespace AreaBulldozer.Localization
                 { "AreaBulldozer.UI.TriangleSize", "Größe Dreieck" },
 
                 { "AreaBulldozer.UI.MultiPointLine", "Mehrpunktlinie" },
-                { "AreaBulldozer.UI.MultiPointLineTooltip", "Korridor aus 2 bis 15 Punkten. Linksklick setzt Punkte. Doppelklick am letzten Punkt schließt die Mehrpunktlinie ab und löscht. Rechtsklick entfernt den letzten Punkt, Esc verwirft die komplette Auswahl." },
+                { "AreaBulldozer.UI.MultiPointLineTooltip", "Korridor aus 2 bis 15 Punkten mit geraden oder abgerundeten Übergängen. Linksklick setzt Punkte. Doppelklick am letzten Punkt schließt die Mehrpunktlinie ab und löscht. Rechtsklick entfernt den letzten Punkt, Esc verwirft die komplette Auswahl." },
                 { "AreaBulldozer.UI.MultiPointLineWidth", "Breite Mehrpunktlinie" },
                 { "AreaBulldozer.UI.DecreaseLineWidth", "Korridor schmaler" },
                 { "AreaBulldozer.UI.IncreaseLineWidth", "Korridor breiter" },
+                { "AreaBulldozer.UI.PolylineStyle", "Linienform" },
+                { "AreaBulldozer.UI.PolylineStraight", "Gerade" },
+                { "AreaBulldozer.UI.PolylineStraightTooltip", "Verbindet alle gesetzten Punkte mit geraden Segmenten." },
+                { "AreaBulldozer.UI.PolylineCurved", "Kurve" },
+                { "AreaBulldozer.UI.PolylineCurvedTooltip", "Rundet die Übergänge zwischen den gesetzten Punkten weich ab. Die Kurve bleibt kontrolliert zwischen den angrenzenden Segmenten und überschwingt nicht." },
+                { "AreaBulldozer.UI.PolylineRounding", "Kurvenrundung" },
+                { "AreaBulldozer.UI.DecreasePolylineRounding", "Rundung verringern" },
+                { "AreaBulldozer.UI.IncreasePolylineRounding", "Rundung erhöhen" },
 
-                // Alte Spline-Schlüssel
+                // Alte Spline-Schlüssel als Fallback 
                 { "AreaBulldozer.UI.Spline", "Mehrpunktlinie" },
                 { "AreaBulldozer.UI.SplineTooltip", "Korridor aus 2 bis 15 Punkten. Linksklick setzt Punkte. Doppelklick schließt ab und löscht. Rechtsklick entfernt den letzten Punkt, Esc bricht ab." },
                 { "AreaBulldozer.UI.SplineWidth", "Breite Mehrpunktlinie" },

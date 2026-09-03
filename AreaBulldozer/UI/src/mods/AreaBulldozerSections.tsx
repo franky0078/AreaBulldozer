@@ -27,7 +27,9 @@ import {
     dimMarkerBackground$,
     isToolActive$,
     lineWidth$,
+    polylineRounding$,
     selectionShape$,
+    useCurvedPolyline$,
     squareRotationDegrees$,
     uiScale$,
 } from "../bindings";
@@ -46,6 +48,10 @@ const RADIUS_STEP = 5;
 const LINE_WIDTH_MIN = 2;
 const LINE_WIDTH_MAX = 100;
 const LINE_WIDTH_STEP = 2;
+
+const POLYLINE_ROUNDING_MIN = 10;
+const POLYLINE_ROUNDING_MAX = 100;
+const POLYLINE_ROUNDING_STEP = 10;
 
 const ROTATION_STEP = 15;
 
@@ -225,6 +231,16 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
             lineWidth$,
             10
         );
+        const useCurvedPolyline = useSafeValue(
+            "useCurvedPolyline$",
+            useCurvedPolyline$,
+            false
+        );
+        const polylineRounding = useSafeValue(
+            "polylineRounding$",
+            polylineRounding$,
+            50
+        );
         const squareRotationDegrees = useSafeValue(
             "squareRotationDegrees$",
             squareRotationDegrees$,
@@ -372,6 +388,24 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
                 clamp(next, LINE_WIDTH_MIN, LINE_WIDTH_MAX)
             );
 
+        const setCurvedPolyline = (enabled: boolean) =>
+            trigger(
+                mod.id,
+                BindingKeys.setUseCurvedPolyline,
+                enabled
+            );
+
+        const setPolylineRounding = (next: number) =>
+            trigger(
+                mod.id,
+                BindingKeys.setPolylineRounding,
+                clamp(
+                    next,
+                    POLYLINE_ROUNDING_MIN,
+                    POLYLINE_ROUNDING_MAX
+                )
+            );
+
         const setShape = (shape: number) =>
             trigger(
                 mod.id,
@@ -442,7 +476,7 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
                         tooltipTitle={text("MultiPointLine", "Mehrpunktlinie")}
                         tooltipText={text(
                             "MultiPointLineTooltip",
-                            "2 bis 15 Punkte: Linksklick setzt Punkte, Doppelklick schließt ab und löscht. Rechtsklick entfernt den letzten Punkt, Esc bricht ab."
+                            "2 bis 15 Punkte mit geraden oder abgerundeten Übergängen. Linksklick setzt Punkte, Doppelklick schließt ab und löscht. Rechtsklick entfernt den letzten Punkt, Esc bricht ab."
                         )}
                         onSelect={() => setShape(SHAPE_POLYLINE)}
                     />
@@ -467,6 +501,57 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
                         />
                     )}
                 </Section>
+
+                {isPolyline && (
+                    <Section title={text("PolylineStyle", "Linienform")}>
+                        <IconToolButton
+                            icon="straight"
+                            selected={!useCurvedPolyline}
+                            tooltipTitle={text("PolylineStraight", "Gerade")}
+                            tooltipText={text(
+                                "PolylineStraightTooltip",
+                                "Verbindet alle gesetzten Punkte mit geraden Segmenten."
+                            )}
+                            onSelect={() => setCurvedPolyline(false)}
+                        />
+                        <IconToolButton
+                            icon="curve"
+                            selected={useCurvedPolyline}
+                            tooltipTitle={text("PolylineCurved", "Kurve")}
+                            tooltipText={text(
+                                "PolylineCurvedTooltip",
+                                "Rundet die Übergänge zwischen den gesetzten Punkten weich ab."
+                            )}
+                            onSelect={() => setCurvedPolyline(true)}
+                        />
+                    </Section>
+                )}
+
+                {isPolyline && useCurvedPolyline && (
+                    <Section title={text("PolylineRounding", "Kurvenrundung")}>
+                        <Stepper
+                            value={`${polylineRounding} %`}
+                            decreaseTooltip={text(
+                                "DecreasePolylineRounding",
+                                "Rundung verringern"
+                            )}
+                            increaseTooltip={text(
+                                "IncreasePolylineRounding",
+                                "Rundung erhöhen"
+                            )}
+                            onDecrease={() =>
+                                setPolylineRounding(
+                                    polylineRounding - POLYLINE_ROUNDING_STEP
+                                )
+                            }
+                            onIncrease={() =>
+                                setPolylineRounding(
+                                    polylineRounding + POLYLINE_ROUNDING_STEP
+                                )
+                            }
+                        />
+                    </Section>
+                )}
 
                 {isRotatable && (
                     <Section title={text("Rotation", "Drehung")}>

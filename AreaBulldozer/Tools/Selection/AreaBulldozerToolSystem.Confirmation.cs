@@ -45,6 +45,8 @@ namespace AreaBulldozer.Tools
 
             m_LargeSelectionConfirmationPolylinePoints.Clear();
             m_LargeSelectionConfirmationPolylineWidth = 0;
+            m_LargeSelectionConfirmationPolylineCurved = false;
+            m_LargeSelectionConfirmationPolylineRounding = 0;
 
             if (UsePolylineBrush &&
                 m_PolylineSelectionLocked)
@@ -56,6 +58,12 @@ namespace AreaBulldozer.Tools
 
                 m_LargeSelectionConfirmationPolylineWidth =
                     CurrentLineWidth;
+
+                m_LargeSelectionConfirmationPolylineCurved =
+                    UseCurvedPolyline;
+
+                m_LargeSelectionConfirmationPolylineRounding =
+                    CurrentPolylineRounding;
             }
 
             m_LargeSelectionConfirmationExpiresAt =
@@ -361,6 +369,8 @@ namespace AreaBulldozer.Tools
 
             m_LargeSelectionConfirmationPolylinePoints.Clear();
             m_LargeSelectionConfirmationPolylineWidth = 0;
+            m_LargeSelectionConfirmationPolylineCurved = false;
+            m_LargeSelectionConfirmationPolylineRounding = 0;
 
             m_LargeSelectionConfirmationExpiresAt =
                 0f;

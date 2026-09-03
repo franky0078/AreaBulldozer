@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 namespace AreaBulldozer.Localization
 {
-
     public class LocaleSelectionShapesEN : IDictionarySource
     {
         private readonly Setting m_Setting;
@@ -24,12 +23,20 @@ namespace AreaBulldozer.Localization
                 { "AreaBulldozer.UI.TriangleSize", "Triangle size" },
 
                 { "AreaBulldozer.UI.MultiPointLine", "Multi-point line" },
-                { "AreaBulldozer.UI.MultiPointLineTooltip", "Corridor using 2 to 15 points. Left click adds points. Double-click the final point to finish and delete. Right click removes the last point; Esc cancels the whole selection." },
+                { "AreaBulldozer.UI.MultiPointLineTooltip", "Corridor using 2 to 15 points with straight or rounded transitions. Left click adds points. Double-click the final point to finish and delete. Right click removes the last point; Esc cancels the whole selection." },
                 { "AreaBulldozer.UI.MultiPointLineWidth", "Multi-point line width" },
                 { "AreaBulldozer.UI.DecreaseLineWidth", "Make corridor narrower" },
                 { "AreaBulldozer.UI.IncreaseLineWidth", "Make corridor wider" },
+                { "AreaBulldozer.UI.PolylineStyle", "Line style" },
+                { "AreaBulldozer.UI.PolylineStraight", "Straight" },
+                { "AreaBulldozer.UI.PolylineStraightTooltip", "Connects all placed points with straight segments." },
+                { "AreaBulldozer.UI.PolylineCurved", "Curve" },
+                { "AreaBulldozer.UI.PolylineCurvedTooltip", "Rounds the transitions between placed points. The curve stays controlled between the adjacent segments and does not overshoot." },
+                { "AreaBulldozer.UI.PolylineRounding", "Curve rounding" },
+                { "AreaBulldozer.UI.DecreasePolylineRounding", "Decrease rounding" },
+                { "AreaBulldozer.UI.IncreasePolylineRounding", "Increase rounding" },
 
-                // Keep old spline keys
+                // Keep old spline keys as fallbacks.
                 { "AreaBulldozer.UI.Spline", "Multi-point line" },
                 { "AreaBulldozer.UI.SplineTooltip", "Corridor using 2 to 15 points. Left click adds points. Double-click finishes and deletes. Right click removes the last point; Esc cancels." },
                 { "AreaBulldozer.UI.SplineWidth", "Multi-point line width" },

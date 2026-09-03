@@ -122,6 +122,19 @@ namespace AreaBulldozer.UISystems
                         2,
                         100)));
 
+            AddBooleanValueBinding(
+                AreaBulldozerUIBindingConstants.UseCurvedPolyline,
+                () => Mod.Settings?.UseCurvedPolyline ?? false);
+
+            AddUpdateBinding(
+                new GetterValueBinding<int>(
+                    group,
+                    AreaBulldozerUIBindingConstants.PolylineRounding,
+                    () => math.clamp(
+                        Mod.Settings?.PolylineRounding ?? 50,
+                        10,
+                        100)));
+
             AddUpdateBinding(
                 new GetterValueBinding<float>(
                     group,
@@ -309,6 +322,31 @@ namespace AreaBulldozer.UISystems
                         ChangeSetting(
                             setting => setting.LineWidth =
                                 math.clamp(value, 2, 100));
+
+                        m_Tool?.InvalidateSelectionGeometry();
+                    }));
+
+            AddBinding(
+                new TriggerBinding<bool>(
+                    group,
+                    AreaBulldozerUIBindingConstants.SetUseCurvedPolyline,
+                    value =>
+                    {
+                        ChangeSetting(
+                            setting => setting.UseCurvedPolyline = value);
+
+                        m_Tool?.InvalidateSelectionGeometry();
+                    }));
+
+            AddBinding(
+                new TriggerBinding<int>(
+                    group,
+                    AreaBulldozerUIBindingConstants.SetPolylineRounding,
+                    value =>
+                    {
+                        ChangeSetting(
+                            setting => setting.PolylineRounding =
+                                math.clamp(value, 10, 100));
 
                         m_Tool?.InvalidateSelectionGeometry();
                     }));

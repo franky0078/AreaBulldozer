@@ -29,6 +29,9 @@ namespace AreaBulldozer.Tools
             NativeArray<float3> polylineBrushPoints =
                 BuildPolylineBrushPreviewPoints();
 
+            NativeArray<float3> polylineControlPoints =
+                BuildPolylineControlPreviewPoints();
+
             float selectionLineWidth =
                 math.clamp(
                     Mod.Settings?.SelectionLineThickness ?? 65,
@@ -58,7 +61,11 @@ namespace AreaBulldozer.Tools
                     TriangleBrushCorners =
                         triangleBrushCorners,
                     PolylineBrushPoints =
-                        polylineBrushPoints
+                        polylineBrushPoints,
+                    PolylineControlPoints =
+                        polylineControlPoints,
+                    CurvedPolyline =
+                        UseCurvedPolyline
                 };
 
             JobHandle jobHandle =
@@ -228,6 +235,61 @@ namespace AreaBulldozer.Tools
         }
 
         private NativeArray<float3>
+            BuildPolylineControlPreviewPoints()
+        {
+            if (!UsePolylineBrush ||
+                !HasValidPosition)
+            {
+                return new NativeArray<float3>(
+                    0,
+                    Allocator.TempJob);
+            }
+
+            const float verticalOffset = 0.16f;
+
+            int pointCount =
+                m_PolylinePoints.Count +
+                (IncludePolylineCursorPoint ? 1 : 0);
+
+            if (pointCount == 0)
+            {
+                NativeArray<float3> cursorPoint =
+                    new(
+                        1,
+                        Allocator.TempJob,
+                        NativeArrayOptions.UninitializedMemory);
+
+                cursorPoint[0] =
+                    CurrentPosition +
+                    new float3(0f, verticalOffset, 0f);
+
+                return cursorPoint;
+            }
+
+            NativeArray<float3> points =
+                new(
+                    pointCount,
+                    Allocator.TempJob,
+                    NativeArrayOptions.UninitializedMemory);
+
+            for (int index = 0;
+                 index < pointCount;
+                 index++)
+            {
+                float3 point =
+                    index < m_PolylinePoints.Count
+                        ? m_PolylinePoints[index]
+                        : CurrentPosition;
+
+                points[index] =
+                    point +
+                    new float3(0f, verticalOffset, 0f);
+            }
+
+            return points;
+        }
+
+        private NativeArray<float3>
             BuildSurfaceOutlineSegmentPoints()
         {
             const int maximumOutlineSegments = 12288;
@@ -358,6 +420,12 @@ namespace AreaBulldozer.Tools
             [DeallocateOnJobCompletion]
             public NativeArray<float3>
                 PolylineBrushPoints;
+
+            [DeallocateOnJobCompletion]
+            public NativeArray<float3>
+                PolylineControlPoints;
+
+            public bool CurvedPolyline;
 
             public void Execute()
             {
@@ -564,11 +632,18 @@ namespace AreaBulldozer.Tools
                         new float2(0f, 1f),
                         PolylineBrushPoints[0],
                         corridorDiameter);
+
+                    DrawPolylineControlMarkers(
+                        selectionColor,
+                        lineWidth);
                     return;
                 }
 
                 if (PolylineBrushPoints.Length < 2)
                 {
+                    DrawPolylineControlMarkers(
+                        selectionColor,
+                        lineWidth);
                     return;
                 }
 
@@ -652,6 +727,58 @@ namespace AreaBulldozer.Tools
                         math.max(0.2f, lineWidth * 0.45f));
                 }
 
+                if (CurvedPolyline)
+                {
+                    // The sampled curve already has closely spaced joints.
+                    // Only endpoint caps are required visually; drawing a
+                    // full circle at every curve sample would clutter the UI.
+                    OverlayBuffer.DrawCircle(
+                        selectionColor,
+                        default,
+                        lineWidth,
+                        0f,
+                        new float2(0f, 1f),
+                        PolylineBrushPoints[0],
+                        corridorDiameter);
+
+                    OverlayBuffer.DrawCircle(
+                        selectionColor,
+                        default,
+                        lineWidth,
+                        0f,
+                        new float2(0f, 1f),
+                        PolylineBrushPoints[
+                            PolylineBrushPoints.Length - 1],
+                        corridorDiameter);
+                }
+                else
+                {
+                    // Straight mode uses a round capsule at every clicked
+                    // corner, matching the existing corridor geometry.
+                    for (int index = 0;
+                         index < PolylineControlPoints.Length;
+                         index++)
+                    {
+                        OverlayBuffer.DrawCircle(
+                            selectionColor,
+                            default,
+                            lineWidth,
+                            0f,
+                            new float2(0f, 1f),
+                            PolylineControlPoints[index],
+                            corridorDiameter);
+                    }
+                }
+
+                DrawPolylineControlMarkers(
+                    selectionColor,
+                    lineWidth);
+            }
+
+            private void DrawPolylineControlMarkers(
+                UnityEngine.Color selectionColor,
+                float lineWidth)
+            {
                 float controlPointDiameter =
                     math.clamp(
                         lineWidth * 2.2f,
@@ -659,28 +786,20 @@ namespace AreaBulldozer.Tools
                         2.4f);
 
                 for (int index = 0;
-                     index < PolylineBrushPoints.Length;
+                     index < PolylineControlPoints.Length;
                      index++)
                 {
-                    OverlayBuffer.DrawCircle(
-                        selectionColor,
-                        default,
-                        lineWidth,
-                        0f,
-                        new float2(0f, 1f),
-                        PolylineBrushPoints[index],
-                        corridorDiameter);
-
                     OverlayBuffer.DrawCircle(
                         selectionColor,
                         selectionColor,
                         0.05f,
                         0f,
                         new float2(0f, 1f),
-                        PolylineBrushPoints[index],
+                        PolylineControlPoints[index],
                         controlPointDiameter);
                 }
             }
+
         }
     }
 }
