@@ -9,7 +9,6 @@ namespace AreaBulldozer.Tools
         // ------------------------------------------------------------
         // Abgedunkelte Marker-Fokusansicht
         // ------------------------------------------------------------
-
         private const string kMarkerFocusOverlayId =
             "area-bulldozer-marker-focus-overlay";
 
@@ -110,7 +109,7 @@ namespace AreaBulldozer.Tools
             m_AppliedMarkerBackgroundDarkness =
                 darknessPercent;
 
-            Mod.Log.Info(
+            Mod.LogDiagnosticInfo(
                 $"Marker background dimming enabled at " +
                 $"{darknessPercent}%.");
         }
@@ -134,7 +133,7 @@ namespace AreaBulldozer.Tools
 
             if (m_MarkerFocusOverlayVisible)
             {
-                Mod.Log.Info(
+                Mod.LogDiagnosticInfo(
                     "Marker background dimming removed.");
             }
 
@@ -267,6 +266,5 @@ namespace AreaBulldozer.Tools
 
             m_MarkerFocusOverlayFailureLogged = true;
         }
-
     }
 }

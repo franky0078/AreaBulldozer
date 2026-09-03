@@ -1,18 +1,16 @@
-﻿using Unity.Mathematics;
+using Unity.Mathematics;
 
 namespace AreaBulldozer.Tools
 {
     public partial class AreaBulldozerToolSystem
     {
-
-
-        // Udateintervall für kontinuierliches Löschen (in Sekunden)
+        // Update interval for continuous deletion (seconds)
         private const float kContinuousDeleteUpdateInterval = 0.05f;
 
-        // Nachdauer für grünes Feedback
+        // Green visual feedback duration
         private const float kDeleteVisualFeedbackDuration = 0.20f;
 
-        // nötiger Maus-/Brush-Weg für das nächste kontinuierliche Löschen
+        // Required brush movement before the next continuous delete
         private const float kContinuousDeleteMoveFactor = 0.15f;
         private const float kContinuousDeleteMinMoveThreshold = 1.5f;
         private const float kContinuousDeleteMaxMoveThreshold = 8f;
@@ -54,6 +52,14 @@ namespace AreaBulldozer.Tools
 
         private void UpdateContinuousDeleteInput()
         {
+            // The multi-point line 
+            if (UsePolylineBrush)
+            {
+                ResetContinuousDeleteState();
+                UpdatePolylineSelectionInput();
+                return;
+            }
+
             if (m_ApplyAction == null)
             {
                 ResetContinuousDeleteState();
@@ -165,7 +171,6 @@ namespace AreaBulldozer.Tools
 
         private void ResetContinuousDeleteState()
         {
-
             FlushContinuousDeleteLog();
 
             m_ContinuousDeleteActive = false;

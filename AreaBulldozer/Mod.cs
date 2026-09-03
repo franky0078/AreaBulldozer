@@ -1,4 +1,4 @@
-﻿using AreaBulldozer.Localization;
+using AreaBulldozer.Localization;
 using AreaBulldozer.Tools;
 using AreaBulldozer.UISystems;
 using Colossal.IO.AssetDatabase;
@@ -13,7 +13,7 @@ namespace AreaBulldozer
 {
     public class Mod : IMod
     {
-        public const string ModVersion = "1.3.6";
+        public const string ModVersion = "1.4.3";
 
         public static readonly ILog Log = LogManager
             .GetLogger(
@@ -23,6 +23,27 @@ namespace AreaBulldozer
 
         public static Setting Settings { get; private set; }
 
+        public static bool DiagnosticLoggingEnabled =>
+            Settings?.EnableDiagnosticLogging ?? false;
+
+        public static void LogDiagnosticInfo(string message)
+        {
+            if (!DiagnosticLoggingEnabled ||
+                string.IsNullOrWhiteSpace(message))
+            {
+                return;
+            }
+
+            try
+            {
+                Log?.Info(message);
+            }
+            catch
+            {
+                // Never let logging interfere with the tool.
+            }
+        }
+
         private ProxyAction m_ActivateToolAction;
 
         public const string ActivateToolActionName =
@@ -30,15 +51,6 @@ namespace AreaBulldozer
 
         public void OnLoad(UpdateSystem updateSystem)
         {
-            Log.Info("Area Bulldozer is loading.");
-
-            if (GameManager.instance.modManager
-                .TryGetExecutableAsset(this, out var asset))
-            {
-                Log.Info($"Current mod asset: {asset.path}");
-            }
-
-
             // Einstellungen
             Settings = new Setting(this);
 
@@ -50,15 +62,37 @@ namespace AreaBulldozer
                 new LocaleEN(Settings));
 
             GameManager.instance.localizationManager.AddSource(
+                "en-US",
+                new LocaleSelectionShapesEN(Settings));
+
+            GameManager.instance.localizationManager.AddSource(
                 "de-DE",
                 new LocaleDE(Settings));
+
+            GameManager.instance.localizationManager.AddSource(
+                "de-DE",
+                new LocaleSelectionShapesDE(Settings));
 
             AssetDatabase.global.LoadSettings(
                 nameof(AreaBulldozer),
                 Settings,
                 new Setting(this));
 
-            
+            if (DiagnosticLoggingEnabled)
+            {
+                LogDiagnosticInfo("Area Bulldozer is loading.");
+                LogDiagnosticInfo(
+                    "Area Bulldozer diagnostic logging is enabled.");
+
+                if (GameManager.instance.modManager
+                    .TryGetExecutableAsset(this, out var asset))
+                {
+                    LogDiagnosticInfo(
+                        $"Current mod asset: {asset.path}");
+                }
+            }
+
+
             // Tastenkürzel
             m_ActivateToolAction =
                 Settings.GetAction(ActivateToolActionName);
@@ -70,7 +104,7 @@ namespace AreaBulldozer
                 m_ActivateToolAction.onInteraction +=
                     OnActivateToolInteraction;
 
-                Log.Info(
+                LogDiagnosticInfo(
                     "Area Bulldozer activation action registered.");
             }
             else
@@ -86,10 +120,10 @@ namespace AreaBulldozer
             updateSystem.UpdateAt<AreaBulldozerUISystem>(
                 SystemUpdatePhase.UIUpdate);
 
-            Log.Info(
+            LogDiagnosticInfo(
                 "Area Bulldozer tool and UI systems registered.");
 
-            Log.Info(
+            LogDiagnosticInfo(
                 "Area Bulldozer loaded successfully.");
         }
 
@@ -118,7 +152,7 @@ namespace AreaBulldozer
 
         public void OnDispose()
         {
-            Log.Info("Area Bulldozer is unloading.");
+            LogDiagnosticInfo("Area Bulldozer is unloading.");
 
             if (m_ActivateToolAction != null)
             {
@@ -129,13 +163,13 @@ namespace AreaBulldozer
                 m_ActivateToolAction = null;
             }
 
+            LogDiagnosticInfo("Area Bulldozer unloaded.");
+
             if (Settings != null)
             {
                 Settings.UnregisterInOptionsUI();
                 Settings = null;
             }
-
-            Log.Info("Area Bulldozer unloaded.");
         }
     }
 }

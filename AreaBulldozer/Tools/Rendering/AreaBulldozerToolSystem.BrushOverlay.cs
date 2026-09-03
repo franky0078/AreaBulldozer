@@ -10,8 +10,6 @@ namespace AreaBulldozer.Tools
 {
     public partial class AreaBulldozerToolSystem
     {
-
-        // Auswahlform
         private JobHandle DrawToolShape(
             JobHandle inputDeps)
         {
@@ -24,6 +22,12 @@ namespace AreaBulldozer.Tools
 
             NativeArray<float3> squareBrushCorners =
                 BuildSquareBrushPreviewCorners();
+
+            NativeArray<float3> triangleBrushCorners =
+                BuildTriangleBrushPreviewCorners();
+
+            NativeArray<float3> polylineBrushPoints =
+                BuildPolylineBrushPreviewPoints();
 
             float selectionLineWidth =
                 math.clamp(
@@ -38,10 +42,11 @@ namespace AreaBulldozer.Tools
                     OverlayBuffer = overlayBuffer,
                     Position = CurrentPosition,
                     Radius = CurrentRadius,
+                    LineHalfWidth = CurrentLineHalfWidth,
                     SelectionLineWidth =
                         selectionLineWidth,
-                    UseSquareBrush =
-                        UseSquareBrush,
+                    SelectionShape =
+                        (int)CurrentSelectionShape,
                     ConfirmationPending =
                         m_LargeSelectionConfirmationPending,
                     DeleteActive =
@@ -49,7 +54,11 @@ namespace AreaBulldozer.Tools
                     SurfaceOutlineSegmentPoints =
                         surfaceOutlineSegmentPoints,
                     SquareBrushCorners =
-                        squareBrushCorners
+                        squareBrushCorners,
+                    TriangleBrushCorners =
+                        triangleBrushCorners,
+                    PolylineBrushPoints =
+                        polylineBrushPoints
                 };
 
             JobHandle jobHandle =
@@ -64,7 +73,6 @@ namespace AreaBulldozer.Tools
             return jobHandle;
         }
 
-        // Eckpunkte der quadratischen Auswahl
         private NativeArray<float3>
             BuildSquareBrushPreviewCorners()
         {
@@ -117,6 +125,107 @@ namespace AreaBulldozer.Tools
             return corners;
         }
 
+        private NativeArray<float3>
+            BuildTriangleBrushPreviewCorners()
+        {
+            if (!UseTriangleBrush ||
+                !HasValidPosition)
+            {
+                return new NativeArray<float3>(
+                    0,
+                    Allocator.TempJob);
+            }
+
+            const float verticalOffset = 0.12f;
+
+            float2 center =
+                new(
+                    CurrentPosition.x,
+                    CurrentPosition.z);
+
+            SelectionGeometry.GetEquilateralTriangleCorners(
+                center,
+                CurrentRadius,
+                SquareRotationRadians,
+                out float2 a,
+                out float2 b,
+                out float2 c);
+
+            NativeArray<float3> corners =
+                new(
+                    3,
+                    Allocator.TempJob,
+                    NativeArrayOptions.UninitializedMemory);
+
+            corners[0] =
+                new float3(
+                    a.x,
+                    CurrentPosition.y + verticalOffset,
+                    a.y);
+
+            corners[1] =
+                new float3(
+                    b.x,
+                    CurrentPosition.y + verticalOffset,
+                    b.y);
+
+            corners[2] =
+                new float3(
+                    c.x,
+                    CurrentPosition.y + verticalOffset,
+                    c.y);
+
+            return corners;
+        }
+
+        private NativeArray<float3>
+            BuildPolylineBrushPreviewPoints()
+        {
+            if (!UsePolylineBrush ||
+                !HasValidPosition)
+            {
+                return new NativeArray<float3>(
+                    0,
+                    Allocator.TempJob);
+            }
+
+            const float verticalOffset = 0.12f;
+
+            int pointCount =
+                CurrentPolylineGeometryPointCount;
+
+            if (pointCount == 0)
+            {
+                NativeArray<float3> cursorPoint =
+                    new(
+                        1,
+                        Allocator.TempJob,
+                        NativeArrayOptions.UninitializedMemory);
+
+                cursorPoint[0] =
+                    CurrentPosition +
+                    new float3(0f, verticalOffset, 0f);
+
+                return cursorPoint;
+            }
+
+            NativeArray<float3> points =
+                new(
+                    pointCount,
+                    Allocator.TempJob,
+                    NativeArrayOptions.UninitializedMemory);
+
+            for (int index = 0;
+                 index < pointCount;
+                 index++)
+            {
+                points[index] =
+                    GetPolylineGeometryPoint(index) +
+                    new float3(0f, verticalOffset, 0f);
+            }
+
+            return points;
+        }
 
         private NativeArray<float3>
             BuildSurfaceOutlineSegmentPoints()
@@ -207,8 +316,6 @@ namespace AreaBulldozer.Tools
             return result;
         }
 
-
-        // Verlängert ein Liniensegment an beiden Enden.
         private static Line3.Segment CreateExtendedSegment(
             float3 start,
             float3 end,
@@ -229,9 +336,10 @@ namespace AreaBulldozer.Tools
 
             public float3 Position;
             public float Radius;
+            public float LineHalfWidth;
             public float SelectionLineWidth;
 
-            public bool UseSquareBrush;
+            public int SelectionShape;
             public bool ConfirmationPending;
             public bool DeleteActive;
 
@@ -242,6 +350,14 @@ namespace AreaBulldozer.Tools
             [DeallocateOnJobCompletion]
             public NativeArray<float3>
                 SquareBrushCorners;
+
+            [DeallocateOnJobCompletion]
+            public NativeArray<float3>
+                TriangleBrushCorners;
+
+            [DeallocateOnJobCompletion]
+            public NativeArray<float3>
+                PolylineBrushPoints;
 
             public void Execute()
             {
@@ -296,25 +412,39 @@ namespace AreaBulldozer.Tools
                 DrawSurfaceOutlines(
                     surfaceOutlineColor);
 
-                if (UseSquareBrush)
+                switch ((AreaBulldozerSelectionShape)SelectionShape)
                 {
-                    DrawSquare(
-                        selectionColor,
-                        lineWidth);
+                    case AreaBulldozerSelectionShape.Square:
+                        DrawSquare(
+                            selectionColor,
+                            lineWidth);
+                        return;
 
-                    return;
+                    case AreaBulldozerSelectionShape.Triangle:
+                        DrawTriangle(
+                            selectionColor,
+                            lineWidth);
+                        return;
+
+                    case AreaBulldozerSelectionShape.Polyline:
+                        DrawPolylineSelection(
+                            selectionColor,
+                            lineWidth);
+                        return;
+
+                    default:
+                        OverlayBuffer.DrawCircle(
+                            selectionColor,
+                            default,
+                            lineWidth,
+                            0f,
+                            new float2(
+                                0f,
+                                1f),
+                            Position,
+                            radius * 2f);
+                        return;
                 }
-
-                OverlayBuffer.DrawCircle(
-                    selectionColor,
-                    default,
-                    lineWidth,
-                    0f,
-                    new float2(
-                        0f,
-                        1f),
-                    Position,
-                    radius * 2f);
             }
 
             private void DrawSurfaceOutlines(
@@ -364,43 +494,192 @@ namespace AreaBulldozer.Tools
                     return;
                 }
 
+                DrawClosedPolygon(
+                    SquareBrushCorners,
+                    selectionColor,
+                    lineWidth);
+            }
+
+            private void DrawTriangle(
+                UnityEngine.Color selectionColor,
+                float lineWidth)
+            {
+                if (TriangleBrushCorners.Length != 3)
+                {
+                    return;
+                }
+
+                DrawClosedPolygon(
+                    TriangleBrushCorners,
+                    selectionColor,
+                    lineWidth);
+            }
+
+            private void DrawClosedPolygon(
+                NativeArray<float3> points,
+                UnityEngine.Color selectionColor,
+                float lineWidth)
+            {
                 float cornerOverlap =
                     math.clamp(
                         lineWidth * 0.5f,
                         0.15f,
                         1f);
 
-                OverlayBuffer.DrawLine(
-                    selectionColor,
-                    CreateExtendedSegment(
-                        SquareBrushCorners[0],
-                        SquareBrushCorners[1],
-                        cornerOverlap),
-                    lineWidth);
+                for (int index = 0;
+                     index < points.Length;
+                     index++)
+                {
+                    int nextIndex =
+                        index + 1 < points.Length
+                            ? index + 1
+                            : 0;
 
-                OverlayBuffer.DrawLine(
-                    selectionColor,
-                    CreateExtendedSegment(
-                        SquareBrushCorners[1],
-                        SquareBrushCorners[2],
-                        cornerOverlap),
-                    lineWidth);
+                    OverlayBuffer.DrawLine(
+                        selectionColor,
+                        CreateExtendedSegment(
+                            points[index],
+                            points[nextIndex],
+                            cornerOverlap),
+                        lineWidth);
+                }
+            }
 
-                OverlayBuffer.DrawLine(
-                    selectionColor,
-                    CreateExtendedSegment(
-                        SquareBrushCorners[2],
-                        SquareBrushCorners[3],
-                        cornerOverlap),
-                    lineWidth);
+            private void DrawPolylineSelection(
+                UnityEngine.Color selectionColor,
+                float lineWidth)
+            {
+                float corridorDiameter =
+                    math.max(
+                        2f,
+                        LineHalfWidth * 2f);
 
-                OverlayBuffer.DrawLine(
-                    selectionColor,
-                    CreateExtendedSegment(
-                        SquareBrushCorners[3],
-                        SquareBrushCorners[0],
-                        cornerOverlap),
-                    lineWidth);
+                if (PolylineBrushPoints.Length == 1)
+                {
+                    OverlayBuffer.DrawCircle(
+                        selectionColor,
+                        default,
+                        lineWidth,
+                        0f,
+                        new float2(0f, 1f),
+                        PolylineBrushPoints[0],
+                        corridorDiameter);
+                    return;
+                }
+
+                if (PolylineBrushPoints.Length < 2)
+                {
+                    return;
+                }
+
+                float overlap =
+                    math.clamp(
+                        lineWidth * 0.5f,
+                        0.15f,
+                        1f);
+
+                for (int index = 0;
+                     index + 1 < PolylineBrushPoints.Length;
+                     index++)
+                {
+                    float3 start =
+                        PolylineBrushPoints[index];
+
+                    float3 end =
+                        PolylineBrushPoints[index + 1];
+
+                    float2 direction =
+                        new float2(
+                            end.x - start.x,
+                            end.z - start.z);
+
+                    float2 normalizedDirection =
+                        math.normalizesafe(
+                            direction,
+                            new float2(1f, 0f));
+
+                    float2 perpendicular =
+                        new float2(
+                            -normalizedDirection.y,
+                            normalizedDirection.x) *
+                        LineHalfWidth;
+
+                    float3 sideAStart =
+                        new(
+                            start.x + perpendicular.x,
+                            start.y,
+                            start.z + perpendicular.y);
+
+                    float3 sideAEnd =
+                        new(
+                            end.x + perpendicular.x,
+                            end.y,
+                            end.z + perpendicular.y);
+
+                    float3 sideBStart =
+                        new(
+                            start.x - perpendicular.x,
+                            start.y,
+                            start.z - perpendicular.y);
+
+                    float3 sideBEnd =
+                        new(
+                            end.x - perpendicular.x,
+                            end.y,
+                            end.z - perpendicular.y);
+
+                    OverlayBuffer.DrawLine(
+                        selectionColor,
+                        CreateExtendedSegment(
+                            sideAStart,
+                            sideAEnd,
+                            overlap),
+                        lineWidth);
+
+                    OverlayBuffer.DrawLine(
+                        selectionColor,
+                        CreateExtendedSegment(
+                            sideBStart,
+                            sideBEnd,
+                            overlap),
+                        lineWidth);
+
+                    OverlayBuffer.DrawLine(
+                        selectionColor,
+                        new Line3.Segment(
+                            start,
+                            end),
+                        math.max(0.2f, lineWidth * 0.45f));
+                }
+
+                float controlPointDiameter =
+                    math.clamp(
+                        lineWidth * 2.2f,
+                        0.8f,
+                        2.4f);
+
+                for (int index = 0;
+                     index < PolylineBrushPoints.Length;
+                     index++)
+                {
+                    OverlayBuffer.DrawCircle(
+                        selectionColor,
+                        default,
+                        lineWidth,
+                        0f,
+                        new float2(0f, 1f),
+                        PolylineBrushPoints[index],
+                        corridorDiameter);
+
+                    OverlayBuffer.DrawCircle(
+                        selectionColor,
+                        selectionColor,
+                        0.05f,
+                        0f,
+                        new float2(0f, 1f),
+                        PolylineBrushPoints[index],
+                        controlPointDiameter);
+                }
             }
         }
     }

@@ -1,6 +1,5 @@
 namespace AreaBulldozer.UISystems
 {
-
     internal static class AreaBulldozerUIBindingConstants
     {
         public const string ModId = "AreaBulldozer";
@@ -9,14 +8,13 @@ namespace AreaBulldozer.UISystems
         public const string IsToolActive = "isToolActive";
         public const string BrushRadius = "brushRadius";
         public const string UseSquareBrush = "useSquareBrush";
+        public const string SelectionShape = "selectionShape";
+        public const string LineWidth = "lineWidth";
         public const string SquareRotationDegrees = "squareRotationDegrees";
         public const string UIScale = "uiScale";
 
         public const string LauncherMode = "launcherMode";
-
-        // Legacy-Binding.
         public const string UseUniversalModMenu = "useUniversalModMenu";
-
         public const string LauncherButtonMovable = "launcherButtonMovable";
         public const string LauncherPositionX = "launcherPositionX";
         public const string LauncherPositionY = "launcherPositionY";
@@ -52,6 +50,8 @@ namespace AreaBulldozer.UISystems
         public const string SetPointerOverUI = "setPointerOverUI";
         public const string SetBrushRadius = "setBrushRadius";
         public const string SetUseSquareBrush = "setUseSquareBrush";
+        public const string SetSelectionShape = "setSelectionShape";
+        public const string SetLineWidth = "setLineWidth";
         public const string SetSquareRotationDegrees = "setSquareRotationDegrees";
         public const string SetLauncherPositionX = "setLauncherPositionX";
         public const string SetLauncherPositionY = "setLauncherPositionY";

@@ -11,17 +11,9 @@ namespace AreaBulldozer.Tools
 {
     public partial class AreaBulldozerToolSystem
     {
-
-        // Räumlicher Vorschauindex
         private const float kSpatialCellSize = 64f;
-
-        // Prüfintervall für die automatische Index-Aktualisierung
         private const float kSpatialRefreshCheckInterval = 2f;
-
-        // Stillstand Pinsel für Neuberechnung
         private const float kSpatialRefreshIdleSeconds = 0.6f;
-
-        // Mindestabstand zwischen zwei Refresh-Neuaufbauten
         private const float kSpatialRefreshMinRebuildInterval = 15f;
 
         private float3 m_SpatialRefreshProbePosition;
@@ -143,6 +135,12 @@ namespace AreaBulldozer.Tools
             m_NextSpatialRefreshCheckTime =
                 UnityEngine.Time.unscaledTime +
                 kSpatialRefreshCheckInterval;
+
+            // Avoid constructing the large diagnostic
+            if (!Mod.DiagnosticLoggingEnabled)
+            {
+                return;
+            }
 
             if (!logDetails)
             {
@@ -1051,19 +1049,33 @@ namespace AreaBulldozer.Tools
                     5f,
                     selectionSize);
 
-            if (UseSquareBrush)
+            switch (CurrentSelectionShape)
             {
-                return IsCandidateInsideSquare(
-                    candidate,
-                    selectionCenter,
-                    safeSize,
-                    SquareRotationRadians);
-            }
+                case AreaBulldozerSelectionShape.Square:
+                    return IsCandidateInsideSquare(
+                        candidate,
+                        selectionCenter,
+                        safeSize,
+                        SquareRotationRadians);
 
-            return IsCandidateInsideCircle(
-                candidate,
-                selectionCenter,
-                safeSize * safeSize);
+                case AreaBulldozerSelectionShape.Triangle:
+                    return IsCandidateInsideTriangle(
+                        candidate,
+                        selectionCenter,
+                        safeSize,
+                        SquareRotationRadians);
+
+                case AreaBulldozerSelectionShape.Polyline:
+                    return IsCandidateInsidePolyline(
+                        candidate,
+                        CurrentLineHalfWidth);
+
+                default:
+                    return IsCandidateInsideCircle(
+                        candidate,
+                        selectionCenter,
+                        safeSize * safeSize);
+            }
         }
 
         private bool IsCandidateInsideCircle(
@@ -1123,6 +1135,46 @@ namespace AreaBulldozer.Tools
                 squareCenter,
                 halfSize,
                 rotationRadians);
+        }
+
+        private bool IsCandidateInsideTriangle(
+            in SpatialCandidate candidate,
+            float2 triangleCenter,
+            float cornerRadius,
+            float rotationRadians)
+        {
+            SelectionGeometry.GetEquilateralTriangleCorners(
+                triangleCenter,
+                cornerRadius,
+                rotationRadians,
+                out float2 a,
+                out float2 b,
+                out float2 c);
+
+            if (candidate.IsSurfaceArea)
+            {
+                return IsSurfaceAreaInsideTriangle(
+                    candidate.Entity,
+                    a,
+                    b,
+                    c);
+            }
+
+            if (!candidate.IsSegment)
+            {
+                return SelectionGeometry.IsPointInsideTriangle(
+                    candidate.Position,
+                    a,
+                    b,
+                    c);
+            }
+
+            return SelectionGeometry.IsSegmentInsideTriangle(
+                candidate.Position,
+                candidate.EndPosition,
+                a,
+                b,
+                c);
         }
 
         private bool IsSurfaceAreaInsideCircle(
@@ -1267,6 +1319,64 @@ namespace AreaBulldozer.Tools
                 SelectionGeometry.IsPointInsidePolygon(nodes, corner1) ||
                 SelectionGeometry.IsPointInsidePolygon(nodes, corner2) ||
                 SelectionGeometry.IsPointInsidePolygon(nodes, corner3);
+        }
+
+        private bool IsSurfaceAreaInsideTriangle(
+            Entity areaEntity,
+            float2 a,
+            float2 b,
+            float2 c)
+        {
+            if (!TryGetAreaNodes(
+                    areaEntity,
+                    out DynamicBuffer<Game.Areas.Node> nodes))
+            {
+                return false;
+            }
+
+            for (int index = 0;
+                 index < nodes.Length;
+                 index++)
+            {
+                int nextIndex =
+                    index + 1 < nodes.Length
+                        ? index + 1
+                        : 0;
+
+                float2 start =
+                    SelectionGeometry.GetAreaNodePosition(
+                        nodes[index]);
+
+                float2 end =
+                    SelectionGeometry.GetAreaNodePosition(
+                        nodes[nextIndex]);
+
+                if (!math.all(math.isfinite(start)) ||
+                    !math.all(math.isfinite(end)))
+                {
+                    return false;
+                }
+
+                if (SelectionGeometry.IsPointInsideTriangle(
+                        start,
+                        a,
+                        b,
+                        c) ||
+                    SelectionGeometry.IsSegmentInsideTriangle(
+                        start,
+                        end,
+                        a,
+                        b,
+                        c))
+                {
+                    return true;
+                }
+            }
+
+            return
+                SelectionGeometry.IsPointInsidePolygon(nodes, a) ||
+                SelectionGeometry.IsPointInsidePolygon(nodes, b) ||
+                SelectionGeometry.IsPointInsidePolygon(nodes, c);
         }
 
         private bool TryGetAreaNodes(

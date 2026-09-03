@@ -3,9 +3,7 @@ using Unity.Mathematics;
 
 namespace AreaBulldozer.Tools
 {
-    /// <summary>
-    /// Objektart eines Vorschauindex-Kandidaten.
-    /// </summary>
+
     internal enum SpatialCandidateKind
     {
         Vegetation,

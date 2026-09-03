@@ -6,8 +6,6 @@ namespace AreaBulldozer.Tools
 {
     public partial class AreaBulldozerToolSystem
     {
-
-        // Vorschau
         private void UpdateSelectionPreviewIfNeeded()
         {
             if (!HasValidPosition ||
@@ -21,8 +19,31 @@ namespace AreaBulldozer.Tools
                 FilterSnapshot.FromSettings(
                     Mod.Settings);
 
-            bool useSquareBrush =
-                Mod.Settings.UseSquareBrush;
+            AreaBulldozerSelectionShape selectionShape =
+                CurrentSelectionShape;
+
+            bool polylineHasNoStart =
+                selectionShape ==
+                    AreaBulldozerSelectionShape.Polyline &&
+                !HasPolylineStart;
+
+            if (polylineHasNoStart)
+            {
+                // The multi-point line
+                ClearSelectionPreview(
+                    resetPreviewState: false);
+
+                m_LastPreviewSelectionShape =
+                    selectionShape;
+
+                m_LastPreviewLineWidth =
+                    CurrentLineWidth;
+
+                m_LastPreviewPosition =
+                    CurrentPosition;
+
+                return;
+            }
 
             if (!filters.HasAnyPrimaryFilter)
             {
@@ -52,11 +73,17 @@ namespace AreaBulldozer.Tools
                     radius -
                     m_LastPreviewRadius) > 0.01f;
 
+            bool lineWidthChanged =
+                CurrentLineWidth !=
+                m_LastPreviewLineWidth;
+
+            bool shapeChanged =
+                selectionShape !=
+                m_LastPreviewSelectionShape;
+
             bool filtersChanged =
-                useSquareBrush !=
-                    m_LastUseSquareBrush ||
                 filters !=
-                    m_LastFilterSnapshot;
+                m_LastFilterSnapshot;
 
             float2 currentPosition =
                 new float2(
@@ -81,6 +108,8 @@ namespace AreaBulldozer.Tools
             if (!movedEnough &&
                 !radiusChanged &&
                 !rotationChanged &&
+                !lineWidthChanged &&
+                !shapeChanged &&
                 !filtersChanged)
             {
                 return;
@@ -88,6 +117,8 @@ namespace AreaBulldozer.Tools
 
             if (!radiusChanged &&
                 !rotationChanged &&
+                !lineWidthChanged &&
+                !shapeChanged &&
                 !filtersChanged &&
                 currentTime <
                     m_NextPreviewUpdateTime)
@@ -95,7 +126,12 @@ namespace AreaBulldozer.Tools
                 return;
             }
 
-            CancelLargeSelectionConfirmation();
+            if (m_LargeSelectionConfirmationPending &&
+                !UsePolylineBrush)
+            {
+                // Circle, square and triangle confirmations
+                CancelLargeSelectionConfirmation();
+            }
 
             UpdateSelectionPreview(
                 in filters);
@@ -106,11 +142,14 @@ namespace AreaBulldozer.Tools
             m_LastPreviewRadius =
                 radius;
 
-            m_LastUseSquareBrush =
-                useSquareBrush;
+            m_LastPreviewSelectionShape =
+                selectionShape;
 
             m_LastPreviewSquareRotationRadians =
                 SquareRotationRadians;
+
+            m_LastPreviewLineWidth =
+                CurrentLineWidth;
 
             m_LastFilterSnapshot =
                 filters;
@@ -135,9 +174,7 @@ namespace AreaBulldozer.Tools
                 CurrentRadius;
 
             float2 selectionCenter =
-                new float2(
-                    CurrentPosition.x,
-                    CurrentPosition.z);
+                CurrentSelectionCenter;
 
             List<SpatialCandidate> candidates =
                 GetSpatialCandidates(

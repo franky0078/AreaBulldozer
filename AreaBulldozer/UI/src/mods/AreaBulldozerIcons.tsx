@@ -1,9 +1,10 @@
 import React from "react";
 
-
 export type AreaBulldozerIconType =
     | "circle"
     | "square"
+    | "triangle"
+    | "polyline"
     | "vegetation"
     | "building"
     | "road"
@@ -45,6 +46,26 @@ export function AreaBulldozerIcon({ type }: { type: AreaBulldozerIconType }) {
             return (
                 <svg {...common}>
                     <rect x="6" y="6" width="20" height="20" rx="2" />
+                </svg>
+            );
+
+        case "triangle":
+            return (
+                <svg {...common}>
+                    <path d="M16 4 28 26H4L16 4Z" />
+                </svg>
+            );
+
+
+        case "polyline":
+            return (
+                <svg {...common}>
+                    <path d="M5 25 11 18 17 21 22 10 27 7" />
+                    <circle cx="5" cy="25" r="1.8" />
+                    <circle cx="11" cy="18" r="1.8" />
+                    <circle cx="17" cy="21" r="1.8" />
+                    <circle cx="22" cy="10" r="1.8" />
+                    <circle cx="27" cy="7" r="1.8" />
                 </svg>
             );
 

@@ -2,7 +2,6 @@ namespace AreaBulldozer.Tools
 {
     public partial class AreaBulldozerToolSystem
     {
-
         private bool m_ContinuousDeleteLogPending;
         private int m_ContinuousDeleteBatchCount;
         private int m_ContinuousDeleteTotalObjects;
@@ -36,6 +35,12 @@ namespace AreaBulldozer.Tools
             int edgesUpdated,
             int protectedIgnored)
         {
+
+            if (!Mod.DiagnosticLoggingEnabled)
+            {
+                return;
+            }
+
             m_ContinuousDeleteLogPending = true;
             m_ContinuousDeleteBatchCount++;
 
@@ -57,6 +62,12 @@ namespace AreaBulldozer.Tools
 
         private void FlushContinuousDeleteLog()
         {
+            if (!Mod.DiagnosticLoggingEnabled)
+            {
+                ResetContinuousDeleteLog();
+                return;
+            }
+
             if (!m_ContinuousDeleteLogPending)
             {
                 return;
@@ -73,17 +84,12 @@ namespace AreaBulldozer.Tools
                 $"railway tracks: {m_ContinuousDeleteRailways}, " +
                 $"surfaces and spaces: {m_ContinuousDeleteSurfaces}, " +
                 $"static objects: {m_ContinuousDeleteStaticObjects}, " +
-                $"spawn locations: " +
-                $"{m_ContinuousDeleteSpawnLocations}, " +
+                $"spawn locations: {m_ContinuousDeleteSpawnLocations}, " +
                 $"asset lanes: {m_ContinuousDeleteMarkerNetworks}, " +
-                $"network endpoint nodes deleted: " +
-                $"{m_ContinuousDeleteNodesDeleted}, " +
-                $"network nodes updated: " +
-                $"{m_ContinuousDeleteNodesUpdated}, " +
-                $"connected network edges updated: " +
-                $"{m_ContinuousDeleteEdgesUpdated}, " +
-                $"protected sub-objects ignored: " +
-                $"{m_ContinuousDeleteProtectedIgnored}.");
+                $"network endpoint nodes deleted: {m_ContinuousDeleteNodesDeleted}, " +
+                $"network nodes updated: {m_ContinuousDeleteNodesUpdated}, " +
+                $"connected network edges updated: {m_ContinuousDeleteEdgesUpdated}, " +
+                $"protected sub-objects ignored: {m_ContinuousDeleteProtectedIgnored}.");
 
             ResetContinuousDeleteLog();
         }

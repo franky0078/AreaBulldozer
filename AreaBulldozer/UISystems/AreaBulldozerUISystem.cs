@@ -31,7 +31,7 @@ namespace AreaBulldozer.UISystems
             RegisterValueBindings();
             RegisterTriggerBindings();
 
-            Mod.Log.Info(
+            Mod.LogDiagnosticInfo(
                 "Area Bulldozer UI bindings initialized.");
         }
 
@@ -102,7 +102,25 @@ namespace AreaBulldozer.UISystems
                 new GetterValueBinding<bool>(
                     group,
                     AreaBulldozerUIBindingConstants.UseSquareBrush,
-                    () => Mod.Settings?.UseSquareBrush ?? false));
+                    () => m_Tool?.UseSquareBrush ??
+                          (Mod.Settings?.UseSquareBrush ?? false)));
+
+            AddUpdateBinding(
+                new GetterValueBinding<int>(
+                    group,
+                    AreaBulldozerUIBindingConstants.SelectionShape,
+                    () => (int)(
+                        m_Tool?.CurrentSelectionShape ??
+                        AreaBulldozerSelectionShape.Circle)));
+
+            AddUpdateBinding(
+                new GetterValueBinding<int>(
+                    group,
+                    AreaBulldozerUIBindingConstants.LineWidth,
+                    () => math.clamp(
+                        Mod.Settings?.LineWidth ?? 10,
+                        2,
+                        100)));
 
             AddUpdateBinding(
                 new GetterValueBinding<float>(
@@ -255,16 +273,45 @@ namespace AreaBulldozer.UISystems
                 new TriggerBinding<int>(
                     group,
                     AreaBulldozerUIBindingConstants.SetBrushRadius,
-                    value => ChangeSetting(
-                        setting => setting.BrushRadius =
-                            math.clamp(value, 5, 200))));
+                    value =>
+                    {
+                        ChangeSetting(
+                            setting => setting.BrushRadius =
+                                math.clamp(value, 5, 200));
 
+                        m_Tool?.InvalidateSelectionGeometry();
+                    }));
+
+            // Compatibility trigger used by older UI builds.
             AddBinding(
                 new TriggerBinding<bool>(
                     group,
                     AreaBulldozerUIBindingConstants.SetUseSquareBrush,
-                    value => ChangeSetting(
-                        setting => setting.UseSquareBrush = value)));
+                    value => SetSelectionShape(
+                        value
+                            ? AreaBulldozerSelectionShape.Square
+                            : AreaBulldozerSelectionShape.Circle)));
+
+            AddBinding(
+                new TriggerBinding<int>(
+                    group,
+                    AreaBulldozerUIBindingConstants.SetSelectionShape,
+                    value => SetSelectionShape(
+                        (AreaBulldozerSelectionShape)
+                        math.clamp(value, 0, 4))));
+
+            AddBinding(
+                new TriggerBinding<int>(
+                    group,
+                    AreaBulldozerUIBindingConstants.SetLineWidth,
+                    value =>
+                    {
+                        ChangeSetting(
+                            setting => setting.LineWidth =
+                                math.clamp(value, 2, 100));
+
+                        m_Tool?.InvalidateSelectionGeometry();
+                    }));
 
             AddBinding(
                 new TriggerBinding<float>(
@@ -363,6 +410,37 @@ namespace AreaBulldozer.UISystems
                     value => ChangeSetting(
                         setting => setting.LargeSelectionThreshold =
                             math.clamp(value, 50, 2000))));
+        }
+
+        private void SetSelectionShape(
+            AreaBulldozerSelectionShape shape)
+        {
+            // Older settings may still contain the former line value 3.
+            // Redirect it to the multi-point line.
+            if (shape == AreaBulldozerSelectionShape.LegacyLine)
+            {
+                shape = AreaBulldozerSelectionShape.Polyline;
+            }
+
+            if (shape != AreaBulldozerSelectionShape.Circle &&
+                shape != AreaBulldozerSelectionShape.Square &&
+                shape != AreaBulldozerSelectionShape.Triangle &&
+                shape != AreaBulldozerSelectionShape.Polyline)
+            {
+                shape = AreaBulldozerSelectionShape.Circle;
+            }
+
+            AreaBulldozerSelectionShape normalizedShape = shape;
+
+            ChangeSetting(
+                setting =>
+                {
+                    setting.SelectionShape = normalizedShape;
+                    setting.UseSquareBrush =
+                        normalizedShape == AreaBulldozerSelectionShape.Square;
+                });
+
+            m_Tool?.NotifySelectionShapeChanged();
         }
 
         private void AddBooleanValueBinding(

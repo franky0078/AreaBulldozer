@@ -15,7 +15,6 @@ namespace AreaBulldozer.Tools
 {
     public partial class AreaBulldozerToolSystem
     {
-
         private readonly List<Entity> m_HighlightAddBuffer =
             new();
 
@@ -183,7 +182,6 @@ namespace AreaBulldozer.Tools
             m_NextHighlightedEntities.Clear();
         }
 
-
         private void ApplyHighlightComponentChanges(
             List<Entity> entitiesToHighlight,
             List<Entity> entitiesToUnhighlight)
@@ -333,8 +331,11 @@ namespace AreaBulldozer.Tools
             m_NextPreviewUpdateTime =
                 0f;
 
-            m_LastUseSquareBrush =
-                false;
+            m_LastPreviewSelectionShape =
+                (AreaBulldozerSelectionShape)(-1);
+
+            m_LastPreviewLineWidth =
+                -1;
 
             m_LastPreviewSquareRotationRadians =
                 -1000f;

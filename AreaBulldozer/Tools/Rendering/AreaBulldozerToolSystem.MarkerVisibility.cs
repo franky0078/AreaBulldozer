@@ -4,7 +4,6 @@ namespace AreaBulldozer.Tools
 {
     public partial class AreaBulldozerToolSystem
     {
-
         // Sichtbarkeit für unsichtbare Marker
         private RenderingSystem m_RenderingSystem;
 
@@ -22,7 +21,7 @@ namespace AreaBulldozer.Tools
 
             InitializeMarkerFocusOverlay();
 
-            Mod.Log.Info(
+            Mod.LogDiagnosticInfo(
                 "Marker visibility support initialized.");
         }
 
@@ -64,7 +63,7 @@ namespace AreaBulldozer.Tools
 
                 m_ControlsMarkerVisibility = true;
 
-                Mod.Log.Info(
+                Mod.LogDiagnosticInfo(
                     "Game marker view is now visible for " +
                     "activity-location, spawn-location, and " +
                     "asset-lane filters. " +
@@ -95,7 +94,7 @@ namespace AreaBulldozer.Tools
                     m_RecordedMarkersVisible;
             }
 
-            Mod.Log.Info(
+            Mod.LogDiagnosticInfo(
                 "Marker visibility restored to " +
                 $"{m_RecordedMarkersVisible}.");
 

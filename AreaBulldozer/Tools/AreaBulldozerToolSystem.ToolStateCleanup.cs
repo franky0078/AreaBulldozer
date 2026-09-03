@@ -6,7 +6,6 @@ namespace AreaBulldozer.Tools
 {
     public partial class AreaBulldozerToolSystem
     {
-  
         private ToolClearSystem m_ToolClearSystem;
         private EntityQuery m_PreExistingHighlightedQuery;
 
@@ -39,7 +38,7 @@ namespace AreaBulldozer.Tools
                         }
                     });
 
-            Mod.Log.Info(
+            Mod.LogDiagnosticInfo(
                 "Previous tool selection cleanup initialized.");
         }
 
@@ -72,7 +71,7 @@ namespace AreaBulldozer.Tools
 
             if (highlightedCount > 0)
             {
-                Mod.Log.Info(
+                Mod.LogDiagnosticInfo(
                     $"Cleared {highlightedCount} highlight(s) " +
                     $"from the previously active tool.");
             }

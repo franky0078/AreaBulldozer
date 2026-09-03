@@ -7,6 +7,8 @@ export const BindingKeys = {
     setPointerOverUI: "setPointerOverUI",
     setBrushRadius: "setBrushRadius",
     setUseSquareBrush: "setUseSquareBrush",
+    setSelectionShape: "setSelectionShape",
+    setLineWidth: "setLineWidth",
     setSquareRotationDegrees: "setSquareRotationDegrees",
     setLauncherPositionX: "setLauncherPositionX",
     setLauncherPositionY: "setLauncherPositionY",
@@ -45,10 +47,24 @@ export const isToolActive$ = bindValue<boolean>(
 
 export const brushRadius$ = bindValue<number>(mod.id, "brushRadius", 30);
 
+// Legacy binding retained for compatibility with existing launcher/UI code.
 export const useSquareBrush$ = bindValue<boolean>(
     mod.id,
     "useSquareBrush",
     false
+);
+
+// 0 = circle, 1 = square, 2 = equilateral triangle, 3 = legacy line (mapped to 4), 4 = multi-point line
+export const selectionShape$ = bindValue<number>(
+    mod.id,
+    "selectionShape",
+    0
+);
+
+export const lineWidth$ = bindValue<number>(
+    mod.id,
+    "lineWidth",
+    10
 );
 
 export const squareRotationDegrees$ = bindValue<number>(
@@ -69,7 +85,7 @@ export const launcherMode$ = bindValue<number>(
     0
 );
 
-// Legacy-Binding für die bereits vorhandenen Launcher-Komponenten.
+// Legacy binding for already existing launcher components.
 export const useUniversalModMenu$ = bindValue<boolean>(
     mod.id,
     "useUniversalModMenu",

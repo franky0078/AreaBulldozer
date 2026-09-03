@@ -4,20 +4,16 @@ namespace AreaBulldozer.Tools
 {
     public partial class AreaBulldozerToolSystem
     {
-
-
         private static void SafeLogInfo(
             string message)
         {
-            try
-            {
-                Mod.Log?.Info(message);
-            }
-            catch (Exception)
-            {
-                // Framework-internes Logging-Problem. (nichts tun)
 
+            if (!Mod.DiagnosticLoggingEnabled)
+            {
+                return;
             }
+
+            Mod.LogDiagnosticInfo(message);
         }
 
         private static void SafeLogWarn(
@@ -25,11 +21,12 @@ namespace AreaBulldozer.Tools
         {
             try
             {
+                // Warnings are never hidden by the diagnostic switch.
                 Mod.Log?.Warn(message);
             }
             catch (Exception)
             {
-                // Siehe SafeLogInfo.
+                // Logging must never affect gameplay.
             }
         }
 
@@ -38,11 +35,12 @@ namespace AreaBulldozer.Tools
         {
             try
             {
+                // Errors are never hidden by the diagnostic switch.
                 Mod.Log?.Error(message);
             }
             catch (Exception)
             {
-                // Siehe SafeLogInfo.
+                // Logging must never affect gameplay.
             }
         }
     }

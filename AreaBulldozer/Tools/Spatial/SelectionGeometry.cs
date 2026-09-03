@@ -3,14 +3,11 @@ using Unity.Mathematics;
 
 namespace AreaBulldozer.Tools
 {
-    /// <summary>
-    /// Reine Geometrie der Auswahlprüfung: Punkt/Segment gegen Kreis
-    /// und rotiertes Quadrat, Punkt-in-Polygon. Alle Methoden sind
-    /// statisch und zustandsfrei und damit unabhängig vom Werkzeug
-    /// (und ohne Spiel-Laufzeit) testbar.
-    /// </summary>
+
     internal static class SelectionGeometry
     {
+        private const float kEpsilon = 0.0001f;
+
         public static float2 RotateLocalToWorld(
             float2 localOffset,
             float rotationRadians)
@@ -128,7 +125,7 @@ namespace AreaBulldozer.Tools
             ref float maximumInterpolation)
         {
             if (math.abs(direction) <
-                0.0001f)
+                kEpsilon)
             {
                 return
                     start >= minimum &&
@@ -180,28 +177,304 @@ namespace AreaBulldozer.Tools
             float2 circleCenter,
             float radiusSquared)
         {
+            return DistancePointToSegmentSquared(
+                       circleCenter,
+                       start,
+                       end) <=
+                   radiusSquared;
+        }
+
+        public static void GetEquilateralTriangleCorners(
+            float2 center,
+            float cornerRadius,
+            float rotationRadians,
+            out float2 cornerA,
+            out float2 cornerB,
+            out float2 cornerC)
+        {
+            float safeRadius =
+                math.max(0.01f, cornerRadius);
+
+            const float sqrtThreeOverTwo =
+                0.8660254037844386f;
+
+            float2 localA =
+                new(0f, safeRadius);
+
+            float2 localB =
+                new(
+                    -sqrtThreeOverTwo * safeRadius,
+                    -0.5f * safeRadius);
+
+            float2 localC =
+                new(
+                    sqrtThreeOverTwo * safeRadius,
+                    -0.5f * safeRadius);
+
+            cornerA =
+                center +
+                RotateLocalToWorld(
+                    localA,
+                    rotationRadians);
+
+            cornerB =
+                center +
+                RotateLocalToWorld(
+                    localB,
+                    rotationRadians);
+
+            cornerC =
+                center +
+                RotateLocalToWorld(
+                    localC,
+                    rotationRadians);
+        }
+
+        public static bool IsPointInsideTriangle(
+            float2 point,
+            float2 a,
+            float2 b,
+            float2 c)
+        {
+            float d1 =
+                Cross(
+                    b - a,
+                    point - a);
+
+            float d2 =
+                Cross(
+                    c - b,
+                    point - b);
+
+            float d3 =
+                Cross(
+                    a - c,
+                    point - c);
+
+            bool hasNegative =
+                d1 < -kEpsilon ||
+                d2 < -kEpsilon ||
+                d3 < -kEpsilon;
+
+            bool hasPositive =
+                d1 > kEpsilon ||
+                d2 > kEpsilon ||
+                d3 > kEpsilon;
+
+            return !(hasNegative && hasPositive);
+        }
+
+        public static bool IsSegmentInsideTriangle(
+            float2 start,
+            float2 end,
+            float2 a,
+            float2 b,
+            float2 c)
+        {
+            if (IsPointInsideTriangle(start, a, b, c) ||
+                IsPointInsideTriangle(end, a, b, c))
+            {
+                return true;
+            }
+
+            return
+                SegmentsIntersect(start, end, a, b) ||
+                SegmentsIntersect(start, end, b, c) ||
+                SegmentsIntersect(start, end, c, a);
+        }
+
+        public static bool IsPointInsideLineCorridor(
+            float2 point,
+            float2 lineStart,
+            float2 lineEnd,
+            float halfWidth)
+        {
+            float safeHalfWidth =
+                math.max(0.01f, halfWidth);
+
+            return DistancePointToSegmentSquared(
+                       point,
+                       lineStart,
+                       lineEnd) <=
+                   safeHalfWidth * safeHalfWidth;
+        }
+
+        public static bool IsSegmentInsideLineCorridor(
+            float2 segmentStart,
+            float2 segmentEnd,
+            float2 lineStart,
+            float2 lineEnd,
+            float halfWidth)
+        {
+            float safeHalfWidth =
+                math.max(0.01f, halfWidth);
+
+            return DistanceSegmentToSegmentSquared(
+                       segmentStart,
+                       segmentEnd,
+                       lineStart,
+                       lineEnd) <=
+                   safeHalfWidth * safeHalfWidth;
+        }
+
+        public static float DistancePointToSegmentSquared(
+            float2 point,
+            float2 segmentStart,
+            float2 segmentEnd)
+        {
             float2 segment =
-                end - start;
+                segmentEnd - segmentStart;
 
             float segmentLengthSquared =
                 math.lengthsq(segment);
 
             float interpolation =
-                segmentLengthSquared > 0.0001f
+                segmentLengthSquared > kEpsilon
                     ? math.saturate(
                         math.dot(
-                            circleCenter - start,
+                            point - segmentStart,
                             segment) /
                         segmentLengthSquared)
                     : 0f;
 
             float2 nearestPoint =
-                start +
+                segmentStart +
                 segment * interpolation;
 
             return math.distancesq(
-                nearestPoint,
-                circleCenter) <= radiusSquared;
+                point,
+                nearestPoint);
+        }
+
+        public static float DistanceSegmentToSegmentSquared(
+            float2 firstStart,
+            float2 firstEnd,
+            float2 secondStart,
+            float2 secondEnd)
+        {
+            if (SegmentsIntersect(
+                    firstStart,
+                    firstEnd,
+                    secondStart,
+                    secondEnd))
+            {
+                return 0f;
+            }
+
+            float distance0 =
+                DistancePointToSegmentSquared(
+                    firstStart,
+                    secondStart,
+                    secondEnd);
+
+            float distance1 =
+                DistancePointToSegmentSquared(
+                    firstEnd,
+                    secondStart,
+                    secondEnd);
+
+            float distance2 =
+                DistancePointToSegmentSquared(
+                    secondStart,
+                    firstStart,
+                    firstEnd);
+
+            float distance3 =
+                DistancePointToSegmentSquared(
+                    secondEnd,
+                    firstStart,
+                    firstEnd);
+
+            return math.min(
+                math.min(distance0, distance1),
+                math.min(distance2, distance3));
+        }
+
+        public static bool SegmentsIntersect(
+            float2 a0,
+            float2 a1,
+            float2 b0,
+            float2 b1)
+        {
+            float o1 =
+                Cross(
+                    a1 - a0,
+                    b0 - a0);
+
+            float o2 =
+                Cross(
+                    a1 - a0,
+                    b1 - a0);
+
+            float o3 =
+                Cross(
+                    b1 - b0,
+                    a0 - b0);
+
+            float o4 =
+                Cross(
+                    b1 - b0,
+                    a1 - b0);
+
+            if (((o1 > kEpsilon && o2 < -kEpsilon) ||
+                 (o1 < -kEpsilon && o2 > kEpsilon)) &&
+                ((o3 > kEpsilon && o4 < -kEpsilon) ||
+                 (o3 < -kEpsilon && o4 > kEpsilon)))
+            {
+                return true;
+            }
+
+            if (math.abs(o1) <= kEpsilon &&
+                IsPointOnSegment(b0, a0, a1))
+            {
+                return true;
+            }
+
+            if (math.abs(o2) <= kEpsilon &&
+                IsPointOnSegment(b1, a0, a1))
+            {
+                return true;
+            }
+
+            if (math.abs(o3) <= kEpsilon &&
+                IsPointOnSegment(a0, b0, b1))
+            {
+                return true;
+            }
+
+            return math.abs(o4) <= kEpsilon &&
+                   IsPointOnSegment(a1, b0, b1);
+        }
+
+        private static bool IsPointOnSegment(
+            float2 point,
+            float2 segmentStart,
+            float2 segmentEnd)
+        {
+            float2 minimum =
+                math.min(
+                    segmentStart,
+                    segmentEnd) -
+                new float2(kEpsilon);
+
+            float2 maximum =
+                math.max(
+                    segmentStart,
+                    segmentEnd) +
+                new float2(kEpsilon);
+
+            return
+                math.all(point >= minimum) &&
+                math.all(point <= maximum);
+        }
+
+        private static float Cross(
+            float2 first,
+            float2 second)
+        {
+            return
+                first.x * second.y -
+                first.y * second.x;
         }
 
         public static float2 GetAreaNodePosition(
@@ -254,7 +527,7 @@ namespace AreaBulldozer.Tools
                     end.y - start.y;
 
                 if (math.abs(verticalDifference) <
-                    0.0001f)
+                    kEpsilon)
                 {
                     continue;
                 }

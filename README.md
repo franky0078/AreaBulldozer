@@ -1,78 +1,84 @@
 # Area Bulldozer
 
-Area Bulldozer is an area deletion tool for **Cities: Skylines II**. It allows multiple objects to be selected and removed at once using an adjustable circular or square selection area.
+Area Bulldozer is an area deletion tool for **Cities: Skylines II**.
+Instead of removing objects individually, you can select and delete multiple objects using circular, square, triangular or multi-point corridor selections. The tool includes configurable object filters, marker visualization and several safety options.
+
 
 ![Area Bulldozer thumbnail](AreaBulldozer/Properties/Thumbnail.jpg)
 
 
+
+## Selection shapes
+
+- Circle - adjustable radius around the cursor
+- Square - adjustable size and free rotation
+- Equilateral triangle - adjustable size and free rotation
+- Multi-point line - corridor selection using 2 to 15 points
+
+The multi-point line also replaces the former dedicated line mode: simply use two points for a straight corridor. Additional points allow angled or complex deletion paths.
+
 ## Features
 
-- Circular and square selection modes
-- Adjustable selection size
-- Adjustable rotation for the square selection
 - Live preview of the selected area
-- Individual filters for:
-  - Vegetation
-  - Buildings
-  - Roads
-  - Pedestrian paths
-  - Railway tracks
-  - Surfaces and areas
-  - Props and markers
-- Advanced prop and marker filters
-- Optional visualization of activity locations, spawn locations and asset lanes
-- Optional background darkening for improved marker visibility
-- Safety settings for sub-objects, owned objects and large selections
-- Compact and scalable in-game interface
-- Optional integration into the universal mod menu
-- Optional movable floating launcher button
+- Adjustable selection size and corridor width
+- Rotation for square and triangle selections
+- Multi-point corridors with up to 15 points
+- Compact in-game tool interface
+- Configurable interface scaling
+- Optional launcher button in the universal mod menu
+- Optional movable launcher button
 - Configurable keyboard shortcut
-- English and German localization
 
+## Object filters
 
-## Usage
+The following object categories can be enabled or disabled individually:
 
-1. Activate Area Bulldozer using the launcher button, the universal mod menu or the configured keyboard shortcut.
-2. Select the circular or square selection mode.
-3. Adjust the selection size.
-4. When using the square selection, adjust its rotation in the tool interface or by holding the right mouse button.
-5. Enable the object filters you want to use.
-6. Move the selection over the area you want to clear.
-7. Press the left mouse button to delete the selected objects.
+- Vegetation
+- Buildings
+- Roads
+- Pedestrian paths
+- Railway tracks
+- Surfaces and areas
+- Props and markers
 
-Check the enabled filters carefully before deleting objects from your city.
+Additional filters are available for:
 
+- General props
+- Streetlights
+- Trash containers and quantity objects
+- Advertising and branding objects
+- Activity locations
+- Spawn locations
+- Asset lanes and sublanes
 
-### Movable launcher button
+## Marker visibility
 
-When the floating launcher is enabled and movement is allowed in the mod options:
+Activity locations, spawn locations and other normally hidden markers can be highlighted while using the tool.
+An optional background-darkening effect can improve marker visibility. The darkening strength can be configured in the mod options.
 
-1. Hold **Ctrl**.
-2. Hold the **left mouse button** on the launcher.
-3. Move the launcher to the desired position.
-4. Release the left mouse button to save the position.
+## Safety options
 
-A normal left click only activates or deactivates the tool.
+Area Bulldozer includes additional safety settings for potentially sensitive objects:
 
-
-## Mod options
-
-Permanent settings are available under the Area Bulldozer section in the game options.
-
-
-### Safety
-
-- Include building sub-objects
-- Include network sub-objects
+- Include or exclude building sub-objects
+- Include or exclude network sub-objects
 - Protect objects assigned to another owner
-- Confirm large selections
-- Configure the large-selection threshold
+- Require confirmation for large selections
+- Configure the large-selection confirmation threshold
 
+Large selections are shown in yellow and require a second confirmation click when the configured threshold is reached.
 
-### Key bindings
+## How to use
 
-- Activate or deactivate Area Bulldozer
-- Reset the configured key binding
+1. Activate Area Bulldozer using the launcher button, the normal Bulldozer integration, the universal mod menu or the configured keyboard shortcut.
+2. Select Circle, Square, Triangle or Multi-point line.
+3. Adjust the selection size or corridor width.
+4. For Square and Triangle, rotate with the interface or by holding the right mouse button and moving the mouse horizontally.
+5. Enable the object filters you want to use.
+6. For Circle, Square and Triangle, hold or click the left mouse button to delete selected objects.
+7. For Multi-point line, left click to place points, double-click to finish and delete, right click to remove the last point, and press Esc to cancel the complete selection.
+
+The floating launcher button can optionally be moved by holding Ctrl and the left mouse button. Release the mouse button to save its new position.
 
 
 ## Credits and inspiration
@@ -105,10 +111,11 @@ When reporting a problem, include:
 
 ## Changes
 
-Version 1.3.6
+Version 1.4.3
 
-- recreated Startbutton (Standard Movablebutton, Universalbutton and Button in BulldozerTooltip)
-- added option to display the Startbutton only in the Bulldozer Tooltip 
+- Added an triangle selection shape with adjustable rotation.
+- Added a multi-point line/corridor selection with 2 to 15 control points.
+- Added optional diagnostic logging. Informational logging is disabled by default, while warnings and errors remain enabled.
 
 
 ## License

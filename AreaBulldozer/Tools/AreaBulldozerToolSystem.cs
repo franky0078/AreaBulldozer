@@ -1,4 +1,4 @@
-﻿using Game;
+using Game;
 using Game.Common;
 using Game.Objects;
 using Game.Prefabs;
@@ -18,15 +18,12 @@ namespace AreaBulldozer.Tools
         private const float kPreviewMoveThreshold = 1.5f;
         private const float kPreviewUpdateInterval = 0.075f;
 
-
         private const int kDefaultLargeSelectionThreshold = 250;
         private const float kLargeSelectionConfirmationTimeout = 5f;
         private const float kLargeSelectionMoveTolerance = 2f;
 
-
         private OverlayRenderSystem m_OverlayRenderSystem;
         private ToolOutputBarrier m_ToolOutputBarrier;
-
 
         private EntityQuery m_PlantQuery;
         private EntityQuery m_BuildingQuery;
@@ -37,34 +34,30 @@ namespace AreaBulldozer.Tools
         private EntityQuery m_SpawnLocationQuery;
         private EntityQuery m_SubLaneOwnerQuery;
 
-
         private InputAction m_ApplyAction;
         private bool m_IsPointerOverUI;
         private InputAction m_RotateSquareHoldAction;
         private InputAction m_RotateSquareDeltaAction;
 
-
         private HashSet<Entity> m_HighlightedEntities;
         private HashSet<Entity> m_NextHighlightedEntities;
         private HashSet<Entity> m_PendingDeletion;
 
-
         private float3 m_LastPreviewPosition;
         private float m_LastPreviewRadius;
         private float m_NextPreviewUpdateTime;
-        private bool m_LastUseSquareBrush;
+        private AreaBulldozerSelectionShape m_LastPreviewSelectionShape;
         private float m_LastPreviewSquareRotationRadians;
-
+        private int m_LastPreviewLineWidth;
 
         private FilterSnapshot m_LastFilterSnapshot;
 
         private bool m_LargeSelectionConfirmationPending;
         private float3 m_LargeSelectionConfirmationPosition;
         private float m_LargeSelectionConfirmationRadius;
-        private bool m_LargeSelectionConfirmationUseSquareBrush;
+        private AreaBulldozerSelectionShape m_LargeSelectionConfirmationShape;
         private float m_LargeSelectionConfirmationSquareRotationRadians;
         private float m_LargeSelectionConfirmationExpiresAt;
-
 
         private FilterSnapshot m_ConfirmationFilterSnapshot;
 
@@ -79,7 +72,6 @@ namespace AreaBulldozer.Tools
         private int m_ConfirmationSpawnLocationCount;
         private int m_ConfirmationMarkerNetworkCount;
         private int m_ConfirmationThreshold;
-
 
         private HashSet<Entity> m_ConfirmationEntities;
 
@@ -130,9 +122,64 @@ namespace AreaBulldozer.Tools
             }
         }
 
+        public int CurrentLineWidth =>
+            math.clamp(
+                Mod.Settings?.LineWidth ?? 10,
+                2,
+                100);
+
+        public float CurrentLineHalfWidth =>
+            CurrentLineWidth * 0.5f;
+
+        public AreaBulldozerSelectionShape CurrentSelectionShape
+        {
+            get
+            {
+                if (Mod.Settings == null)
+                {
+                    return AreaBulldozerSelectionShape.Circle;
+                }
+
+                AreaBulldozerSelectionShape shape =
+                    Mod.Settings.SelectionShape;
+
+                // Migration for settings saved before SelectionShape existed.
+                if (shape == AreaBulldozerSelectionShape.Circle &&
+                    Mod.Settings.UseSquareBrush)
+                {
+                    return AreaBulldozerSelectionShape.Square;
+                }
+
+                return shape switch
+                {
+                    AreaBulldozerSelectionShape.Circle => shape,
+                    AreaBulldozerSelectionShape.Square => shape,
+                    AreaBulldozerSelectionShape.Triangle => shape,
+                    AreaBulldozerSelectionShape.LegacyLine =>
+                        AreaBulldozerSelectionShape.Polyline,
+                    AreaBulldozerSelectionShape.Polyline => shape,
+                    _ => AreaBulldozerSelectionShape.Circle
+                };
+            }
+        }
+
         public bool UseSquareBrush =>
-            Mod.Settings != null &&
-            Mod.Settings.UseSquareBrush;
+            CurrentSelectionShape ==
+            AreaBulldozerSelectionShape.Square;
+
+        public bool UseTriangleBrush =>
+            CurrentSelectionShape ==
+            AreaBulldozerSelectionShape.Triangle;
+
+        public bool UseLineBrush => false;
+
+        public bool UsePolylineBrush =>
+            CurrentSelectionShape ==
+            AreaBulldozerSelectionShape.Polyline;
+
+        private bool IsRotatableSelection =>
+            UseSquareBrush ||
+            UseTriangleBrush;
 
         public float SquareRotationRadians
         {
@@ -143,16 +190,44 @@ namespace AreaBulldozer.Tools
         public float SquareRotationDegrees =>
             math.degrees(SquareRotationRadians);
 
+        private float2 CurrentSelectionCenter
+        {
+            get
+            {
+                if (UsePolylineBrush &&
+                    TryGetPolylineQueryCircle(
+                        out float2 polylineCenter,
+                        out float _))
+                {
+                    return polylineCenter;
+                }
+
+                return new float2(
+                    CurrentPosition.x,
+                    CurrentPosition.z);
+            }
+        }
+
         private float CurrentSpatialQueryRadius
         {
             get
             {
-                return UseSquareBrush
-                    ? CurrentRadius * 1.41421356237f
-                    : CurrentRadius;
+                if (UsePolylineBrush &&
+                    TryGetPolylineQueryCircle(
+                        out float2 _,
+                        out float polylineRadius))
+                {
+                    return polylineRadius;
+                }
+
+                if (UseSquareBrush)
+                {
+                    return CurrentRadius * 1.41421356237f;
+                }
+
+                return CurrentRadius;
             }
         }
-
 
         public int CurrentLargeSelectionThreshold
         {
@@ -367,6 +442,7 @@ namespace AreaBulldozer.Tools
             SquareRotationRadians = 0f;
 
             ResetPreviewState();
+            ResetPolylineSelection();
 
             CurrentPosition = float3.zero;
             HasValidPosition = false;
@@ -409,6 +485,9 @@ namespace AreaBulldozer.Tools
                 "Owned sub-object scope filters initialized.");
 
             TryLogInfo(
+                "Triangle and multi-point line selection support initialized.");
+
+            TryLogInfo(
                 $"Large selection confirmation initialized at " +
                 $"{CurrentLargeSelectionThreshold} objects.");
 
@@ -417,20 +496,9 @@ namespace AreaBulldozer.Tools
                 $"{kSpatialCellSize:0} m cells.");
         }
 
-
         private static void TryLogInfo(string message)
         {
-            try
-            {
-                if (Mod.Log != null)
-                {
-                    Mod.Log.Info(message);
-                }
-            }
-            catch
-            {
-                // Logging failed.
-            }
+            Mod.LogDiagnosticInfo(message);
         }
 
         protected override void OnDestroy()
@@ -441,6 +509,7 @@ namespace AreaBulldozer.Tools
             DisposeMarkerVisibility();
             DisposeToolStateCleanup();
 
+            ResetPolylineSelection();
             ClearSelectionPreview();
 
             if (m_ApplyAction != null)
@@ -483,7 +552,7 @@ namespace AreaBulldozer.Tools
                 Instance = null;
             }
 
-            Mod.Log.Info(
+            Mod.LogDiagnosticInfo(
                 $"{nameof(AreaBulldozerToolSystem)} destroyed.");
 
             base.OnDestroy();
@@ -499,6 +568,7 @@ namespace AreaBulldozer.Tools
             m_PendingDeletion ??=
                 new();
 
+            ResetPolylineSelection();
             ClearPreviousToolSelection();
             ResetPreviewState();
 
@@ -509,34 +579,47 @@ namespace AreaBulldozer.Tools
             m_RotateSquareHoldAction?.Enable();
             m_RotateSquareDeltaAction?.Enable();
 
-            Mod.Log.Info(
-                "Area Bulldozer tool activated.");
+            if (Mod.DiagnosticLoggingEnabled)
+            {
+                Mod.LogDiagnosticInfo(
+                    "Area Bulldozer tool activated.");
 
-            Mod.Log.Info(
-                $"Active selection - shape: {(UseSquareBrush ? "square" : "circle")}, " +
-                $"size: {CurrentRadius:0} m " +
-                $"{(UseSquareBrush ? "half-side" : "radius")}" +
-                $"{(UseSquareBrush ? $", rotation: {SquareRotationDegrees:0} degrees" : string.Empty)}. " +
-                $"Active filters - vegetation: {Mod.Settings?.DeleteTrees}, " +
-                $"buildings: {Mod.Settings?.DeleteBuildings}, " +
-                $"roads: {Mod.Settings?.DeleteRoads}, " +
-                $"pedestrian paths: {Mod.Settings?.DeletePaths}, " +
-                $"railway tracks: {Mod.Settings?.DeleteRailways}, " +
-                $"surfaces and spaces: {Mod.Settings?.DeleteSurfaces}, " +
-                $"static objects: {Mod.Settings?.DeleteStaticObjects}, " +
-                $"general props: {Mod.Settings?.DeleteGeneralProps}, " +
-                $"street lights: {Mod.Settings?.DeleteStreetLights}, " +
-                $"quantity objects: {Mod.Settings?.DeleteQuantityObjects}, " +
-                $"branding: {Mod.Settings?.DeleteBrandingObjects}, " +
-                $"activity locations: {Mod.Settings?.DeleteActivityLocations}, " +
-                $"spawn locations: {Mod.Settings?.DeleteSpawnLocations}, " +
-                $"asset lanes: {Mod.Settings?.DeleteMarkerNetworks}, " +
-                $"dim marker background: {Mod.Settings?.DimMarkerBackground}, " +
-                $"background darkness: {Mod.Settings?.MarkerBackgroundDarkness}%, " +
-                $"building sub-objects: {Mod.Settings?.DeleteBuildingSubObjects}, " +
-                $"network sub-objects: {Mod.Settings?.DeleteNetworkSubObjects}, " +
-                $"protect other owned: {Mod.Settings?.ProtectOwnedObjects}, " +
-                $"confirmation threshold: {CurrentLargeSelectionThreshold}.");
+                string shapeDescription =
+                    CurrentSelectionShape switch
+                    {
+                        AreaBulldozerSelectionShape.Square =>
+                            $"square, half-side: {CurrentRadius:0} m, rotation: {SquareRotationDegrees:0} degrees",
+                        AreaBulldozerSelectionShape.Triangle =>
+                            $"equilateral triangle, corner radius: {CurrentRadius:0} m, rotation: {SquareRotationDegrees:0} degrees",
+                        AreaBulldozerSelectionShape.Polyline =>
+                            $"multi-point line, width: {CurrentLineWidth} m, max points: {MaximumPolylinePoints}",
+                        _ =>
+                            $"circle, radius: {CurrentRadius:0} m"
+                    };
+
+                Mod.LogDiagnosticInfo(
+                    $"Active selection - {shapeDescription}. " +
+                    $"Active filters - vegetation: {Mod.Settings?.DeleteTrees}, " +
+                    $"buildings: {Mod.Settings?.DeleteBuildings}, " +
+                    $"roads: {Mod.Settings?.DeleteRoads}, " +
+                    $"pedestrian paths: {Mod.Settings?.DeletePaths}, " +
+                    $"railway tracks: {Mod.Settings?.DeleteRailways}, " +
+                    $"surfaces and spaces: {Mod.Settings?.DeleteSurfaces}, " +
+                    $"static objects: {Mod.Settings?.DeleteStaticObjects}, " +
+                    $"general props: {Mod.Settings?.DeleteGeneralProps}, " +
+                    $"street lights: {Mod.Settings?.DeleteStreetLights}, " +
+                    $"quantity objects: {Mod.Settings?.DeleteQuantityObjects}, " +
+                    $"branding: {Mod.Settings?.DeleteBrandingObjects}, " +
+                    $"activity locations: {Mod.Settings?.DeleteActivityLocations}, " +
+                    $"spawn locations: {Mod.Settings?.DeleteSpawnLocations}, " +
+                    $"asset lanes: {Mod.Settings?.DeleteMarkerNetworks}, " +
+                    $"dim marker background: {Mod.Settings?.DimMarkerBackground}, " +
+                    $"background darkness: {Mod.Settings?.MarkerBackgroundDarkness}%, " +
+                    $"building sub-objects: {Mod.Settings?.DeleteBuildingSubObjects}, " +
+                    $"network sub-objects: {Mod.Settings?.DeleteNetworkSubObjects}, " +
+                    $"protect other owned: {Mod.Settings?.ProtectOwnedObjects}, " +
+                    $"confirmation threshold: {CurrentLargeSelectionThreshold}.");
+            }
         }
 
         protected override void OnStopRunning()
@@ -548,6 +631,7 @@ namespace AreaBulldozer.Tools
             RestoreMarkerVisibility();
 
             CancelLargeSelectionConfirmation();
+            ResetPolylineSelection();
 
             FlushContinuousDeleteLog();
             m_ContinuousDeleteActive = false;
@@ -600,6 +684,7 @@ namespace AreaBulldozer.Tools
             }
 
             CancelLargeSelectionConfirmation();
+            ResetPolylineSelection();
 
             ClearSelectionPreview();
 
@@ -619,6 +704,23 @@ namespace AreaBulldozer.Tools
             {
                 CancelLargeSelectionConfirmation();
             }
+        }
+
+        public void NotifySelectionShapeChanged()
+        {
+            ResetContinuousDeleteState();
+            ResetPolylineSelection();
+            CancelLargeSelectionConfirmation();
+            ClearSelectionPreview();
+            m_NextPreviewUpdateTime = 0f;
+        }
+
+        public void InvalidateSelectionGeometry()
+        {
+            CancelLargeSelectionConfirmation();
+            m_LastPreviewRadius = -1f;
+            m_LastPreviewLineWidth = -1;
+            m_NextPreviewUpdateTime = 0f;
         }
 
         public override void InitializeRaycast()
@@ -647,7 +749,7 @@ namespace AreaBulldozer.Tools
         private void UpdateSquareRotationInput()
         {
             if (m_IsPointerOverUI ||
-                !UseSquareBrush ||
+                !IsRotatableSelection ||
                 m_RotateSquareHoldAction == null ||
                 m_RotateSquareDeltaAction == null ||
                 m_RotateSquareHoldAction.ReadValue<float>() < 0.5f)
@@ -682,7 +784,7 @@ namespace AreaBulldozer.Tools
             {
                 CancelLargeSelectionConfirmation(
                     logReason:
-                    "Large selection confirmation cancelled because the square rotated.");
+                    "Large selection confirmation cancelled because the selection rotated.");
             }
         }
 

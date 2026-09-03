@@ -1,4 +1,4 @@
-﻿using Colossal.IO.AssetDatabase;
+using Colossal.IO.AssetDatabase;
 using Game.Input;
 using Game.Modding;
 using Game.Settings;
@@ -10,6 +10,16 @@ namespace AreaBulldozer
         Standalone = 0,
         VanillaBulldozer = 1,
         UniversalModMenu = 2
+    }
+
+    public enum AreaBulldozerSelectionShape
+    {
+        Circle = 0,
+        Square = 1,
+        Triangle = 2,
+        LegacyLine = 3,
+
+        Polyline = 4
     }
 
     [FileLocation(nameof(AreaBulldozer))]
@@ -75,7 +85,6 @@ namespace AreaBulldozer
         [SettingsUIHidden]
         public bool DeleteStaticObjects { get; set; }
 
-
         [SettingsUIHidden]
         public bool DeleteGeneralProps { get; set; }
 
@@ -118,10 +127,16 @@ namespace AreaBulldozer
 
 
         [SettingsUIHidden]
+        public AreaBulldozerSelectionShape SelectionShape { get; set; }
+
+        [SettingsUIHidden]
         public bool UseSquareBrush { get; set; }
 
         [SettingsUIHidden]
         public int BrushRadius { get; set; }
+
+        [SettingsUIHidden]
+        public int LineWidth { get; set; }
 
         [SettingsUISlider(
             min = 25,
@@ -148,12 +163,12 @@ namespace AreaBulldozer
             {
                 m_LauncherMode = value;
 
-                // Kompatibilität mit der alten Einstellung:
+                // Compatibility with the former boolean option.
                 UseUniversalModMenu = false;
             }
         }
 
-        // Alte Einstellung aus bisherigen Versionen.
+        // Old setting from previous versions.
         [SettingsUIHidden]
         public bool UseUniversalModMenu { get; set; }
 
@@ -174,7 +189,7 @@ namespace AreaBulldozer
                 LauncherPositionX = 54;
                 LauncherPositionY = 8;
 
-                Mod.Log.Info(
+                Mod.LogDiagnosticInfo(
                     "Resetting Area Bulldozer launcher position.");
             }
         }
@@ -201,12 +216,15 @@ namespace AreaBulldozer
         {
             set
             {
-                Mod.Log.Info(
+                Mod.LogDiagnosticInfo(
                     "Resetting Area Bulldozer key bindings.");
 
                 ResetKeyBindings();
             }
         }
+
+        [SettingsUISection(kSection, kAboutGroup)]
+        public bool EnableDiagnosticLogging { get; set; }
 
         [SettingsUISection(kSection, kAboutGroup)]
         public string Version => Mod.ModVersion;
@@ -237,8 +255,10 @@ namespace AreaBulldozer
             DeleteNetworkSubObjects = false;
             ProtectOwnedObjects = true;
 
+            SelectionShape = AreaBulldozerSelectionShape.Circle;
             UseSquareBrush = false;
             BrushRadius = 30;
+            LineWidth = 10;
 
             SelectionLineThickness = 65;
 
@@ -253,6 +273,8 @@ namespace AreaBulldozer
 
             ConfirmLargeSelection = true;
             LargeSelectionThreshold = 250;
+
+            EnableDiagnosticLogging = false;
         }
     }
 }

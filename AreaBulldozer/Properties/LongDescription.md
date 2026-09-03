@@ -1,13 +1,22 @@
 Area Bulldozer adds a flexible area deletion tool to Cities: Skylines II.
 
-Instead of removing objects individually, you can select and delete multiple objects inside an adjustable circular or square area. The tool includes configurable object filters, marker visualization and several safety options.
+Instead of removing objects individually, you can select and delete multiple objects using circular, square, triangular or multi-point corridor selections. The tool includes configurable object filters, marker visualization and several safety options.
+
+## Selection shapes
+
+- Circle - adjustable radius around the cursor
+- Square - adjustable size and free rotation
+- Equilateral triangle - adjustable size and free rotation
+- Multi-point line - corridor selection using 2 to 15 points
+
+The multi-point line also replaces the former dedicated line mode: simply use two points for a straight corridor. Additional points allow angled or complex deletion paths.
 
 ## Features
 
-- Circular and square selection modes
-- Adjustable selection size
-- Adjustable rotation for the square selection
 - Live preview of the selected area
+- Adjustable selection size and corridor width
+- Rotation for square and triangle selections
+- Multi-point corridors with up to 15 points
 - Compact in-game tool interface
 - Configurable interface scaling
 - Optional launcher button in the universal mod menu
@@ -36,25 +45,34 @@ Additional filters are available for:
 - Spawn locations
 - Asset lanes and sublanes
 
-
 ## Marker visibility
 
 Activity locations, spawn locations and other normally hidden markers can be highlighted while using the tool.
 An optional background-darkening effect can improve marker visibility. The darkening strength can be configured in the mod options.
 
+## Safety options
+
+Area Bulldozer includes additional safety settings for potentially sensitive objects:
+
+- Include or exclude building sub-objects
+- Include or exclude network sub-objects
+- Protect objects assigned to another owner
+- Require confirmation for large selections
+- Configure the large-selection confirmation threshold
+
+Large selections are shown in yellow and require a second confirmation click when the configured threshold is reached.
 
 ## How to use
 
-1. Activate Area Bulldozer using the launcher button, the universal mod menu or the configured keyboard shortcut.
-2. Select the circular or square selection mode.
-3. Adjust the selection size.
-4. When using the square selection, adjust its rotation with the interface or by holding the right mouse button.
+1. Activate Area Bulldozer using the launcher button, the normal Bulldozer integration, the universal mod menu or the configured keyboard shortcut.
+2. Select Circle, Square, Triangle or Multi-point line.
+3. Adjust the selection size or corridor width.
+4. For Square and Triangle, rotate with the interface or by holding the right mouse button and moving the mouse horizontally.
 5. Enable the object filters you want to use.
-6. Move the selection over the area you want to clear.
-7. Press the left mouse button to delete the selected objects.
+6. For Circle, Square and Triangle, hold or click the left mouse button to delete selected objects.
+7. For Multi-point line, left click to place points, double-click to finish and delete, right click to remove the last point, and press Esc to cancel the complete selection.
 
 The floating launcher button can optionally be moved by holding Ctrl and the left mouse button. Release the mouse button to save its new position.
-
 
 
 ## Credits and inspiration
@@ -68,12 +86,10 @@ Special thanks to both developers for their work and their contributions to the 
 
 Area Bulldozer is an independent implementation and is not officially affiliated with these mods or their developers.
 
-
 ## Transparency note
 
 - Some parts of the code are built with AI assistance.
 - Some parts of the UI elements were built entirely with AI assistance, and I also rely on AI for debugging and troubleshooting.
-		
 
 ## Feedback and bug reports
 
@@ -82,3 +98,4 @@ When reporting a problem, please include:
 - A detailed description of what happened
 - The selected object filters
 - The selected safety settings
+- Diagnostic log output when available

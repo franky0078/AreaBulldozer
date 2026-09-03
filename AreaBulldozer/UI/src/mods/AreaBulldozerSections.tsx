@@ -26,16 +26,26 @@ import {
     deleteTrees$,
     dimMarkerBackground$,
     isToolActive$,
+    lineWidth$,
+    selectionShape$,
     squareRotationDegrees$,
     uiScale$,
-    useSquareBrush$,
 } from "../bindings";
 
 const UI_PREFIX = "AreaBulldozer.UI.";
 
+const SHAPE_CIRCLE = 0;
+const SHAPE_SQUARE = 1;
+const SHAPE_TRIANGLE = 2;
+const SHAPE_POLYLINE = 4;
+
 const RADIUS_MIN = 5;
 const RADIUS_MAX = 200;
 const RADIUS_STEP = 5;
+
+const LINE_WIDTH_MIN = 2;
+const LINE_WIDTH_MAX = 100;
+const LINE_WIDTH_STEP = 2;
 
 const ROTATION_STEP = 15;
 
@@ -50,15 +60,10 @@ function clamp(value: number, min: number, max: number) {
     return Math.min(max, Math.max(min, value));
 }
 
-/* -------------------------------------------------------------------------
- * Bausteine
- * ---------------------------------------------------------------------- */
-
 interface IconToolButtonProps {
     icon: AreaBulldozerIconType;
     selected?: boolean;
     disabled?: boolean;
-    //  Props-/Marker-Detailfilter Farbe.
     marker?: boolean;
     tooltipTitle: string;
     tooltipText?: string;
@@ -79,7 +84,6 @@ function IconToolButton({
     const tooltipTheme = resolver.descriptionTooltipTheme;
     const Tooltip = resolver.Tooltip;
     const scale = React.useContext(ScaleContext);
-
 
     const buttonStyle: React.CSSProperties = {
         width: `${(BASE_BUTTON * scale).toFixed(1)}rem`,
@@ -196,10 +200,6 @@ function Stepper({
     );
 }
 
-/* -------------------------------------------------------------------------
- * Hauptkomponente
- * ---------------------------------------------------------------------- */
-
 export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
     return (props: any) => {
         const resolver = VanillaComponentResolver.instance;
@@ -215,10 +215,15 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
             brushRadius$,
             30
         );
-        const useSquareBrush = useSafeValue(
-            "useSquareBrush$",
-            useSquareBrush$,
-            false
+        const selectionShape = useSafeValue(
+            "selectionShape$",
+            selectionShape$,
+            SHAPE_CIRCLE
+        );
+        const lineWidth = useSafeValue(
+            "lineWidth$",
+            lineWidth$,
+            10
         );
         const squareRotationDegrees = useSafeValue(
             "squareRotationDegrees$",
@@ -360,54 +365,110 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
                 clamp(next, RADIUS_MIN, RADIUS_MAX)
             );
 
+        const setLineWidth = (next: number) =>
+            trigger(
+                mod.id,
+                BindingKeys.setLineWidth,
+                clamp(next, LINE_WIDTH_MIN, LINE_WIDTH_MAX)
+            );
+
+        const setShape = (shape: number) =>
+            trigger(
+                mod.id,
+                BindingKeys.setSelectionShape,
+                shape
+            );
+
         const setRotation = (next: number) =>
-            trigger(mod.id, BindingKeys.setSquareRotationDegrees, ((next % 360) + 360) % 360);
+            trigger(
+                mod.id,
+                BindingKeys.setSquareRotationDegrees,
+                ((next % 360) + 360) % 360
+            );
 
         const toggle = (key: string, current: boolean) =>
             trigger(mod.id, key, !current);
+
+        const isPolyline = selectionShape === SHAPE_POLYLINE;
+        const isSquare = selectionShape === SHAPE_SQUARE;
+        const isTriangle = selectionShape === SHAPE_TRIANGLE;
+        const isRotatable = isSquare || isTriangle;
+        const usesCorridorWidth = isPolyline;
+
+        const sizeTitle = isPolyline
+            ? text("MultiPointLineWidth", "Breite Mehrpunktlinie")
+            : isSquare
+                ? text("HalfSide", "Größe Quadrat")
+                : isTriangle
+                    ? text("TriangleSize", "Größe Dreieck")
+                    : text("Radius", "Radius");
 
         const sections = (
             <ScaleContext.Provider value={scale}>
                 <Section title={text("Selection", "Auswahl")}>
                     <IconToolButton
                         icon="circle"
-                        selected={!useSquareBrush}
+                        selected={selectionShape === SHAPE_CIRCLE}
                         tooltipTitle={text("Circle", "Kreis")}
                         tooltipText={text(
                             "CircleTooltip",
                             "Runde Auswahlfläche um den Mauszeiger."
                         )}
-                        onSelect={() => trigger(mod.id, BindingKeys.setUseSquareBrush, false)}
+                        onSelect={() => setShape(SHAPE_CIRCLE)}
                     />
                     <IconToolButton
                         icon="square"
-                        selected={useSquareBrush}
+                        selected={isSquare}
                         tooltipTitle={text("Square", "Quadrat")}
                         tooltipText={text(
                             "SquareTooltip",
                             "Quadratische Auswahlfläche, drehbar mit gehaltener rechter Maustaste."
                         )}
-                        onSelect={() => trigger(mod.id, BindingKeys.setUseSquareBrush, true)}
+                        onSelect={() => setShape(SHAPE_SQUARE)}
+                    />
+                    <IconToolButton
+                        icon="triangle"
+                        selected={isTriangle}
+                        tooltipTitle={text("Triangle", "Dreieck")}
+                        tooltipText={text(
+                            "TriangleTooltip",
+                            "Gleichseitige Auswahlfläche. Größe wie beim normalen Pinsel; mit gehaltener rechter Maustaste drehbar."
+                        )}
+                        onSelect={() => setShape(SHAPE_TRIANGLE)}
+                    />
+                    <IconToolButton
+                        icon="polyline"
+                        selected={isPolyline}
+                        tooltipTitle={text("MultiPointLine", "Mehrpunktlinie")}
+                        tooltipText={text(
+                            "MultiPointLineTooltip",
+                            "2 bis 15 Punkte: Linksklick setzt Punkte, Doppelklick schließt ab und löscht. Rechtsklick entfernt den letzten Punkt, Esc bricht ab."
+                        )}
+                        onSelect={() => setShape(SHAPE_POLYLINE)}
                     />
                 </Section>
 
-                <Section
-                    title={
-                        useSquareBrush
-                            ? text("HalfSide", "Größe Quadrat")
-                            : text("Radius", "Radius")
-                    }
-                >
-                    <Stepper
-                        value={`${brushRadius} m`}
-                        decreaseTooltip={text("DecreaseSize", "Auswahl verkleinern")}
-                        increaseTooltip={text("IncreaseSize", "Auswahl vergrößern")}
-                        onDecrease={() => setRadius(brushRadius - RADIUS_STEP)}
-                        onIncrease={() => setRadius(brushRadius + RADIUS_STEP)}
-                    />
+                <Section title={sizeTitle}>
+                    {usesCorridorWidth ? (
+                        <Stepper
+                            value={`${lineWidth} m`}
+                            decreaseTooltip={text("DecreaseLineWidth", "Linie schmaler")}
+                            increaseTooltip={text("IncreaseLineWidth", "Linie breiter")}
+                            onDecrease={() => setLineWidth(lineWidth - LINE_WIDTH_STEP)}
+                            onIncrease={() => setLineWidth(lineWidth + LINE_WIDTH_STEP)}
+                        />
+                    ) : (
+                        <Stepper
+                            value={`${brushRadius} m`}
+                            decreaseTooltip={text("DecreaseSize", "Auswahl verkleinern")}
+                            increaseTooltip={text("IncreaseSize", "Auswahl vergrößern")}
+                            onDecrease={() => setRadius(brushRadius - RADIUS_STEP)}
+                            onIncrease={() => setRadius(brushRadius + RADIUS_STEP)}
+                        />
+                    )}
                 </Section>
 
-                {useSquareBrush && (
+                {isRotatable && (
                     <Section title={text("Rotation", "Drehung")}>
                         <Stepper
                             narrow
