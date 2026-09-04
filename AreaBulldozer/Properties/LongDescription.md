@@ -1,15 +1,17 @@
 Area Bulldozer adds a flexible area deletion tool to Cities: Skylines II.
 
-Instead of removing objects individually, you can select and delete multiple objects using circular, square, triangular or multi-point corridor selections. The tool includes configurable object filters, marker visualization and several safety options.
+Instead of removing objects individually, you can select and delete multiple objects using circular, square, triangular, Freeform Area or multi-point corridor selections. The tool includes configurable object filters, marker visualization and several safety options.
 
 ## Selection shapes
 
 - Circle - adjustable radius around the cursor
 - Square - adjustable size and free rotation
 - Equilateral triangle - adjustable size and free rotation
-- Multi-point line - corridor selection using 2 to 15 points
+- Multi-point line - corridor selection using 2 to 25 points
+- Freeform area - custom polygon selection using an unlimited number of points
 
 The multi-point line also replaces the former dedicated line mode: simply use two points for a straight corridor. Additional points allow angled or complex deletion paths.
+The freeform area allows you to create custom deletion zones of almost any shape. Place as many corner points as needed and close the polygon by clicking the first point or by double-clicking.
 
 ## Features
 
@@ -71,6 +73,7 @@ Large selections are shown in yellow and require a second confirmation click whe
 5. Enable the object filters you want to use.
 6. For Circle, Square and Triangle, hold or click the left mouse button to delete selected objects.
 7. For Multi-point line, left click to place points, double-click to finish and delete, right click to remove the last point, and press Esc to cancel the complete selection.
+8. For Freeform area, left click to place points, right-click removes the last polygon point, while Esc cancels the current selection. Self-intersecting polygon edges are automatically prevented to keep the selection valid.
 
 The floating launcher button can optionally be moved by holding Ctrl and the left mouse button. Release the mouse button to save its new position.
 
