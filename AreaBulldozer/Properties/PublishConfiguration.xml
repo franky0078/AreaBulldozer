@@ -130,6 +130,8 @@
 	<Screenshot Value="Properties/Screenshot05.jpg" />
 	<Screenshot Value="Properties/Screenshot06.jpg" />
 	<Screenshot Value="Properties/Screenshot07.jpg" />
+	<Screenshot Value="Properties/Screenshot08.jpg" />
+	<Screenshot Value="Properties/Screenshot09.jpg" />
 
 	<!-- Add supported Paradox Mods tags here if required.-->
 	<Tag Value="Code Mod" />
