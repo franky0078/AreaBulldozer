@@ -117,8 +117,7 @@ When reporting a problem, include:
 
 Version 1.5.0
 
-- Added a new Free Area Polygon selection mode, based on the district tool
-- Multiline selection now supports up to 25 points instead of 15.
+- Tooltip text changed for shape selection buttons.
 
 
 ## License

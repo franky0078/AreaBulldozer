@@ -23,7 +23,7 @@ namespace AreaBulldozer.Localization
                 { "AreaBulldozer.UI.TriangleSize", "Größe Dreieck" },
 
                 { "AreaBulldozer.UI.MultiPointLine", "Mehrpunktlinie" },
-                { "AreaBulldozer.UI.MultiPointLineTooltip", "Korridor aus 2 bis 15 Punkten mit geraden oder abgerundeten Übergängen. Linksklick setzt Punkte. Doppelklick am letzten Punkt schließt die Mehrpunktlinie ab und löscht. Rechtsklick entfernt den letzten Punkt, Esc verwirft die komplette Auswahl." },
+                { "AreaBulldozer.UI.MultiPointLineTooltip", "Korridor aus 2 bis 25 Punkten mit geraden oder abgerundeten Übergängen. Linksklick setzt Punkte. Doppelklick am letzten Punkt schließt die Mehrpunktlinie ab und löscht. Rechtsklick entfernt den letzten Punkt, Esc verwirft die komplette Auswahl." },
                 { "AreaBulldozer.UI.MultiPointLineWidth", "Breite Mehrpunktlinie" },
                 { "AreaBulldozer.UI.DecreaseLineWidth", "Korridor schmaler" },
                 { "AreaBulldozer.UI.IncreaseLineWidth", "Korridor breiter" },
@@ -38,7 +38,7 @@ namespace AreaBulldozer.Localization
 
                 // Alte Spline-Schlüssel als Fallback 
                 { "AreaBulldozer.UI.Spline", "Mehrpunktlinie" },
-                { "AreaBulldozer.UI.SplineTooltip", "Korridor aus 2 bis 15 Punkten. Linksklick setzt Punkte. Doppelklick schließt ab und löscht. Rechtsklick entfernt den letzten Punkt, Esc bricht ab." },
+                { "AreaBulldozer.UI.SplineTooltip", "Korridor aus 2 bis 25 Punkten. Linksklick setzt Punkte. Doppelklick schließt ab und löscht. Rechtsklick entfernt den letzten Punkt, Esc bricht ab." },
                 { "AreaBulldozer.UI.SplineWidth", "Breite Mehrpunktlinie" },
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.EnableDiagnosticLogging)), "Diagnose-Logging aktivieren" },

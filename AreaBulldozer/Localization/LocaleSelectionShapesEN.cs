@@ -23,7 +23,7 @@ namespace AreaBulldozer.Localization
                 { "AreaBulldozer.UI.TriangleSize", "Triangle size" },
 
                 { "AreaBulldozer.UI.MultiPointLine", "Multi-point line" },
-                { "AreaBulldozer.UI.MultiPointLineTooltip", "Corridor using 2 to 15 points with straight or rounded transitions. Left click adds points. Double-click the final point to finish and delete. Right click removes the last point; Esc cancels the whole selection." },
+                { "AreaBulldozer.UI.MultiPointLineTooltip", "Corridor using 2 to 25 points with straight or rounded transitions. Left click adds points. Double-click the final point to finish and delete. Right click removes the last point; Esc cancels the whole selection." },
                 { "AreaBulldozer.UI.MultiPointLineWidth", "Multi-point line width" },
                 { "AreaBulldozer.UI.DecreaseLineWidth", "Make corridor narrower" },
                 { "AreaBulldozer.UI.IncreaseLineWidth", "Make corridor wider" },
@@ -38,7 +38,7 @@ namespace AreaBulldozer.Localization
 
                 // Keep old spline keys as fallbacks.
                 { "AreaBulldozer.UI.Spline", "Multi-point line" },
-                { "AreaBulldozer.UI.SplineTooltip", "Corridor using 2 to 15 points. Left click adds points. Double-click finishes and deletes. Right click removes the last point; Esc cancels." },
+                { "AreaBulldozer.UI.SplineTooltip", "Corridor using 2 to 25 points. Left click adds points. Double-click finishes and deletes. Right click removes the last point; Esc cancels." },
                 { "AreaBulldozer.UI.SplineWidth", "Multi-point line width" },
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.EnableDiagnosticLogging)), "Enable diagnostic logging" },

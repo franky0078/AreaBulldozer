@@ -144,7 +144,7 @@
 	<ForumLink Value="https://forum.paradoxplaza.com/forum/threads/mod-area-bulldozer-area-deletion-tool-with-object-filters.1937211/" />
 
 	<!-- Mod version -->
-	<ModVersion Value="1.5.0" />
+	<ModVersion Value="1.5.1" />
 
 	<!--
 	Recommended game version.
@@ -172,10 +172,9 @@
 	-->
 
 	<ChangeLog>
-		Version 1.5.0
+		Version 1.5.1
 
-		- Added a new Free Area Polygon selection mode, based on the district tool
-		- Multiline selection now supports up to 25 points instead of 15.
+		- Tooltip text changed for shape selection buttons.
 
 
 	</ChangeLog>
