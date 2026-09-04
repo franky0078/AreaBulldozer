@@ -5,6 +5,7 @@ export type AreaBulldozerIconType =
     | "square"
     | "triangle"
     | "polyline"
+    | "polygon"
     | "straight"
     | "curve"
     | "vegetation"
@@ -58,7 +59,6 @@ export function AreaBulldozerIcon({ type }: { type: AreaBulldozerIconType }) {
                 </svg>
             );
 
-
         case "polyline":
             return (
                 <svg {...common}>
@@ -68,6 +68,19 @@ export function AreaBulldozerIcon({ type }: { type: AreaBulldozerIconType }) {
                     <circle cx="17" cy="21" r="1.8" />
                     <circle cx="22" cy="10" r="1.8" />
                     <circle cx="27" cy="7" r="1.8" />
+                </svg>
+            );
+
+        case "polygon":
+            return (
+                <svg {...common}>
+                    <path d="M5 22 8 8 18 5 27 12 24 26 12 28 5 22Z" />
+                    <circle cx="5" cy="22" r="1.8" />
+                    <circle cx="8" cy="8" r="1.8" />
+                    <circle cx="18" cy="5" r="1.8" />
+                    <circle cx="27" cy="12" r="1.8" />
+                    <circle cx="24" cy="26" r="1.8" />
+                    <circle cx="12" cy="28" r="1.8" />
                 </svg>
             );
 

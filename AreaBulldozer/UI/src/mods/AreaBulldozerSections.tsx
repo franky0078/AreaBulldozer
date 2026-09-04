@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { ModuleRegistryExtend } from "cs2/modding";
-import { trigger } from "cs2/api";
+import { bindValue, trigger } from "cs2/api";
 import { useLocalization } from "cs2/l10n";
 import mod from "mod.json";
 import styles from "./AreaBulldozerCompact.module.scss";
@@ -40,6 +40,18 @@ const SHAPE_CIRCLE = 0;
 const SHAPE_SQUARE = 1;
 const SHAPE_TRIANGLE = 2;
 const SHAPE_POLYLINE = 4;
+
+const freeAreaPolygon$ = bindValue<boolean>(
+    mod.id,
+    "freeAreaPolygon",
+    false
+);
+
+const freeAreaPolygonPointCount$ = bindValue<number>(
+    mod.id,
+    "freeAreaPolygonPointCount",
+    0
+);
 
 const RADIUS_MIN = 5;
 const RADIUS_MAX = 200;
@@ -124,6 +136,7 @@ function IconToolButton({
             onClick={(event) => {
                 event.preventDefault();
                 event.stopPropagation();
+
                 if (!disabled) {
                     onSelect();
                 }
@@ -170,6 +183,7 @@ function Stepper({
 }: StepperProps) {
     const numberFieldClass =
         VanillaComponentResolver.instance.mouseToolOptionsTheme?.numberField;
+
     const scale = React.useContext(ScaleContext);
 
     const fieldStyle: React.CSSProperties = {
@@ -185,6 +199,7 @@ function Stepper({
                 tooltipTitle={decreaseTooltip}
                 onSelect={onDecrease}
             />
+
             <div
                 className={[
                     numberFieldClass ?? "",
@@ -197,6 +212,7 @@ function Stepper({
             >
                 {value}
             </div>
+
             <IconToolButton
                 icon="plus"
                 tooltipTitle={increaseTooltip}
@@ -216,68 +232,97 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
             isToolActive$,
             false
         );
+
         const brushRadius = useSafeValue(
             "brushRadius$",
             brushRadius$,
             30
         );
+
         const selectionShape = useSafeValue(
             "selectionShape$",
             selectionShape$,
             SHAPE_CIRCLE
         );
+
+        const freeAreaPolygon = useSafeValue(
+            "freeAreaPolygon$",
+            freeAreaPolygon$,
+            false
+        );
+
+        const freeAreaPolygonPointCount = useSafeValue(
+            "freeAreaPolygonPointCount$",
+            freeAreaPolygonPointCount$,
+            0
+        );
+
         const lineWidth = useSafeValue(
             "lineWidth$",
             lineWidth$,
             10
         );
+
         const useCurvedPolyline = useSafeValue(
             "useCurvedPolyline$",
             useCurvedPolyline$,
             false
         );
+
         const polylineRounding = useSafeValue(
             "polylineRounding$",
             polylineRounding$,
             50
         );
+
         const squareRotationDegrees = useSafeValue(
             "squareRotationDegrees$",
             squareRotationDegrees$,
             0
         );
-        const uiScalePercent = useSafeValue("uiScale$", uiScale$, 100);
+
+        const uiScalePercent = useSafeValue(
+            "uiScale$",
+            uiScale$,
+            100
+        );
 
         const deleteTrees = useSafeValue(
             "deleteTrees$",
             deleteTrees$,
             false
         );
+
         const deleteBuildings = useSafeValue(
             "deleteBuildings$",
             deleteBuildings$,
             false
         );
+
         const deleteRoads = useSafeValue(
             "deleteRoads$",
             deleteRoads$,
             false
         );
+
         const deletePaths = useSafeValue(
             "deletePaths$",
             deletePaths$,
             false
         );
+
         const deleteRailways = useSafeValue(
             "deleteRailways$",
             deleteRailways$,
             false
         );
+
         const deleteSurfaces = useSafeValue(
             "deleteSurfaces$",
             deleteSurfaces$,
             false
         );
+
         const deleteStaticObjects = useSafeValue(
             "deleteStaticObjects$",
             deleteStaticObjects$,
@@ -289,36 +334,43 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
             deleteGeneralProps$,
             false
         );
+
         const deleteStreetLights = useSafeValue(
             "deleteStreetLights$",
             deleteStreetLights$,
             false
         );
+
         const deleteQuantityObjects = useSafeValue(
             "deleteQuantityObjects$",
             deleteQuantityObjects$,
             false
         );
+
         const deleteBrandingObjects = useSafeValue(
             "deleteBrandingObjects$",
             deleteBrandingObjects$,
             false
         );
+
         const deleteActivityLocations = useSafeValue(
             "deleteActivityLocations$",
             deleteActivityLocations$,
             false
         );
+
         const deleteSpawnLocations = useSafeValue(
             "deleteSpawnLocations$",
             deleteSpawnLocations$,
             false
         );
+
         const deleteMarkerNetworks = useSafeValue(
             "deleteMarkerNetworks$",
             deleteMarkerNetworks$,
             false
         );
+
         const dimMarkerBackground = useSafeValue(
             "dimMarkerBackground$",
             dimMarkerBackground$,
@@ -326,6 +378,7 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
         );
 
         const { translate } = useLocalization();
+
         const text = (key: string, fallback: string) =>
             translate(`${UI_PREFIX}${key}`, fallback) ?? fallback;
 
@@ -339,19 +392,22 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
                 `Section=${typeof Section} ` +
                 `ToolButtonTheme=${resolver.toolButtonTheme ? "ok" : "FEHLT"} ` +
                 `MouseToolOptionsTheme=${resolver.mouseToolOptionsTheme ? "ok" : "FEHLT"} ` +
-                `Tooltip=${typeof resolver.Tooltip}`
+                `Tooltip=${typeof resolver.Tooltip} ` +
+                `FreeAreaPolygon=${freeAreaPolygon}`
             );
-        }, [isToolActive]);
+        }, [isToolActive, freeAreaPolygon]);
 
         let result: JSX.Element | null = null;
 
         try {
             result = Component();
-        } catch (error) {
+        }
+        catch (error) {
             console.error(
                 "[AreaBulldozer] MouseToolOptions (Original) hat geworfen.",
                 error
             );
+
             return null;
         }
 
@@ -369,10 +425,12 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
             console.error(
                 "[AreaBulldozer] Vanilla-Section nicht verfügbar. Sections werden übersprungen."
             );
+
             return result;
         }
 
-        const scale = clamp(uiScalePercent, 50, 125) / 100;
+        const scale =
+            clamp(uiScalePercent, 50, 125) / 100;
 
         const setRadius = (next: number) =>
             trigger(
@@ -406,12 +464,29 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
                 )
             );
 
-        const setShape = (shape: number) =>
+        const setShape = (shape: number) => {
+            if (freeAreaPolygon) {
+                trigger(
+                    mod.id,
+                    "setFreeAreaPolygon",
+                    false
+                );
+            }
+
             trigger(
                 mod.id,
                 BindingKeys.setSelectionShape,
                 shape
             );
+        };
+
+        const setFreeAreaPolygon = () => {
+            trigger(
+                mod.id,
+                "setFreeAreaPolygon",
+                true
+            );
+        };
 
         const setRotation = (next: number) =>
             trigger(
@@ -423,26 +498,57 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
         const toggle = (key: string, current: boolean) =>
             trigger(mod.id, key, !current);
 
-        const isPolyline = selectionShape === SHAPE_POLYLINE;
-        const isSquare = selectionShape === SHAPE_SQUARE;
-        const isTriangle = selectionShape === SHAPE_TRIANGLE;
-        const isRotatable = isSquare || isTriangle;
-        const usesCorridorWidth = isPolyline;
+        const isFreeAreaPolygon =
+            freeAreaPolygon;
+
+        const isPolyline =
+            selectionShape === SHAPE_POLYLINE &&
+            !isFreeAreaPolygon;
+
+        const isSquare =
+            selectionShape === SHAPE_SQUARE &&
+            !isFreeAreaPolygon;
+
+        const isTriangle =
+            selectionShape === SHAPE_TRIANGLE &&
+            !isFreeAreaPolygon;
+
+        const isCircle =
+            selectionShape === SHAPE_CIRCLE &&
+            !isFreeAreaPolygon;
+
+        const isRotatable =
+            isSquare || isTriangle;
+
+        const usesCorridorWidth =
+            isPolyline;
 
         const sizeTitle = isPolyline
-            ? text("MultiPointLineWidth", "Breite Mehrpunktlinie")
+            ? text(
+                "MultiPointLineWidth",
+                "Breite Mehrpunktlinie"
+            )
             : isSquare
-                ? text("HalfSide", "Größe Quadrat")
+                ? text(
+                    "HalfSide",
+                    "Größe Quadrat"
+                )
                 : isTriangle
-                    ? text("TriangleSize", "Größe Dreieck")
-                    : text("Radius", "Radius");
+                    ? text(
+                        "TriangleSize",
+                        "Größe Dreieck"
+                    )
+                    : text(
+                        "Radius",
+                        "Radius"
+                    );
 
         const sections = (
             <ScaleContext.Provider value={scale}>
                 <Section title={text("Selection", "Auswahl")}>
                     <IconToolButton
                         icon="circle"
-                        selected={selectionShape === SHAPE_CIRCLE}
+                        selected={isCircle}
                         tooltipTitle={text("Circle", "Kreis")}
                         tooltipText={text(
                             "CircleTooltip",
@@ -450,6 +556,7 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
                         )}
                         onSelect={() => setShape(SHAPE_CIRCLE)}
                     />
+
                     <IconToolButton
                         icon="square"
                         selected={isSquare}
@@ -460,6 +567,7 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
                         )}
                         onSelect={() => setShape(SHAPE_SQUARE)}
                     />
+
                     <IconToolButton
                         icon="triangle"
                         selected={isTriangle}
@@ -470,37 +578,105 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
                         )}
                         onSelect={() => setShape(SHAPE_TRIANGLE)}
                     />
+
                     <IconToolButton
                         icon="polyline"
                         selected={isPolyline}
-                        tooltipTitle={text("MultiPointLine", "Mehrpunktlinie")}
+                        tooltipTitle={text(
+                            "MultiPointLine",
+                            "Mehrpunktlinie"
+                        )}
                         tooltipText={text(
                             "MultiPointLineTooltip",
                             "2 bis 15 Punkte mit geraden oder abgerundeten Übergängen. Linksklick setzt Punkte, Doppelklick schließt ab und löscht. Rechtsklick entfernt den letzten Punkt, Esc bricht ab."
                         )}
                         onSelect={() => setShape(SHAPE_POLYLINE)}
                     />
+
+                    <IconToolButton
+                        icon="polygon"
+                        selected={isFreeAreaPolygon}
+                        tooltipTitle={text(
+                            "FreeAreaPolygon",
+                            "Freie Fläche"
+                        )}
+                        tooltipText={text(
+                            "FreeAreaPolygonTooltip",
+                            "Beliebig viele Eckpunkte definieren eine freie Löschfläche. Linksklick setzt Punkte. Klick auf den ersten Punkt oder Doppelklick schließt das Polygon und löscht den Inhalt. Rechtsklick entfernt den letzten Punkt, Esc verwirft die Auswahl."
+                        )}
+                        onSelect={setFreeAreaPolygon}
+                    />
                 </Section>
 
-                <Section title={sizeTitle}>
-                    {usesCorridorWidth ? (
-                        <Stepper
-                            value={`${lineWidth} m`}
-                            decreaseTooltip={text("DecreaseLineWidth", "Linie schmaler")}
-                            increaseTooltip={text("IncreaseLineWidth", "Linie breiter")}
-                            onDecrease={() => setLineWidth(lineWidth - LINE_WIDTH_STEP)}
-                            onIncrease={() => setLineWidth(lineWidth + LINE_WIDTH_STEP)}
-                        />
-                    ) : (
-                        <Stepper
-                            value={`${brushRadius} m`}
-                            decreaseTooltip={text("DecreaseSize", "Auswahl verkleinern")}
-                            increaseTooltip={text("IncreaseSize", "Auswahl vergrößern")}
-                            onDecrease={() => setRadius(brushRadius - RADIUS_STEP)}
-                            onIncrease={() => setRadius(brushRadius + RADIUS_STEP)}
-                        />
-                    )}
-                </Section>
+                {!isFreeAreaPolygon && (
+                    <Section title={sizeTitle}>
+                        {usesCorridorWidth ? (
+                            <Stepper
+                                value={`${lineWidth} m`}
+                                decreaseTooltip={text(
+                                    "DecreaseLineWidth",
+                                    "Linie schmaler"
+                                )}
+                                increaseTooltip={text(
+                                    "IncreaseLineWidth",
+                                    "Linie breiter"
+                                )}
+                                onDecrease={() =>
+                                    setLineWidth(
+                                        lineWidth -
+                                        LINE_WIDTH_STEP
+                                    )
+                                }
+                                onIncrease={() =>
+                                    setLineWidth(
+                                        lineWidth +
+                                        LINE_WIDTH_STEP
+                                    )
+                                }
+                            />
+                        ) : (
+                            <Stepper
+                                value={`${brushRadius} m`}
+                                decreaseTooltip={text(
+                                    "DecreaseSize",
+                                    "Auswahl verkleinern"
+                                )}
+                                increaseTooltip={text(
+                                    "IncreaseSize",
+                                    "Auswahl vergrößern"
+                                )}
+                                onDecrease={() =>
+                                    setRadius(
+                                        brushRadius -
+                                        RADIUS_STEP
+                                    )
+                                }
+                                onIncrease={() =>
+                                    setRadius(
+                                        brushRadius +
+                                        RADIUS_STEP
+                                    )
+                                }
+                            />
+                        )}
+                    </Section>
+                )}
+
+                {isFreeAreaPolygon && (
+                    <Section
+                        title={
+                            text(
+                                "FreeAreaPolygon",
+                                "Freie Fläche"
+                            ) +
+                            ` · ${freeAreaPolygonPointCount} ` +
+                            text(
+                                "PolygonPoints",
+                                "Punkte"
+                            )
+                        }
+                    />
+                )}
 
                 {isPolyline && (
                     <Section title={text("PolylineStyle", "Linienform")}>
@@ -514,6 +690,7 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
                             )}
                             onSelect={() => setCurvedPolyline(false)}
                         />
+
                         <IconToolButton
                             icon="curve"
                             selected={useCurvedPolyline}
@@ -541,12 +718,14 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
                             )}
                             onDecrease={() =>
                                 setPolylineRounding(
-                                    polylineRounding - POLYLINE_ROUNDING_STEP
+                                    polylineRounding -
+                                    POLYLINE_ROUNDING_STEP
                                 )
                             }
                             onIncrease={() =>
                                 setPolylineRounding(
-                                    polylineRounding + POLYLINE_ROUNDING_STEP
+                                    polylineRounding +
+                                    POLYLINE_ROUNDING_STEP
                                 )
                             }
                         />
@@ -558,10 +737,26 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
                         <Stepper
                             narrow
                             value={`${Math.round(squareRotationDegrees)}°`}
-                            decreaseTooltip={text("RotateLeft", "Gegen den Uhrzeigersinn drehen")}
-                            increaseTooltip={text("RotateRight", "Im Uhrzeigersinn drehen")}
-                            onDecrease={() => setRotation(squareRotationDegrees - ROTATION_STEP)}
-                            onIncrease={() => setRotation(squareRotationDegrees + ROTATION_STEP)}
+                            decreaseTooltip={text(
+                                "RotateLeft",
+                                "Gegen den Uhrzeigersinn drehen"
+                            )}
+                            increaseTooltip={text(
+                                "RotateRight",
+                                "Im Uhrzeigersinn drehen"
+                            )}
+                            onDecrease={() =>
+                                setRotation(
+                                    squareRotationDegrees -
+                                    ROTATION_STEP
+                                )
+                            }
+                            onIncrease={() =>
+                                setRotation(
+                                    squareRotationDegrees +
+                                    ROTATION_STEP
+                                )
+                            }
                         />
                     </Section>
                 )}
@@ -575,53 +770,110 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
                             "VegetationTooltip",
                             "Bäume, Büsche und Pflanzen löschen."
                         )}
-                        onSelect={() => toggle(BindingKeys.setDeleteTrees, deleteTrees)}
+                        onSelect={() =>
+                            toggle(
+                                BindingKeys.setDeleteTrees,
+                                deleteTrees
+                            )
+                        }
                     />
+
                     <IconToolButton
                         icon="building"
                         selected={deleteBuildings}
                         tooltipTitle={text("Buildings", "Gebäude")}
-                        tooltipText={text("BuildingsTooltip", "Gebäude im Bereich löschen.")}
-                        onSelect={() => toggle(BindingKeys.setDeleteBuildings, deleteBuildings)}
+                        tooltipText={text(
+                            "BuildingsTooltip",
+                            "Gebäude im Bereich löschen."
+                        )}
+                        onSelect={() =>
+                            toggle(
+                                BindingKeys.setDeleteBuildings,
+                                deleteBuildings
+                            )
+                        }
                     />
+
                     <IconToolButton
                         icon="road"
                         selected={deleteRoads}
                         tooltipTitle={text("Roads", "Straßen")}
-                        tooltipText={text("RoadsTooltip", "Straßen im Bereich löschen.")}
-                        onSelect={() => toggle(BindingKeys.setDeleteRoads, deleteRoads)}
+                        tooltipText={text(
+                            "RoadsTooltip",
+                            "Straßen im Bereich löschen."
+                        )}
+                        onSelect={() =>
+                            toggle(
+                                BindingKeys.setDeleteRoads,
+                                deleteRoads
+                            )
+                        }
                     />
+
                     <IconToolButton
                         icon="path"
                         selected={deletePaths}
                         tooltipTitle={text("Paths", "Fußwege")}
-                        tooltipText={text("PathsTooltip", "Fuß- und Radwege löschen.")}
-                        onSelect={() => toggle(BindingKeys.setDeletePaths, deletePaths)}
+                        tooltipText={text(
+                            "PathsTooltip",
+                            "Fuß- und Radwege löschen."
+                        )}
+                        onSelect={() =>
+                            toggle(
+                                BindingKeys.setDeletePaths,
+                                deletePaths
+                            )
+                        }
                     />
+
                     <IconToolButton
                         icon="rail"
                         selected={deleteRailways}
                         tooltipTitle={text("Railways", "Gleise")}
-                        tooltipText={text("RailwaysTooltip", "Schienenwege löschen.")}
-                        onSelect={() => toggle(BindingKeys.setDeleteRailways, deleteRailways)}
+                        tooltipText={text(
+                            "RailwaysTooltip",
+                            "Schienenwege löschen."
+                        )}
+                        onSelect={() =>
+                            toggle(
+                                BindingKeys.setDeleteRailways,
+                                deleteRailways
+                            )
+                        }
                     />
+
                     <IconToolButton
                         icon="surface"
                         selected={deleteSurfaces}
                         tooltipTitle={text("SurfacesShort", "Flächen")}
-                        tooltipText={text("SurfacesTooltip", "Oberflächen und Bereiche löschen.")}
-                        onSelect={() => toggle(BindingKeys.setDeleteSurfaces, deleteSurfaces)}
+                        tooltipText={text(
+                            "SurfacesTooltip",
+                            "Oberflächen und Bereiche löschen."
+                        )}
+                        onSelect={() =>
+                            toggle(
+                                BindingKeys.setDeleteSurfaces,
+                                deleteSurfaces
+                            )
+                        }
                     />
+
                     <IconToolButton
                         icon="props"
                         selected={deleteStaticObjects}
-                        tooltipTitle={text("StaticObjectsShort", "Props / Marker")}
+                        tooltipTitle={text(
+                            "StaticObjectsShort",
+                            "Props / Marker"
+                        )}
                         tooltipText={text(
                             "StaticObjectsTooltip",
                             "Hauptschalter für Props und Marker. Aktiviert die Detailfilter darunter."
                         )}
                         onSelect={() =>
-                            toggle(BindingKeys.setDeleteStaticObjects, deleteStaticObjects)
+                            toggle(
+                                BindingKeys.setDeleteStaticObjects,
+                                deleteStaticObjects
+                            )
                         }
                     />
                 </Section>
@@ -634,41 +886,66 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
                             selected={deleteGeneralProps}
                             tooltipTitle={text("GeneralProps", "Allgemeine Props")}
                             onSelect={() =>
-                                toggle(BindingKeys.setDeleteGeneralProps, deleteGeneralProps)
+                                toggle(
+                                    BindingKeys.setDeleteGeneralProps,
+                                    deleteGeneralProps
+                                )
                             }
                         />
+
                         <IconToolButton
                             marker
                             icon="streetLight"
                             selected={deleteStreetLights}
                             tooltipTitle={text("StreetLights", "Straßenlaternen")}
                             onSelect={() =>
-                                toggle(BindingKeys.setDeleteStreetLights, deleteStreetLights)
+                                toggle(
+                                    BindingKeys.setDeleteStreetLights,
+                                    deleteStreetLights
+                                )
                             }
                         />
+
                         <IconToolButton
                             marker
                             icon="quantity"
                             selected={deleteQuantityObjects}
-                            tooltipTitle={text("QuantityObjects", "Mülleimer und Mengenobjekte")}
+                            tooltipTitle={text(
+                                "QuantityObjects",
+                                "Mülleimer und Mengenobjekte"
+                            )}
                             onSelect={() =>
-                                toggle(BindingKeys.setDeleteQuantityObjects, deleteQuantityObjects)
+                                toggle(
+                                    BindingKeys.setDeleteQuantityObjects,
+                                    deleteQuantityObjects
+                                )
                             }
                         />
+
                         <IconToolButton
                             marker
                             icon="branding"
                             selected={deleteBrandingObjects}
-                            tooltipTitle={text("Branding", "Werbung und Branding")}
+                            tooltipTitle={text(
+                                "Branding",
+                                "Werbung und Branding"
+                            )}
                             onSelect={() =>
-                                toggle(BindingKeys.setDeleteBrandingObjects, deleteBrandingObjects)
+                                toggle(
+                                    BindingKeys.setDeleteBrandingObjects,
+                                    deleteBrandingObjects
+                                )
                             }
                         />
+
                         <IconToolButton
                             marker
                             icon="activity"
                             selected={deleteActivityLocations}
-                            tooltipTitle={text("ActivityLocations", "Aktivitätspunkte")}
+                            tooltipTitle={text(
+                                "ActivityLocations",
+                                "Aktivitätspunkte"
+                            )}
                             onSelect={() =>
                                 toggle(
                                     BindingKeys.setDeleteActivityLocations,
@@ -676,31 +953,52 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
                                 )
                             }
                         />
+
                         <IconToolButton
                             marker
                             icon="spawn"
                             selected={deleteSpawnLocations}
-                            tooltipTitle={text("SpawnLocations", "Spawnpunkte")}
+                            tooltipTitle={text(
+                                "SpawnLocations",
+                                "Spawnpunkte"
+                            )}
                             onSelect={() =>
-                                toggle(BindingKeys.setDeleteSpawnLocations, deleteSpawnLocations)
+                                toggle(
+                                    BindingKeys.setDeleteSpawnLocations,
+                                    deleteSpawnLocations
+                                )
                             }
                         />
+
                         <IconToolButton
                             marker
                             icon="lanes"
                             selected={deleteMarkerNetworks}
-                            tooltipTitle={text("AssetLanes", "Asset-Lanes / SubLanes")}
+                            tooltipTitle={text(
+                                "AssetLanes",
+                                "Asset-Lanes / SubLanes"
+                            )}
                             onSelect={() =>
-                                toggle(BindingKeys.setDeleteMarkerNetworks, deleteMarkerNetworks)
+                                toggle(
+                                    BindingKeys.setDeleteMarkerNetworks,
+                                    deleteMarkerNetworks
+                                )
                             }
                         />
+
                         <IconToolButton
                             marker
                             icon="dim"
                             selected={dimMarkerBackground}
-                            tooltipTitle={text("DimBackground", "Marker-Hintergrund abdunkeln")}
+                            tooltipTitle={text(
+                                "DimBackground",
+                                "Marker-Hintergrund abdunkeln"
+                            )}
                             onSelect={() =>
-                                toggle(BindingKeys.setDimMarkerBackground, dimMarkerBackground)
+                                toggle(
+                                    BindingKeys.setDimMarkerBackground,
+                                    dimMarkerBackground
+                                )
                             }
                         />
                     </Section>
@@ -719,6 +1017,7 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
 
             if (Array.isArray(result.props?.children)) {
                 result.props.children.push(sections);
+
                 return result;
             }
 
@@ -728,11 +1027,13 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
                 ...React.Children.toArray(result.props?.children),
                 sections
             );
-        } catch (error) {
+        }
+        catch (error) {
             console.error(
                 "[AreaBulldozer] Sections konnten nicht eingehängt werden.",
                 error
             );
+
             return result;
         }
     };

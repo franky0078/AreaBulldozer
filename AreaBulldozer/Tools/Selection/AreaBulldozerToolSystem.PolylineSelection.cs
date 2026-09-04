@@ -6,7 +6,7 @@ namespace AreaBulldozer.Tools
 {
     public partial class AreaBulldozerToolSystem
     {
-        private const int kPolylineMaximumPoints = 15;
+        private const int kPolylineMaximumPoints = 25;
         private const float kPolylineMinimumSegmentLength = 0.5f;
         private const float kPolylineDoubleClickSeconds = 0.35f;
         private const float kPolylineDoubleClickDistance = 2.5f;

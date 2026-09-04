@@ -111,10 +111,10 @@ When reporting a problem, include:
 
 ## Changes
 
-Version 1.4.5
+Version 1.5.0
 
-- Improved logging efficiency and cleaned up legacy straight-line code.
-- Added Straight and Curved multi-point modes
+- Added a new Free Area Polygon selection mode, based on the district tool
+- Multiline selection now supports up to 25 points instead of 15.
 
 
 ## License

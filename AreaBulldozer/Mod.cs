@@ -13,7 +13,7 @@ namespace AreaBulldozer
 {
     public class Mod : IMod
     {
-        public const string ModVersion = "1.4.5";
+        public const string ModVersion = "1.5.0";
 
         public static readonly ILog Log = LogManager
             .GetLogger(
@@ -66,12 +66,20 @@ namespace AreaBulldozer
                 new LocaleSelectionShapesEN(Settings));
 
             GameManager.instance.localizationManager.AddSource(
+                "en-US",
+                new LocalePolygonEN());
+
+            GameManager.instance.localizationManager.AddSource(
                 "de-DE",
                 new LocaleDE(Settings));
 
             GameManager.instance.localizationManager.AddSource(
                 "de-DE",
                 new LocaleSelectionShapesDE(Settings));
+
+            GameManager.instance.localizationManager.AddSource(
+                "de-DE",
+                new LocalePolygonDE());
 
             AssetDatabase.global.LoadSettings(
                 nameof(AreaBulldozer),
@@ -117,11 +125,20 @@ namespace AreaBulldozer
             updateSystem.UpdateAt<AreaBulldozerToolSystem>(
                 SystemUpdatePhase.ToolUpdate);
 
+            updateSystem.UpdateAt<AreaBulldozerPolygonOverlaySystem>(
+                SystemUpdatePhase.ToolUpdate);
+
             updateSystem.UpdateAt<AreaBulldozerUISystem>(
+                SystemUpdatePhase.UIUpdate);
+
+            updateSystem.UpdateAt<AreaBulldozerPolygonUISystem>(
                 SystemUpdatePhase.UIUpdate);
 
             LogDiagnosticInfo(
                 "Area Bulldozer tool and UI systems registered.");
+
+            LogDiagnosticInfo(
+                "Area Bulldozer free-area polygon support registered.");
 
             LogDiagnosticInfo(
                 "Area Bulldozer loaded successfully.");

@@ -17,7 +17,7 @@ import { launcherMode$ } from "./bindings";
 
 
 const UI_BUILD =
-    "r6-position-umm-backtext-fix";
+    "r7-free-area-polygon-direct";
 
 
 const ENABLE = {
@@ -222,6 +222,7 @@ const register:
                 }
             );
         }
+
 
         if (
             ENABLE.BACK_TO_BULLDOZER

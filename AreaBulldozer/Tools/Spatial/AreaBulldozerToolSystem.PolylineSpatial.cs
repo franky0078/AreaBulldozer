@@ -9,6 +9,12 @@ namespace AreaBulldozer.Tools
             in SpatialCandidate candidate,
             float halfWidth)
         {
+            if (UseFreeAreaPolygon)
+            {
+                return IsCandidateInsideFreeAreaPolygon(
+                    candidate);
+            }
+
             int pointCount =
                 CurrentPolylineGeometryPointCount;
 

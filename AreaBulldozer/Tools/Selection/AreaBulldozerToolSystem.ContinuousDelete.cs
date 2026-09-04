@@ -52,6 +52,12 @@ namespace AreaBulldozer.Tools
 
         private void UpdateContinuousDeleteInput()
         {
+            if (UseFreeAreaPolygon)
+            {
+                ResetContinuousDeleteState();
+                UpdateFreeAreaPolygonInput();
+                return;
+            }
 
             if (UsePolylineBrush)
             {
