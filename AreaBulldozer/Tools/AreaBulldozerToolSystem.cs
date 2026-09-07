@@ -287,6 +287,7 @@ namespace AreaBulldozer.Tools
             InitializeSpatialIndex();
             InitializeMarkerVisibility();
             InitializeToolStateCleanup();
+            InitializeEditorTool();
 
             m_PlantQuery = GetEntityQuery(
                 new EntityQueryDesc
@@ -518,6 +519,7 @@ namespace AreaBulldozer.Tools
             RestoreMarkerVisibility();
             DisposeMarkerVisibility();
             DisposeToolStateCleanup();
+            DisposeEditorTool();
 
             ResetPolylineSelection();
             ClearSelectionPreview();
@@ -681,6 +683,8 @@ namespace AreaBulldozer.Tools
                 return;
             }
 
+            SelectEditorTool();
+
             Enabled = true;
 
             m_ToolSystem.selected = Entity.Null;
@@ -689,6 +693,8 @@ namespace AreaBulldozer.Tools
 
         public void DeactivateTool()
         {
+            RestorePreviousEditorTool();
+
             if (m_ToolSystem.activeTool != this)
             {
                 Enabled = false;

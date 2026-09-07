@@ -1,10 +1,13 @@
 ﻿import React from "react";
 
+import { trigger } from "cs2/api";
 import { tool } from "cs2/bindings";
 import { useLocalization } from "cs2/l10n";
 import type { ModuleRegistryExtend } from "cs2/modding";
+import mod from "mod.json";
 
 import {
+    BindingKeys,
     isToolActive$,
     launcherMode$,
 } from "../bindings";
@@ -149,6 +152,12 @@ export const BackToBulldozer:
                             (event) => {
                                 event.preventDefault();
                                 event.stopPropagation();
+
+                                trigger(
+                                    mod.id,
+                                    BindingKeys.deactivateTool
+                                );
+
                                 tool.selectTool(
                                     tool.BULLDOZE_TOOL
                                 );

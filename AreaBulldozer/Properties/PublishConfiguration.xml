@@ -144,7 +144,7 @@
 	<ForumLink Value="https://forum.paradoxplaza.com/forum/threads/mod-area-bulldozer-area-deletion-tool-with-object-filters.1937211/" />
 
 	<!-- Mod version -->
-	<ModVersion Value="1.5.1" />
+	<ModVersion Value="1.5.2" />
 
 	<!--
 	Recommended game version.
@@ -172,9 +172,10 @@
 	-->
 
 	<ChangeLog>
-		Version 1.5.1
+		Version 1.5.2
 
 		- Tooltip text changed for shape selection buttons.
+		- Added Editor compatibility
 
 
 	</ChangeLog>

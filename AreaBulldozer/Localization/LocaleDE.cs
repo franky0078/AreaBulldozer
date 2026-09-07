@@ -126,6 +126,8 @@ namespace AreaBulldozer.Localization
                 { m_Setting.GetBindingKeyLocaleID(Mod.ActivateToolActionName), "Area Bulldozer aktivieren" },
                 { m_Setting.GetBindingMapLocaleID(), "Area Bulldozer" },
 
+                { "Editor.TOOL[AreaBulldozerTool]", "Area Bulldozer" },
+
                 // In-game tool interface
                 { "AreaBulldozer.UI.Title", "Area Bulldozer" },
                 { "AreaBulldozer.UI.ToggleTool", "Area Bulldozer umschalten" },
