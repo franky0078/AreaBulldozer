@@ -115,9 +115,10 @@ When reporting a problem, include:
 
 ## Changes
 
-Version 1.5.0
+Version 1.5.2
 
 - Tooltip text changed for shape selection buttons.
+- Added Editor compatibility
 
 
 ## License
