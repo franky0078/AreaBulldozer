@@ -10,7 +10,7 @@
 	<DisplayName Value="Area Bulldozer" />
 
 	<!-- Short description -->
-	<ShortDescription Value="Delete multiple objects using circle, square, triangle or multi-point corridor selections with configurable object filters." />
+	<ShortDescription Value="Delete multiple objects using circle, square, triangle, freeform area or multi-point corridor selections with configurable object filters." />
 
 	<!--
 	Long description.
