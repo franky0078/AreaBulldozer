@@ -54,6 +54,17 @@ Additional filters are available for:
 - Spawn locations
 - Asset lanes and sublanes
 
+
+## Compatibility
+
+The Anarchy button uses the original Anarchy icon from Unified Icon Library when the library is available. Unified Icon Library is optional and is not required to use Area Bulldozer. If the library is not installed or the icon cannot be loaded, Area Bulldozer automatically displays its built-in fallback icon. The Anarchy function remains fully available in either case.
+
+
+## Language support
+
+Area Bulldozer currently includes English and German. Support for additional languages is planned for future updates.
+
+
 ## Marker visibility
 
 Activity locations, spawn locations and other normally hidden markers can be highlighted while using the tool.
@@ -115,10 +126,11 @@ When reporting a problem, include:
 
 ## Changes
 
-Version 1.5.5
+Version 1.6.0
 
 - added Anarchy button and function
 - added dependency on Unified Icon Library
+- added fallback icon for Unified Icon Library is not loading
 
 
 ## License
