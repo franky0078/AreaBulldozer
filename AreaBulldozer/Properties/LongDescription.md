@@ -1,6 +1,5 @@
 Area Bulldozer adds a flexible area deletion tool to Cities: Skylines II.
 
-Instead of removing objects individually, you can select and delete multiple objects using circular, square, triangular, Freeform Area or multi-point corridor selections. The tool includes configurable object filters, marker visualization and several safety options.
 
 ## Selection shapes
 
@@ -12,6 +11,7 @@ Instead of removing objects individually, you can select and delete multiple obj
 
 The multi-point line also replaces the former dedicated line mode: simply use two points for a straight corridor. Additional points allow angled or complex deletion paths.
 The freeform area allows you to create custom deletion zones of almost any shape. Place as many corner points as needed and close the polygon by clicking the first point or by double-clicking.
+
 
 ## Features
 
@@ -46,6 +46,17 @@ Additional filters are available for:
 - Activity locations
 - Spawn locations
 - Asset lanes and sublanes
+
+
+## Compatibility
+
+The Anarchy button uses the original Anarchy icon from Unified Icon Library when the library is available. Unified Icon Library is optional and is not required to use Area Bulldozer. If the library is not installed or the icon cannot be loaded, Area Bulldozer automatically displays its built-in fallback icon. The Anarchy function remains fully available in either case.
+
+
+## Language support
+
+Area Bulldozer currently includes English and German. Support for additional languages is planned for future updates.
+
 
 ## Marker visibility
 

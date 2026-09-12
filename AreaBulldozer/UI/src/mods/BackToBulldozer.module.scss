@@ -49,6 +49,28 @@
     background-color: rgba(30, 112, 62, 0.72) !important;
 }
 
-.anarchyButtonActive:hover {
-    background-color: rgba(40, 137, 77, 0.85) !important;
+    .anarchyButtonActive:hover {
+        background-color: rgba(40, 137, 77, 0.85) !important;
+    }
+
+.anarchyIcon {
+    position: relative;
+    width: 23rem;
+    height: 23rem;
+    display: block;
+    color: #ffffff;
+    pointer-events: none;
+}
+
+.anarchyButtonActive .anarchyIcon {
+    color: #f2a51f;
+}
+
+.anarchyIcon svg,
+.anarchyLibraryIcon {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
 }

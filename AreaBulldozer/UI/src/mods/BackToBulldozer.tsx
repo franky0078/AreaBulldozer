@@ -14,6 +14,7 @@ import {
 } from "../bindings";
 
 import styles from "./BackToBulldozer.module.scss";
+import { AreaBulldozerIcon } from "./AreaBulldozerIcons";
 import { useSafeValue } from "./useSafeValue";
 import { VanillaComponentResolver } from "./VanillaComponentResolver";
 
@@ -87,6 +88,12 @@ export const BackToBulldozer:
                     false
                 );
 
+            const [loadedAnarchyIconSource, setLoadedAnarchyIconSource] =
+                React.useState<string | null>(null);
+
+            const [failedAnarchyIconSource, setFailedAnarchyIconSource] =
+                React.useState<string | null>(null);
+
             const { translate } =
                 useLocalization();
 
@@ -125,9 +132,6 @@ export const BackToBulldozer:
             const Section =
                 resolver.Section;
 
-            const ToolButton =
-                resolver.ToolButton;
-
             const Tooltip =
                 resolver.Tooltip;
 
@@ -139,8 +143,7 @@ export const BackToBulldozer:
 
 
             if (
-                typeof Section !== "function" ||
-                typeof ToolButton !== "function"
+                typeof Section !== "function"
             ) {
                 return result;
             }
@@ -233,18 +236,15 @@ export const BackToBulldozer:
                 ) ??
                 "Together with the vegetation filter, allows overridden or Anarchy-placed trees to be removed.";
 
+            const anarchyIconSource =
+                includeOverriddenVegetation
+                    ? ANARCHY_ICON_COLORED
+                    : ANARCHY_ICON_STANDARD;
+
             const anarchyButton =
                 (
-                    <ToolButton
-                        src={
-                            includeOverriddenVegetation
-                                ? ANARCHY_ICON_COLORED
-                                : ANARCHY_ICON_STANDARD
-                        }
-                        selected={false}
-                        multiSelect={false}
-                        disabled={false}
-                        focusKey={resolver.FOCUS_DISABLED}
+                    <button
+                        type="button"
                         className={[
                             toolButtonTheme?.button ?? "",
                             styles.anarchyButton,
@@ -254,9 +254,9 @@ export const BackToBulldozer:
                         ]
                             .filter(Boolean)
                             .join(" ")}
-                        onSelect={(event: any) => {
-                            event?.preventDefault?.();
-                            event?.stopPropagation?.();
+                        onClick={(event) => {
+                            event.preventDefault();
+                            event.stopPropagation();
 
                             trigger(
                                 mod.id,
@@ -267,7 +267,35 @@ export const BackToBulldozer:
                         aria-label={anarchyTitle}
                         aria-pressed={includeOverriddenVegetation}
                         title={Tooltip ? undefined : anarchyTitle}
-                    />
+                    >
+                        <span
+                            className={styles.anarchyIcon}
+                            aria-hidden="true"
+                        >
+                            {loadedAnarchyIconSource !== anarchyIconSource && (
+                                <AreaBulldozerIcon type="anarchy" />
+                            )}
+
+                            {failedAnarchyIconSource !== anarchyIconSource && (
+                                <img
+                                    key={anarchyIconSource}
+                                    className={styles.anarchyLibraryIcon}
+                                    src={anarchyIconSource}
+                                    alt=""
+                                    onLoad={() => {
+                                        setLoadedAnarchyIconSource(
+                                            anarchyIconSource
+                                        );
+                                    }}
+                                    onError={() => {
+                                        setFailedAnarchyIconSource(
+                                            anarchyIconSource
+                                        );
+                                    }}
+                                />
+                            )}
+                        </span>
+                    </button>
                 );
 
             const wrappedAnarchyButton =
