@@ -19,7 +19,8 @@ namespace AreaBulldozer.Tools
 
         // Entity-Prüfungen
         private bool IsEntityUsable(
-            Entity entity)
+            Entity entity,
+            bool allowOverridden = false)
         {
             if (entity == Entity.Null ||
                 !EntityManager.Exists(entity))
@@ -31,8 +32,9 @@ namespace AreaBulldozer.Tools
                     entity) ||
                 EntityManager.HasComponent<Temp>(
                     entity) ||
-                EntityManager.HasComponent<Overridden>(
-                    entity))
+                (!allowOverridden &&
+                 EntityManager.HasComponent<Overridden>(
+                     entity)))
             {
                 return false;
             }

@@ -29,6 +29,9 @@ namespace AreaBulldozer.Localization
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DeleteTrees)), "Remove trees and vegetation" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.DeleteTrees)), "Targets trees, bushes, and other vegetation inside the selection area." },
 
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.IncludeOverriddenVegetation)), "Include Anarchy vegetation" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.IncludeOverriddenVegetation)), "Allows overridden or Anarchy-placed trees and vegetation to be removed. This option is disabled by default." },
+
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DeleteBuildings)), "Remove buildings" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.DeleteBuildings)), "Targets complete root buildings inside the selection area. Building-owned props, markers, and lanes are not counted as separate buildings." },
 
@@ -164,6 +167,8 @@ namespace AreaBulldozer.Localization
                 { "AreaBulldozer.UI.ChooseFilters", "Choose filters" },
                 { "AreaBulldozer.UI.Vegetation", "Trees and vegetation" },
                 { "AreaBulldozer.UI.VegetationShort", "Vegetation" },
+                { "AreaBulldozer.UI.AnarchyVegetation", "Anarchy" },
+                { "AreaBulldozer.UI.AnarchyVegetationTooltip", "Together with the vegetation filter, allows overridden or Anarchy-placed trees to be removed." },
                 { "AreaBulldozer.UI.Buildings", "Buildings" },
                 { "AreaBulldozer.UI.Roads", "Roads" },
                 { "AreaBulldozer.UI.Paths", "Pedestrian paths" },

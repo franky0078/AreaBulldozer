@@ -310,7 +310,11 @@ namespace AreaBulldozer.Tools
                     continue;
                 }
 
-                if (!IsEntityUsable(entity))
+                if (!IsEntityUsable(
+                        entity,
+                        allowOverridden:
+                            candidate.IsVegetation &&
+                            filters.IncludeOverriddenVegetation))
                 {
                     continue;
                 }

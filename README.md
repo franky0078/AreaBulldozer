@@ -115,10 +115,10 @@ When reporting a problem, include:
 
 ## Changes
 
-Version 1.5.2
+Version 1.5.5
 
-- Tooltip text changed for shape selection buttons.
-- Added Editor compatibility
+- Anarchy Fix
+- Added Anarchy button
 
 
 ## License

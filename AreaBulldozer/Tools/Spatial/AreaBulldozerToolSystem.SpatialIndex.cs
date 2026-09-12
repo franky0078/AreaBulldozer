@@ -395,7 +395,10 @@ namespace AreaBulldozer.Tools
             {
                 foreach (Entity entity in entities)
                 {
-                    if (!IsEntityUsable(entity))
+                    if (!IsEntityUsable(
+                            entity,
+                            allowOverridden:
+                                kind == SpatialCandidateKind.Vegetation))
                     {
                         continue;
                     }

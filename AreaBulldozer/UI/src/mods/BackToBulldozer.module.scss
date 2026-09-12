@@ -23,3 +23,69 @@
 .backIcon {
     color: #ffffff;
 }
+
+.navigationButtons {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: nowrap;
+}
+
+.anarchyButton {
+    width: 32rem;
+    height: 32rem;
+    flex: 0 0 32rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 2rem;
+    padding: 0;
+    cursor: pointer;
+}
+
+.anarchyButtonActive {
+    border-color: rgba(84, 210, 126, 0.9) !important;
+    background-color: rgba(30, 112, 62, 0.72) !important;
+}
+
+    .anarchyButtonActive:hover {
+        background-color: rgba(40, 137, 77, 0.85) !important;
+    }
+
+.anarchyIcon {
+    width: 23rem;
+    height: 23rem;
+    display: block;
+    color: #ffffff;
+}
+
+    .anarchyIcon svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+    }
+
+        .anarchyIcon svg [data-anarchy-part] {
+            fill: none !important;
+        }
+
+        .anarchyIcon svg [data-anarchy-part="ring"] {
+            stroke: #ffffff !important;
+        }
+
+        .anarchyIcon svg [data-anarchy-part="letter"] {
+            stroke: #ffffff !important;
+        }
+
+.anarchyButton:hover .anarchyIcon svg [data-anarchy-part="ring"] {
+    stroke: #ffffff !important;
+}
+
+.anarchyButton:hover .anarchyIcon svg [data-anarchy-part="letter"] {
+    stroke: #ffffff !important;
+}
+
+.anarchyButton:hover .anarchyIcon {
+    color: #ffffff;
+}

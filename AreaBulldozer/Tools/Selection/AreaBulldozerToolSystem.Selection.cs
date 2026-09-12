@@ -202,7 +202,11 @@ namespace AreaBulldozer.Tools
                 Entity entity =
                     candidate.Entity;
 
-                if (!IsEntityUsable(entity))
+                if (!IsEntityUsable(
+                        entity,
+                        allowOverridden:
+                            candidate.IsVegetation &&
+                            filters.IncludeOverriddenVegetation))
                 {
                     continue;
                 }

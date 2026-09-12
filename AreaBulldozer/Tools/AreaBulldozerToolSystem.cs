@@ -301,8 +301,7 @@ namespace AreaBulldozer.Tools
                     None = new ComponentType[]
                     {
                         ComponentType.ReadOnly<Deleted>(),
-                        ComponentType.ReadOnly<Temp>(),
-                        ComponentType.ReadOnly<Overridden>()
+                        ComponentType.ReadOnly<Temp>()
                     }
                 });
 
@@ -466,6 +465,9 @@ namespace AreaBulldozer.Tools
                 "Building filter support initialized.");
 
             TryLogInfo(
+                "Anarchy-compatible vegetation deletion initialized.");
+
+            TryLogInfo(
                 "Road network filter support initialized.");
 
             TryLogInfo(
@@ -614,6 +616,7 @@ namespace AreaBulldozer.Tools
                 Mod.LogDiagnosticInfo(
                     $"Active selection - {shapeDescription}. " +
                     $"Active filters - vegetation: {Mod.Settings?.DeleteTrees}, " +
+                    $"Anarchy vegetation: {Mod.Settings?.IncludeOverriddenVegetation}, " +
                     $"buildings: {Mod.Settings?.DeleteBuildings}, " +
                     $"roads: {Mod.Settings?.DeleteRoads}, " +
                     $"pedestrian paths: {Mod.Settings?.DeletePaths}, " +

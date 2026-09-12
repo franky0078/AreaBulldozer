@@ -188,6 +188,9 @@ namespace AreaBulldozer.UISystems
                 AreaBulldozerUIBindingConstants.DeleteTrees,
                 () => Mod.Settings?.DeleteTrees ?? true);
             AddBooleanValueBinding(
+                AreaBulldozerUIBindingConstants.IncludeOverriddenVegetation,
+                () => Mod.Settings?.IncludeOverriddenVegetation ?? false);
+            AddBooleanValueBinding(
                 AreaBulldozerUIBindingConstants.DeleteBuildings,
                 () => Mod.Settings?.DeleteBuildings ?? false);
             AddBooleanValueBinding(
@@ -376,6 +379,10 @@ namespace AreaBulldozer.UISystems
             AddBooleanSettingTrigger(
                 AreaBulldozerUIBindingConstants.SetDeleteTrees,
                 (setting, value) => setting.DeleteTrees = value);
+            AddBooleanSettingTrigger(
+                AreaBulldozerUIBindingConstants.SetIncludeOverriddenVegetation,
+                (setting, value) =>
+                    setting.IncludeOverriddenVegetation = value);
             AddBooleanSettingTrigger(
                 AreaBulldozerUIBindingConstants.SetDeleteBuildings,
                 (setting, value) => setting.DeleteBuildings = value);

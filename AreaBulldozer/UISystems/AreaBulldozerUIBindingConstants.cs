@@ -22,6 +22,7 @@ namespace AreaBulldozer.UISystems
         public const string LauncherPositionY = "launcherPositionY";
 
         public const string DeleteTrees = "deleteTrees";
+        public const string IncludeOverriddenVegetation = "includeOverriddenVegetation";
         public const string DeleteBuildings = "deleteBuildings";
         public const string DeleteRoads = "deleteRoads";
         public const string DeletePaths = "deletePaths";
@@ -61,6 +62,7 @@ namespace AreaBulldozer.UISystems
         public const string SetLauncherPositionY = "setLauncherPositionY";
 
         public const string SetDeleteTrees = "setDeleteTrees";
+        public const string SetIncludeOverriddenVegetation = "setIncludeOverriddenVegetation";
         public const string SetDeleteBuildings = "setDeleteBuildings";
         public const string SetDeleteRoads = "setDeleteRoads";
         public const string SetDeletePaths = "setDeletePaths";

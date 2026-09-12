@@ -8,11 +8,13 @@ import mod from "mod.json";
 
 import {
     BindingKeys,
+    includeOverriddenVegetation$,
     isToolActive$,
     launcherMode$,
 } from "../bindings";
 
 import styles from "./BackToBulldozer.module.scss";
+import { AreaBulldozerIcon } from "./AreaBulldozerIcons";
 import { useSafeValue } from "./useSafeValue";
 import { VanillaComponentResolver } from "./VanillaComponentResolver";
 
@@ -71,6 +73,13 @@ export const BackToBulldozer:
                     "launcherMode$",
                     launcherMode$,
                     0
+                );
+
+            const includeOverriddenVegetation =
+                useSafeValue(
+                    "includeOverriddenVegetation$",
+                    includeOverriddenVegetation$,
+                    false
                 );
 
             const { translate } =
@@ -201,6 +210,74 @@ export const BackToBulldozer:
                     : button;
 
 
+            const anarchyTitle =
+                translate(
+                    `${UI_PREFIX}AnarchyVegetation`,
+                    "Anarchy"
+                ) ??
+                "Anarchy";
+
+            const anarchyText =
+                translate(
+                    `${UI_PREFIX}AnarchyVegetationTooltip`,
+                    "Together with the vegetation filter, allows overridden or Anarchy-placed trees to be removed."
+                ) ??
+                "Together with the vegetation filter, allows overridden or Anarchy-placed trees to be removed.";
+
+            const anarchyButton =
+                (
+                    <button
+                        type="button"
+                        className={[
+                            toolButtonTheme?.button ?? "",
+                            styles.anarchyButton,
+                            includeOverriddenVegetation
+                                ? styles.anarchyButtonActive
+                                : "",
+                        ]
+                            .filter(Boolean)
+                            .join(" ")}
+                        onClick={(event) => {
+                            event.preventDefault();
+                            event.stopPropagation();
+
+                            trigger(
+                                mod.id,
+                                BindingKeys.setIncludeOverriddenVegetation,
+                                !includeOverriddenVegetation
+                            );
+                        }}
+                        aria-label={anarchyTitle}
+                        aria-pressed={includeOverriddenVegetation}
+                        title={Tooltip ? undefined : anarchyTitle}
+                    >
+                        <span className={styles.anarchyIcon}>
+                            <AreaBulldozerIcon type="anarchy" />
+                        </span>
+                    </button>
+                );
+
+            const wrappedAnarchyButton =
+                Tooltip
+                    ? (
+                        <Tooltip
+                            tooltip={
+                                <>
+                                    <div className={tooltipTheme?.title}>
+                                        {anarchyTitle}
+                                    </div>
+                                    <div className={tooltipTheme?.content}>
+                                        {anarchyText}
+                                    </div>
+                                </>
+                            }
+                        >
+                            {anarchyButton}
+                        </Tooltip>
+                    )
+                    : anarchyButton;
+
+
             const backSection =
                 (
                     <Section
@@ -212,7 +289,10 @@ export const BackToBulldozer:
                             "Navigation"
                         }
                     >
-                        {wrappedButton}
+                        <div className={styles.navigationButtons}>
+                            {wrappedButton}
+                            {wrappedAnarchyButton}
+                        </div>
                     </Section>
                 );
 

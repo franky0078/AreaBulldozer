@@ -9,6 +9,7 @@ export type AreaBulldozerIconType =
     | "straight"
     | "curve"
     | "vegetation"
+    | "anarchy"
     | "building"
     | "road"
     | "path"
@@ -108,6 +109,22 @@ export function AreaBulldozerIcon({ type }: { type: AreaBulldozerIconType }) {
             return (
                 <svg {...common}>
                     <path d="M16 4 9 14h4l-6 8h7v6h4v-6h7l-6-8h4L16 4Z" />
+                </svg>
+            );
+
+        case "anarchy":
+            return (
+                <svg {...common}>
+                    <circle
+                        data-anarchy-part="ring"
+                        cx="16"
+                        cy="16"
+                        r="11.5"
+                    />
+                    <path
+                        data-anarchy-part="letter"
+                        d="M9 25 16 6.5 23 25M11.3 19h9.4"
+                    />
                 </svg>
             );
 

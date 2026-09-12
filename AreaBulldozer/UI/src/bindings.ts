@@ -16,6 +16,7 @@ export const BindingKeys = {
     setLauncherPositionY: "setLauncherPositionY",
 
     setDeleteTrees: "setDeleteTrees",
+    setIncludeOverriddenVegetation: "setIncludeOverriddenVegetation",
     setDeleteBuildings: "setDeleteBuildings",
     setDeleteRoads: "setDeleteRoads",
     setDeletePaths: "setDeletePaths",
@@ -128,6 +129,12 @@ export const deleteTrees$ = bindValue<boolean>(
     mod.id,
     "deleteTrees",
     true
+);
+
+export const includeOverriddenVegetation$ = bindValue<boolean>(
+    mod.id,
+    "includeOverriddenVegetation",
+    false
 );
 
 export const deleteBuildings$ = bindValue<boolean>(
