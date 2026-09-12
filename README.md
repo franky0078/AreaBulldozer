@@ -117,8 +117,8 @@ When reporting a problem, include:
 
 Version 1.5.5
 
-- Anarchy Fix
-- Added Anarchy button
+- added Anarchy button and function
+- added dependency on Unified Icon Library
 
 
 ## License

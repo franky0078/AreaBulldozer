@@ -14,7 +14,6 @@ import {
 } from "../bindings";
 
 import styles from "./BackToBulldozer.module.scss";
-import { AreaBulldozerIcon } from "./AreaBulldozerIcons";
 import { useSafeValue } from "./useSafeValue";
 import { VanillaComponentResolver } from "./VanillaComponentResolver";
 
@@ -22,6 +21,12 @@ import { VanillaComponentResolver } from "./VanillaComponentResolver";
 const UI_PREFIX = "AreaBulldozer.UI.";
 
 const VANILLA_BULLDOZER_LAUNCHER_MODE = 1;
+
+const ANARCHY_ICON_STANDARD =
+    "coui://uil/Standard/Anarchy.svg";
+
+const ANARCHY_ICON_COLORED =
+    "coui://uil/Colored/Anarchy.svg";
 
 
 function BackArrowIcon() {
@@ -120,6 +125,9 @@ export const BackToBulldozer:
             const Section =
                 resolver.Section;
 
+            const ToolButton =
+                resolver.ToolButton;
+
             const Tooltip =
                 resolver.Tooltip;
 
@@ -131,7 +139,8 @@ export const BackToBulldozer:
 
 
             if (
-                typeof Section !== "function"
+                typeof Section !== "function" ||
+                typeof ToolButton !== "function"
             ) {
                 return result;
             }
@@ -226,8 +235,16 @@ export const BackToBulldozer:
 
             const anarchyButton =
                 (
-                    <button
-                        type="button"
+                    <ToolButton
+                        src={
+                            includeOverriddenVegetation
+                                ? ANARCHY_ICON_COLORED
+                                : ANARCHY_ICON_STANDARD
+                        }
+                        selected={false}
+                        multiSelect={false}
+                        disabled={false}
+                        focusKey={resolver.FOCUS_DISABLED}
                         className={[
                             toolButtonTheme?.button ?? "",
                             styles.anarchyButton,
@@ -237,9 +254,9 @@ export const BackToBulldozer:
                         ]
                             .filter(Boolean)
                             .join(" ")}
-                        onClick={(event) => {
-                            event.preventDefault();
-                            event.stopPropagation();
+                        onSelect={(event: any) => {
+                            event?.preventDefault?.();
+                            event?.stopPropagation?.();
 
                             trigger(
                                 mod.id,
@@ -250,11 +267,7 @@ export const BackToBulldozer:
                         aria-label={anarchyTitle}
                         aria-pressed={includeOverriddenVegetation}
                         title={Tooltip ? undefined : anarchyTitle}
-                    >
-                        <span className={styles.anarchyIcon}>
-                            <AreaBulldozerIcon type="anarchy" />
-                        </span>
-                    </button>
+                    />
                 );
 
             const wrappedAnarchyButton =

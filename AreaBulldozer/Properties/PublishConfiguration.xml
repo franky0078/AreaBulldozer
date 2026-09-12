@@ -159,6 +159,7 @@
 	Example:
 	<Dependency Id="123456" />
 	-->
+	<Dependency Id="74417" DisplayName="Unified Icon Library" Version="1.0.13" />
 
 	<!--
 	Only add required DLC entries when the mod truly requires them.
@@ -174,8 +175,8 @@
 	<ChangeLog>
 		Version 1.5.5
 
-		- Anarchy Fix
-		- Added Anarchy button
+		- added Anarchy button and function
+		- added dependency on Unified Icon Library
 
 
 	</ChangeLog>
