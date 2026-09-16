@@ -31,6 +31,7 @@ The freeform area allows you to create custom deletion zones of almost any shape
 - Optional launcher button in the universal mod menu
 - Optional movable launcher button
 - Configurable keyboard shortcut
+- Language support for German, English, French, Italian and Spanish
 
 ## Object filters
 
@@ -126,11 +127,9 @@ When reporting a problem, include:
 
 ## Changes
 
-Version 1.6.0
+Version 1.6.1
 
-- added Anarchy button and function
-- added dependency on Unified Icon Library
-- added fallback icon for Unified Icon Library is not loading
+- added language support for French, Italian and Spanish
 
 
 ## License
