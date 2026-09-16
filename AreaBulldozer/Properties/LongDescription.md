@@ -24,6 +24,7 @@ The freeform area allows you to create custom deletion zones of almost any shape
 - Optional launcher button in the universal mod menu
 - Optional movable launcher button
 - Configurable keyboard shortcut
+- Language support for German, English, French, Italian and Spanish
 
 ## Object filters
 
@@ -55,7 +56,7 @@ The Anarchy button uses the original Anarchy icon from Unified Icon Library when
 
 ## Language support
 
-Area Bulldozer currently includes English and German. Support for additional languages is planned for future updates.
+Support for additional languages is planned for future updates.
 
 
 ## Marker visibility

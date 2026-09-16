@@ -197,7 +197,34 @@ namespace AreaBulldozer.Localization
                 { "AreaBulldozer.UI.Objects", "objects" },
                 { "AreaBulldozer.UI.ApplyHelp", "Delete selected objects" },
                 { "AreaBulldozer.UI.RotateHelp", "Hold and drag to rotate" },
-                { "AreaBulldozer.UI.ShortcutHelp", "Toggle tool" }
+                { "AreaBulldozer.UI.ShortcutHelp", "Toggle tool" },
+
+                { "AreaBulldozer.UI.Triangle", "Triangle" },
+                { "AreaBulldozer.UI.TriangleTooltip", "Equilateral selection area around the cursor. Size is measured from the center to a corner. Hold the right mouse button and move horizontally to rotate it." },
+                { "AreaBulldozer.UI.TriangleSize", "Triangle size" },
+                { "AreaBulldozer.UI.MultiPointLine", "Multi-point line" },
+                { "AreaBulldozer.UI.MultiPointLineTooltip", "Corridor using 2 to 25 points with straight or rounded transitions. Left click adds points. Double-click the final point to finish and delete. Right click removes the last point; Esc cancels the whole selection." },
+                { "AreaBulldozer.UI.MultiPointLineWidth", "Multi-point line width" },
+                { "AreaBulldozer.UI.DecreaseLineWidth", "Make corridor narrower" },
+                { "AreaBulldozer.UI.IncreaseLineWidth", "Make corridor wider" },
+                { "AreaBulldozer.UI.PolylineStyle", "Line style" },
+                { "AreaBulldozer.UI.PolylineStraight", "Straight" },
+                { "AreaBulldozer.UI.PolylineStraightTooltip", "Connects all placed points with straight segments." },
+                { "AreaBulldozer.UI.PolylineCurved", "Curve" },
+                { "AreaBulldozer.UI.PolylineCurvedTooltip", "Rounds the transitions between placed points. The curve stays controlled between the adjacent segments and does not overshoot." },
+                { "AreaBulldozer.UI.PolylineRounding", "Curve rounding" },
+                { "AreaBulldozer.UI.DecreasePolylineRounding", "Decrease rounding" },
+                { "AreaBulldozer.UI.IncreasePolylineRounding", "Increase rounding" },
+                { "AreaBulldozer.UI.Spline", "Multi-point line" },
+                { "AreaBulldozer.UI.SplineTooltip", "Corridor using 2 to 25 points. Left click adds points. Double-click finishes and deletes. Right click removes the last point; Esc cancels." },
+                { "AreaBulldozer.UI.SplineWidth", "Multi-point line width" },
+                { "AreaBulldozer.UI.FreeAreaPolygon", "Freeform area" },
+                { "AreaBulldozer.UI.FreeAreaPolygonActive", "Freeform area" },
+                { "AreaBulldozer.UI.PolygonPoints", "points" },
+                { "AreaBulldozer.UI.FreeAreaPolygonTooltip", "Define a freeform deletion area using an unlimited number of corner points. Left-click to place points. Click the first point or double-click to close the polygon and delete everything inside it. Right-click removes the last point, and Esc cancels the current selection. Self-intersecting edges are prevented automatically." },
+
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.EnableDiagnosticLogging)), "Enable diagnostic logging" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.EnableDiagnosticLogging)), "Writes additional informational and diagnostic messages to the log. Disabled by default. Warnings and errors are still logged regardless of this setting." }
             };
         }
 

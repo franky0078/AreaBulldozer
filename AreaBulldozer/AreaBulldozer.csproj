@@ -7,9 +7,9 @@
 		<RootNamespace>AreaBulldozer</RootNamespace>
 
 		<!-- Keep synchronized with Mod.ModVersion and PublishConfiguration.xml. -->
-		<Version>1.6.0</Version>
-		<AssemblyVersion>1.6.0.0</AssemblyVersion>
-		<FileVersion>1.6.0.0</FileVersion>
+		<Version>1.6.1</Version>
+		<AssemblyVersion>1.6.1.0</AssemblyVersion>
+		<FileVersion>1.6.1.0</FileVersion>
 
 		<!--
 		The file where mod information required for publishing

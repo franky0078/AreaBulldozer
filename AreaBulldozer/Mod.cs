@@ -13,7 +13,7 @@ namespace AreaBulldozer
 {
     public class Mod : IMod
     {
-        public const string ModVersion = "1.6.0";
+        public const string ModVersion = "1.6.1";
 
         public static readonly ILog Log = LogManager
             .GetLogger(
@@ -62,24 +62,20 @@ namespace AreaBulldozer
                 new LocaleEN(Settings));
 
             GameManager.instance.localizationManager.AddSource(
-                "en-US",
-                new LocaleSelectionShapesEN(Settings));
-
-            GameManager.instance.localizationManager.AddSource(
-                "en-US",
-                new LocalePolygonEN());
-
-            GameManager.instance.localizationManager.AddSource(
                 "de-DE",
                 new LocaleDE(Settings));
 
             GameManager.instance.localizationManager.AddSource(
-                "de-DE",
-                new LocaleSelectionShapesDE(Settings));
+                "es-ES",
+                new LocaleES(Settings));
 
             GameManager.instance.localizationManager.AddSource(
-                "de-DE",
-                new LocalePolygonDE());
+                "fr-FR",
+                new LocaleFR(Settings));
+
+            GameManager.instance.localizationManager.AddSource(
+                "it-IT",
+                new LocaleIT(Settings));
 
             AssetDatabase.global.LoadSettings(
                 nameof(AreaBulldozer),

@@ -43,6 +43,7 @@
 		- Optional launcher button in the universal mod menu
 		- Optional movable launcher button
 		- Configurable keyboard shortcut
+		- Language support for German, English, French, Italian and Spanish
 
 		## Object filters
 
@@ -74,7 +75,7 @@
 
 		## Language support
 
-		Area Bulldozer currently includes English and German. Support for additional languages is planned for future updates.
+		Support for additional languages is planned for future updates.
 
 
 		## Marker visibility
@@ -154,7 +155,7 @@
 	<ForumLink Value="https://forum.paradoxplaza.com/forum/threads/mod-area-bulldozer-area-deletion-tool-with-object-filters.1937211/" />
 
 	<!-- Mod version -->
-	<ModVersion Value="1.6.0" />
+	<ModVersion Value="1.6.1" />
 
 	<!--
 	Recommended game version.
@@ -183,11 +184,9 @@
 	-->
 
 	<ChangeLog>
-		Version 1.6.0
+		Version 1.6.1
 
-		- added Anarchy button and function
-		- added dependency on Unified Icon Library
-		- added fallback icon for Unified Icon Library is not loading
+		- added language support for French, Italian and Spanish
 
 
 	</ChangeLog>
