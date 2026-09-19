@@ -40,6 +40,14 @@ export const BindingKeys = {
 
     setConfirmLargeSelection: "setConfirmLargeSelection",
     setLargeSelectionThreshold: "setLargeSelectionThreshold",
+
+    setSelectionColor: "setSelectionColor",
+    setConfirmationColor: "setConfirmationColor",
+    setDeleteColor: "setDeleteColor",
+    setSurfaceColor: "setSurfaceColor",
+    setColorEditorPositionX: "setColorEditorPositionX",
+    setColorEditorPositionY: "setColorEditorPositionY",
+    resetColors: "resetColors",
 } as const;
 
 export const isToolActive$ = bindValue<boolean>(
@@ -255,4 +263,40 @@ export const largeSelectionThreshold$ = bindValue<number>(
     mod.id,
     "largeSelectionThreshold",
     250
+);
+
+export const selectionColor$ = bindValue<number>(
+    mod.id,
+    "selectionColor",
+    0xff401a
+);
+
+export const confirmationColor$ = bindValue<number>(
+    mod.id,
+    "confirmationColor",
+    0xffd91a
+);
+
+export const deleteColor$ = bindValue<number>(
+    mod.id,
+    "deleteColor",
+    0x1ff238
+);
+
+export const surfaceColor$ = bindValue<number>(
+    mod.id,
+    "surfaceColor",
+    0x14dbff
+);
+
+export const colorEditorPositionX$ = bindValue<number>(
+    mod.id,
+    "colorEditorPositionX",
+    -1
+);
+
+export const colorEditorPositionY$ = bindValue<number>(
+    mod.id,
+    "colorEditorPositionY",
+    -1
 );

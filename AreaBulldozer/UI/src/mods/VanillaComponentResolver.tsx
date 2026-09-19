@@ -40,6 +40,10 @@ const registryIndex = {
         "game-ui/game/components/tool-options/mouse-tool-options/mouse-tool-options.module.scss",
         "classes",
     ],
+    toolOptionsPanelTheme: [
+        "game-ui/game/components/tool-options/tool-options-panel.module.scss",
+        "classes",
+    ],
     descriptionTooltipTheme: [
         "game-ui/common/tooltip/description-tooltip/description-tooltip.module.scss",
         "classes",
@@ -101,6 +105,13 @@ export class VanillaComponentResolver {
         return (
             this.cachedData["mouseToolOptionsTheme"] ??
             this.updateCache("mouseToolOptionsTheme")
+        );
+    }
+
+    public get toolOptionsPanelTheme(): Theme | any {
+        return (
+            this.cachedData["toolOptionsPanelTheme"] ??
+            this.updateCache("toolOptionsPanelTheme")
         );
     }
 

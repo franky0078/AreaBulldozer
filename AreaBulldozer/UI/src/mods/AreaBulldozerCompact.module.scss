@@ -2,6 +2,15 @@
 $buttonSize: 32rem;
 $iconSize: 21rem;
 
+.compactColorToolbar {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    box-sizing: border-box;
+    padding: 0 12rem 4rem 2rem;
+}
+
 .iconButton {
     width: $buttonSize;
     height: $buttonSize;

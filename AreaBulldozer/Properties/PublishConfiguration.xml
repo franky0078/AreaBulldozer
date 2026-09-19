@@ -37,11 +37,11 @@
 		- Live preview of the selected area
 		- Adjustable selection size and corridor width
 		- Rotation for square and triangle selections
-		- Multi-point corridors with up to 15 points
+		- Multi-point corridors with up to 25 points
 		- Compact in-game tool interface
 		- Configurable interface scaling
 		- Optional launcher button in the universal mod menu
-		- Optional movable launcher button
+		- Color editor options for customizing selection shapes and preview
 		- Configurable keyboard shortcut
 		- Language support for German, English, French, Italian and Spanish
 
@@ -155,7 +155,7 @@
 	<ForumLink Value="https://forum.paradoxplaza.com/forum/threads/mod-area-bulldozer-area-deletion-tool-with-object-filters.1937211/" />
 
 	<!-- Mod version -->
-	<ModVersion Value="1.6.1" />
+	<ModVersion Value="1.7.0" />
 
 	<!--
 	Recommended game version.
@@ -184,9 +184,9 @@
 	-->
 
 	<ChangeLog>
-		Version 1.6.1
+		Version 1.7.0
 
-		- added language support for French, Italian and Spanish
+		- added new color editor options for customizing selection shapes and preview
 
 
 	</ChangeLog>

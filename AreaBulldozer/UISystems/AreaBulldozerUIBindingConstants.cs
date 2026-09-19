@@ -47,6 +47,13 @@ namespace AreaBulldozer.UISystems
         public const string ConfirmLargeSelection = "confirmLargeSelection";
         public const string LargeSelectionThreshold = "largeSelectionThreshold";
 
+        public const string SelectionColor = "selectionColor";
+        public const string ConfirmationColor = "confirmationColor";
+        public const string DeleteColor = "deleteColor";
+        public const string SurfaceColor = "surfaceColor";
+        public const string ColorEditorPositionX = "colorEditorPositionX";
+        public const string ColorEditorPositionY = "colorEditorPositionY";
+
         // Triggers
         public const string ToggleTool = "toggleTool";
         public const string DeactivateTool = "deactivateTool";
@@ -86,5 +93,13 @@ namespace AreaBulldozer.UISystems
 
         public const string SetConfirmLargeSelection = "setConfirmLargeSelection";
         public const string SetLargeSelectionThreshold = "setLargeSelectionThreshold";
+
+        public const string SetSelectionColor = "setSelectionColor";
+        public const string SetConfirmationColor = "setConfirmationColor";
+        public const string SetDeleteColor = "setDeleteColor";
+        public const string SetSurfaceColor = "setSurfaceColor";
+        public const string SetColorEditorPositionX = "setColorEditorPositionX";
+        public const string SetColorEditorPositionY = "setColorEditorPositionY";
+        public const string ResetColors = "resetColors";
     }
 }

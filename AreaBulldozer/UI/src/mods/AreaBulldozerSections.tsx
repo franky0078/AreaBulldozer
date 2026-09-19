@@ -26,6 +26,7 @@ import {
     deleteTrees$,
     dimMarkerBackground$,
     isToolActive$,
+    launcherMode$,
     lineWidth$,
     polylineRounding$,
     selectionShape$,
@@ -33,6 +34,10 @@ import {
     squareRotationDegrees$,
     uiScale$,
 } from "../bindings";
+import {
+    toggleColorEditor,
+    useColorEditorOpen,
+} from "./AreaBulldozerColorEditorState";
 
 const UI_PREFIX = "AreaBulldozer.UI.";
 
@@ -40,6 +45,8 @@ const SHAPE_CIRCLE = 0;
 const SHAPE_SQUARE = 1;
 const SHAPE_TRIANGLE = 2;
 const SHAPE_POLYLINE = 4;
+
+const VANILLA_BULLDOZER_LAUNCHER_MODE = 1;
 
 const freeAreaPolygon$ = bindValue<boolean>(
     mod.id,
@@ -232,6 +239,14 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
             isToolActive$,
             false
         );
+
+        const launcherMode = useSafeValue(
+            "launcherMode$",
+            launcherMode$,
+            0
+        );
+
+        const colorEditorOpen = useColorEditorOpen();
 
         const brushRadius = useSafeValue(
             "brushRadius$",
@@ -545,6 +560,31 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
 
         const sections = (
             <ScaleContext.Provider value={scale}>
+                {launcherMode !== VANILLA_BULLDOZER_LAUNCHER_MODE && (
+                    <div className={styles.compactColorToolbar}>
+                        <IconToolButton
+                            icon="palette"
+                            selected={colorEditorOpen}
+                            tooltipTitle={
+                                colorEditorOpen
+                                    ? text(
+                                        "CloseColorEditor",
+                                        "Farbeditor schließen"
+                                    )
+                                    : text(
+                                        "OpenColorEditor",
+                                        "Farbeditor öffnen"
+                                    )
+                            }
+                            tooltipText={text(
+                                "ColorEditorTooltip",
+                                "Farben mit direkter Vorschau anpassen."
+                            )}
+                            onSelect={toggleColorEditor}
+                        />
+                    </div>
+                )}
+
                 <Section title={text("Selection", "Auswahl")}>
                     <IconToolButton
                         icon="circle"
@@ -675,7 +715,9 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
                                 "Punkte"
                             )
                         }
-                    />
+                    >
+                        <></>
+                    </Section>
                 )}
 
                 {isPolyline && (

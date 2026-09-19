@@ -1,6 +1,7 @@
 import type { ModRegistrar } from "cs2/modding";
 
 import { AreaBulldozerSections } from "./mods/AreaBulldozerSections";
+import { AreaBulldozerColorEditorWindow } from "./mods/AreaBulldozerColorEditorWindow";
 import { BackToBulldozer } from "./mods/BackToBulldozer";
 
 import {
@@ -17,7 +18,7 @@ import { launcherMode$ } from "./bindings";
 
 
 const UI_BUILD =
-    "r7-free-area-polygon-direct";
+    "r14-compact-color-button";
 
 
 const ENABLE = {
@@ -27,6 +28,7 @@ const ENABLE = {
     BACK_TO_BULLDOZER: true,
     VANILLA_LAUNCHER: true,
     PANEL_VISIBLE: true,
+    COLOR_EDITOR: true,
 };
 
 
@@ -124,6 +126,21 @@ const register:
                     );
             }
         );
+
+
+        if (
+            ENABLE.COLOR_EDITOR
+        ) {
+            safely(
+                "Verschiebbarer Farbeditor",
+                () => {
+                    moduleRegistry.append(
+                        "GameTopLeft",
+                        AreaBulldozerColorEditorWindow
+                    );
+                }
+            );
+        }
 
 
         if (

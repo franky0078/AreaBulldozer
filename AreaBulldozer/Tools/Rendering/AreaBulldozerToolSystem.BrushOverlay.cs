@@ -39,6 +39,32 @@ namespace AreaBulldozer.Tools
                     150) /
                 100f;
 
+            Setting settings = Mod.Settings;
+
+            UnityEngine.Color selectionColor =
+                CreateOverlayColor(
+                    settings?.SelectionColorRed ?? 255,
+                    settings?.SelectionColorGreen ?? 64,
+                    settings?.SelectionColorBlue ?? 26);
+
+            UnityEngine.Color confirmationColor =
+                CreateOverlayColor(
+                    settings?.ConfirmationColorRed ?? 255,
+                    settings?.ConfirmationColorGreen ?? 217,
+                    settings?.ConfirmationColorBlue ?? 26);
+
+            UnityEngine.Color deleteColor =
+                CreateOverlayColor(
+                    settings?.DeleteColorRed ?? 31,
+                    settings?.DeleteColorGreen ?? 242,
+                    settings?.DeleteColorBlue ?? 56);
+
+            UnityEngine.Color surfaceColor =
+                CreateOverlayColor(
+                    settings?.SurfaceColorRed ?? 20,
+                    settings?.SurfaceColorGreen ?? 219,
+                    settings?.SurfaceColorBlue ?? 255);
+
             ToolRadiusJob radiusJob =
                 new()
                 {
@@ -54,6 +80,10 @@ namespace AreaBulldozer.Tools
                         m_LargeSelectionConfirmationPending,
                     DeleteActive =
                         IsDeleteVisualFeedbackActive,
+                    SelectionColor = selectionColor,
+                    ConfirmationColor = confirmationColor,
+                    DeleteColor = deleteColor,
+                    SurfaceColor = surfaceColor,
                     SurfaceOutlineSegmentPoints =
                         surfaceOutlineSegmentPoints,
                     SquareBrushCorners =
@@ -78,6 +108,18 @@ namespace AreaBulldozer.Tools
                 jobHandle);
 
             return jobHandle;
+        }
+
+        private static UnityEngine.Color CreateOverlayColor(
+            int red,
+            int green,
+            int blue)
+        {
+            return new UnityEngine.Color(
+                math.clamp(red, 0, 255) / 255f,
+                math.clamp(green, 0, 255) / 255f,
+                math.clamp(blue, 0, 255) / 255f,
+                1f);
         }
 
         private NativeArray<float3>
@@ -405,6 +447,11 @@ namespace AreaBulldozer.Tools
             public bool ConfirmationPending;
             public bool DeleteActive;
 
+            public UnityEngine.Color SelectionColor;
+            public UnityEngine.Color ConfirmationColor;
+            public UnityEngine.Color DeleteColor;
+            public UnityEngine.Color SurfaceColor;
+
             [DeallocateOnJobCompletion]
             public NativeArray<float3>
                 SurfaceOutlineSegmentPoints;
@@ -444,38 +491,19 @@ namespace AreaBulldozer.Tools
 
                 if (ConfirmationPending)
                 {
-                    selectionColor =
-                        new UnityEngine.Color(
-                            1f,
-                            0.85f,
-                            0.1f,
-                            1f);
+                    selectionColor = ConfirmationColor;
                 }
                 else if (DeleteActive)
                 {
-                    selectionColor =
-                        new UnityEngine.Color(
-                            0.12f,
-                            0.95f,
-                            0.22f,
-                            1f);
+                    selectionColor = DeleteColor;
                 }
                 else
                 {
-                    selectionColor =
-                        new UnityEngine.Color(
-                            1f,
-                            0.25f,
-                            0.1f,
-                            1f);
+                    selectionColor = SelectionColor;
                 }
 
                 UnityEngine.Color surfaceOutlineColor =
-                    new(
-                        0.08f,
-                        0.86f,
-                        1f,
-                        1f);
+                    SurfaceColor;
 
                 DrawSurfaceOutlines(
                     surfaceOutlineColor);

@@ -71,6 +71,8 @@ namespace AreaBulldozer.Tools
                 m_OverlayRenderSystem.GetBuffer(
                     out JobHandle overlayDependencies);
 
+            Setting settings = Mod.Settings;
+
             PolygonOverlayJob job =
                 new()
                 {
@@ -85,7 +87,19 @@ namespace AreaBulldozer.Tools
                     ConfirmationPending =
                         m_Tool.FreeAreaPolygonConfirmationPending,
                     Locked =
-                        m_Tool.FreeAreaPolygonSelectionLocked
+                        m_Tool.FreeAreaPolygonSelectionLocked,
+                    NormalColor = CreateOverlayColor(
+                        settings?.SelectionColorRed ?? 255,
+                        settings?.SelectionColorGreen ?? 64,
+                        settings?.SelectionColorBlue ?? 26),
+                    ConfirmationColor = CreateOverlayColor(
+                        settings?.ConfirmationColorRed ?? 255,
+                        settings?.ConfirmationColorGreen ?? 217,
+                        settings?.ConfirmationColorBlue ?? 26),
+                    CloseColor = CreateOverlayColor(
+                        settings?.DeleteColorRed ?? 31,
+                        settings?.DeleteColorGreen ?? 242,
+                        settings?.DeleteColorBlue ?? 56)
                 };
 
             JobHandle jobHandle =
@@ -99,6 +113,18 @@ namespace AreaBulldozer.Tools
 
             Dependency =
                 jobHandle;
+        }
+
+        private static UnityEngine.Color CreateOverlayColor(
+            int red,
+            int green,
+            int blue)
+        {
+            return new UnityEngine.Color(
+                math.clamp(red, 0, 255) / 255f,
+                math.clamp(green, 0, 255) / 255f,
+                math.clamp(blue, 0, 255) / 255f,
+                1f);
         }
 
         protected override void OnDestroy()
@@ -125,14 +151,14 @@ namespace AreaBulldozer.Tools
             public bool ConfirmationPending;
             public bool Locked;
 
+            public UnityEngine.Color NormalColor;
+            public UnityEngine.Color ConfirmationColor;
+            public UnityEngine.Color CloseColor;
+
             public void Execute()
             {
                 UnityEngine.Color normalColor =
-                    new(
-                        1f,
-                        0.25f,
-                        0.1f,
-                        1f);
+                    NormalColor;
 
                 UnityEngine.Color invalidColor =
                     new(
@@ -142,18 +168,10 @@ namespace AreaBulldozer.Tools
                         1f);
 
                 UnityEngine.Color closeColor =
-                    new(
-                        0.2f,
-                        0.95f,
-                        0.35f,
-                        1f);
+                    CloseColor;
 
                 UnityEngine.Color confirmationColor =
-                    new(
-                        1f,
-                        0.85f,
-                        0.1f,
-                        1f);
+                    ConfirmationColor;
 
                 UnityEngine.Color lineColor =
                     ConfirmationPending

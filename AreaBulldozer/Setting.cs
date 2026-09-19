@@ -212,6 +212,48 @@ namespace AreaBulldozer
         [SettingsUISection(kSection, kSubObjectGroup)]
         public int LargeSelectionThreshold { get; set; }
 
+        [SettingsUIHidden]
+        public int SelectionColorRed { get; set; }
+
+        [SettingsUIHidden]
+        public int SelectionColorGreen { get; set; }
+
+        [SettingsUIHidden]
+        public int SelectionColorBlue { get; set; }
+
+        [SettingsUIHidden]
+        public int ConfirmationColorRed { get; set; }
+
+        [SettingsUIHidden]
+        public int ConfirmationColorGreen { get; set; }
+
+        [SettingsUIHidden]
+        public int ConfirmationColorBlue { get; set; }
+
+        [SettingsUIHidden]
+        public int DeleteColorRed { get; set; }
+
+        [SettingsUIHidden]
+        public int DeleteColorGreen { get; set; }
+
+        [SettingsUIHidden]
+        public int DeleteColorBlue { get; set; }
+
+        [SettingsUIHidden]
+        public int SurfaceColorRed { get; set; }
+
+        [SettingsUIHidden]
+        public int SurfaceColorGreen { get; set; }
+
+        [SettingsUIHidden]
+        public int SurfaceColorBlue { get; set; }
+
+        [SettingsUIHidden]
+        public int ColorEditorPositionX { get; set; }
+
+        [SettingsUIHidden]
+        public int ColorEditorPositionY { get; set; }
+
         [SettingsUIKeyboardBinding(
             BindingKeyboard.B,
             Mod.ActivateToolActionName,
@@ -282,12 +324,36 @@ namespace AreaBulldozer
             LauncherPositionX = 54;
             LauncherPositionY = 8;
 
+            ColorEditorPositionX = -1;
+            ColorEditorPositionY = -1;
+
             ConfirmLargeSelection = true;
             LargeSelectionThreshold = 250;
+
+            ResetColorsToDefaults();
 
             // Info/diagnostic logging is deliberately disabled by default.
             // Warnings and errors are always written.
             EnableDiagnosticLogging = false;
+        }
+
+        public void ResetColorsToDefaults()
+        {
+            SelectionColorRed = 255;
+            SelectionColorGreen = 64;
+            SelectionColorBlue = 26;
+
+            ConfirmationColorRed = 255;
+            ConfirmationColorGreen = 217;
+            ConfirmationColorBlue = 26;
+
+            DeleteColorRed = 31;
+            DeleteColorGreen = 242;
+            DeleteColorBlue = 56;
+
+            SurfaceColorRed = 20;
+            SurfaceColorGreen = 219;
+            SurfaceColorBlue = 255;
         }
     }
 }

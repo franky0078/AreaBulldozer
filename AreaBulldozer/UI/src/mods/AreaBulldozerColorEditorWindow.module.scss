@@ -1,0 +1,16 @@
+.window {
+    position: fixed !important;
+    width: 470rem !important;
+    min-width: 470rem !important;
+    max-width: 470rem !important;
+    height: auto !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    z-index: 80;
+}
+
+.dragging {
+    user-select: none;
+}

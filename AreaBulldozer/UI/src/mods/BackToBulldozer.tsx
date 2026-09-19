@@ -15,6 +15,10 @@ import {
 
 import styles from "./BackToBulldozer.module.scss";
 import { AreaBulldozerIcon } from "./AreaBulldozerIcons";
+import {
+    toggleColorEditor,
+    useColorEditorOpen,
+} from "./AreaBulldozerColorEditorState";
 import { useSafeValue } from "./useSafeValue";
 import { VanillaComponentResolver } from "./VanillaComponentResolver";
 
@@ -88,6 +92,8 @@ export const BackToBulldozer:
                     false
                 );
 
+            const colorEditorOpen = useColorEditorOpen();
+
             const [loadedAnarchyIconSource, setLoadedAnarchyIconSource] =
                 React.useState<string | null>(null);
 
@@ -140,6 +146,9 @@ export const BackToBulldozer:
 
             const toolButtonTheme =
                 resolver.toolButtonTheme;
+
+            const text = (key: string, fallback: string) =>
+                translate(`${UI_PREFIX}${key}`, fallback) ?? fallback;
 
 
             if (
@@ -319,6 +328,60 @@ export const BackToBulldozer:
                     : anarchyButton;
 
 
+            const colorTitle = colorEditorOpen
+                ? text("CloseColorEditor", "Farbeditor schließen")
+                : text("OpenColorEditor", "Farbeditor öffnen");
+
+            const colorButton = (
+                <button
+                    type="button"
+                    className={[
+                        toolButtonTheme?.button ?? "",
+                        styles.colorButton,
+                        colorEditorOpen
+                            ? styles.colorButtonActive
+                            : "",
+                    ]
+                        .filter(Boolean)
+                        .join(" ")}
+                    onClick={(event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        toggleColorEditor();
+                    }}
+                    aria-label={colorTitle}
+                    aria-pressed={colorEditorOpen}
+                    title={Tooltip ? undefined : colorTitle}
+                >
+                    <span className={styles.colorIcon} aria-hidden="true">
+                        <AreaBulldozerIcon type="palette" />
+                    </span>
+                </button>
+            );
+
+            const wrappedColorButton = Tooltip
+                ? (
+                    <Tooltip
+                        tooltip={
+                            <>
+                                <div className={tooltipTheme?.title}>
+                                    {colorTitle}
+                                </div>
+                                <div className={tooltipTheme?.content}>
+                                    {text(
+                                        "ColorEditorTooltip",
+                                        "Farben mit direkter Vorschau anpassen."
+                                    )}
+                                </div>
+                            </>
+                        }
+                    >
+                        {colorButton}
+                    </Tooltip>
+                )
+                : colorButton;
+
+
             const backSection =
                 (
                     <Section
@@ -331,12 +394,17 @@ export const BackToBulldozer:
                         }
                     >
                         <div className={styles.navigationButtons}>
-                            {wrappedButton}
-                            {wrappedAnarchyButton}
+                            <div className={styles.navigationColorButton}>
+                                {wrappedColorButton}
+                            </div>
+
+                            <div className={styles.navigationRightButtons}>
+                                {wrappedButton}
+                                {wrappedAnarchyButton}
+                            </div>
                         </div>
                     </Section>
                 );
-
 
             try {
                 if (!result) {

@@ -1,0 +1,259 @@
+.editor {
+    width: 100%;
+    padding: 9rem;
+    color: #e3eef8;
+    font-size: 12rem;
+}
+
+.titleRow {
+    min-height: 25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 7rem;
+    padding: 0 3rem 6rem;
+    border-bottom: 1rem solid rgba(190, 213, 232, 0.2);
+}
+
+.titleRowDraggable {
+    cursor: move;
+    user-select: none;
+}
+
+.titleRowDragging {
+    cursor: grabbing;
+}
+
+.titleRow strong {
+    font-size: 13rem;
+}
+
+.titleRow span {
+    max-width: 250rem;
+    overflow: hidden;
+    color: #b9cfdd;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.editorBody {
+    display: flex;
+    align-items: stretch;
+    gap: 9rem;
+}
+
+.stateColumn {
+    width: 166rem;
+    min-width: 166rem;
+    display: flex;
+    flex-direction: column;
+    gap: 5rem;
+}
+
+.stateButton {
+    width: 100%;
+    min-height: 35rem;
+    display: flex;
+    align-items: center;
+    gap: 7rem;
+    padding: 5rem 7rem;
+    border: 1rem solid rgba(190, 213, 232, 0.28);
+    border-radius: 4rem;
+    background: rgba(6, 15, 22, 0.54);
+    color: #e3eef8;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.stateButton:hover {
+    border-color: rgba(226, 240, 252, 0.7);
+    background: rgba(52, 82, 105, 0.62);
+}
+
+.stateButtonSelected {
+    border-color: rgba(84, 210, 126, 0.9);
+    background: rgba(30, 112, 62, 0.58);
+}
+
+.stateSwatch {
+    width: 21rem;
+    height: 21rem;
+    min-width: 21rem;
+    border: 2rem solid rgba(255, 255, 255, 0.7);
+    border-radius: 4rem;
+}
+
+.controlsColumn {
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
+.previewArea {
+    height: 63rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14rem;
+    margin-bottom: 7rem;
+    padding: 7rem;
+    border: 1rem solid rgba(190, 213, 232, 0.22);
+    border-radius: 5rem;
+    background: rgba(4, 10, 15, 0.46);
+}
+
+.previewShape {
+    width: 68rem;
+    height: 38rem;
+    min-width: 68rem;
+    border: 4rem solid var(--ab-current-color);
+    border-radius: 50%;
+    box-shadow: 0 0 7rem var(--ab-current-color);
+}
+
+.previewText {
+    min-width: 92rem;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+}
+
+.previewText strong {
+    overflow: hidden;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.previewText span,
+.channelRow output {
+    color: #b9cfdd;
+    font-variant-numeric: tabular-nums;
+}
+
+.presetArea {
+    display: flex;
+    align-items: center;
+    gap: 7rem;
+    margin-bottom: 7rem;
+}
+
+.areaLabel {
+    min-width: 66rem;
+    color: #b9cfdd;
+}
+
+.presetList {
+    display: flex;
+    flex: 1 1 auto;
+    flex-wrap: wrap;
+    gap: 4rem;
+}
+
+.presetButton {
+    width: 22rem;
+    height: 22rem;
+    min-width: 22rem;
+    padding: 0;
+    border: 2rem solid rgba(255, 255, 255, 0.35);
+    border-radius: 4rem;
+    cursor: pointer;
+}
+
+.presetButton:hover,
+.presetButtonSelected {
+    border-color: #ffffff;
+    box-shadow: 0 0 0 2rem rgba(84, 210, 126, 0.9);
+}
+
+.channelRow {
+    min-height: 27rem;
+    display: flex;
+    align-items: center;
+    gap: 7rem;
+    margin: 2rem 0;
+}
+
+.channelRow > span {
+    width: 34rem;
+    min-width: 34rem;
+}
+
+.channelSlider {
+    position: relative;
+    min-width: 0;
+    height: 7rem;
+    flex: 1 1 auto;
+    border: 1rem solid rgba(226, 240, 252, 0.45);
+    border-radius: 5rem;
+    cursor: pointer;
+}
+
+.channelSlider:focus {
+    border-color: #ffffff;
+    box-shadow: 0 0 0 2rem rgba(84, 210, 126, 0.55);
+}
+
+.channelSliderThumb {
+    position: absolute;
+    top: 50%;
+    width: 15rem;
+    height: 15rem;
+    border: 2rem solid #ffffff;
+    border-radius: 50%;
+    background: var(--ab-current-color);
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+}
+
+.channelRow output {
+    width: 27rem;
+    min-width: 27rem;
+    text-align: right;
+}
+
+.hexRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 7rem;
+    margin-top: 6rem;
+}
+
+.hexInput {
+    width: 94rem;
+    height: 28rem;
+    padding: 0 7rem;
+    border: 1rem solid rgba(190, 213, 232, 0.4);
+    border-radius: 4rem;
+    background: rgba(4, 10, 15, 0.68);
+    color: #e3eef8;
+    font: inherit;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.actionRow {
+    display: flex;
+    justify-content: flex-end;
+    gap: 6rem;
+    margin-top: 7rem;
+    padding-top: 7rem;
+    border-top: 1rem solid rgba(190, 213, 232, 0.2);
+}
+
+.actionButton {
+    min-height: 29rem;
+    padding: 0 8rem;
+    border: 1rem solid rgba(190, 213, 232, 0.32);
+    border-radius: 4rem;
+    background: rgba(6, 15, 22, 0.6);
+    color: #e3eef8;
+    font: inherit;
+    cursor: pointer;
+}
+
+.actionButton:hover {
+    border-color: rgba(226, 240, 252, 0.7);
+    background: rgba(52, 82, 105, 0.75);
+}

@@ -18,11 +18,11 @@ The freeform area allows you to create custom deletion zones of almost any shape
 - Live preview of the selected area
 - Adjustable selection size and corridor width
 - Rotation for square and triangle selections
-- Multi-point corridors with up to 15 points
+- Multi-point corridors with up to 25 points
 - Compact in-game tool interface
 - Configurable interface scaling
 - Optional launcher button in the universal mod menu
-- Optional movable launcher button
+- Color editor options for customizing selection shapes and preview
 - Configurable keyboard shortcut
 - Language support for German, English, French, Italian and Spanish
 

@@ -259,6 +259,50 @@ namespace AreaBulldozer.UISystems
                     group,
                     AreaBulldozerUIBindingConstants.LargeSelectionThreshold,
                     () => Mod.Settings?.LargeSelectionThreshold ?? 250));
+
+            AddColorValueBinding(
+                AreaBulldozerUIBindingConstants.SelectionColor,
+                setting => PackColor(
+                    setting.SelectionColorRed,
+                    setting.SelectionColorGreen,
+                    setting.SelectionColorBlue),
+                0xFF401A);
+
+            AddColorValueBinding(
+                AreaBulldozerUIBindingConstants.ConfirmationColor,
+                setting => PackColor(
+                    setting.ConfirmationColorRed,
+                    setting.ConfirmationColorGreen,
+                    setting.ConfirmationColorBlue),
+                0xFFD91A);
+
+            AddColorValueBinding(
+                AreaBulldozerUIBindingConstants.DeleteColor,
+                setting => PackColor(
+                    setting.DeleteColorRed,
+                    setting.DeleteColorGreen,
+                    setting.DeleteColorBlue),
+                0x1FF238);
+
+            AddColorValueBinding(
+                AreaBulldozerUIBindingConstants.SurfaceColor,
+                setting => PackColor(
+                    setting.SurfaceColorRed,
+                    setting.SurfaceColorGreen,
+                    setting.SurfaceColorBlue),
+                0x14DBFF);
+
+            AddUpdateBinding(
+                new GetterValueBinding<int>(
+                    group,
+                    AreaBulldozerUIBindingConstants.ColorEditorPositionX,
+                    () => Mod.Settings?.ColorEditorPositionX ?? -1));
+
+            AddUpdateBinding(
+                new GetterValueBinding<int>(
+                    group,
+                    AreaBulldozerUIBindingConstants.ColorEditorPositionY,
+                    () => Mod.Settings?.ColorEditorPositionY ?? -1));
         }
 
         private void RegisterTriggerBindings()
@@ -455,6 +499,63 @@ namespace AreaBulldozer.UISystems
                     value => ChangeSetting(
                         setting => setting.LargeSelectionThreshold =
                             math.clamp(value, 50, 2000))));
+
+            AddColorSettingTrigger(
+                AreaBulldozerUIBindingConstants.SetSelectionColor,
+                (setting, red, green, blue) =>
+                {
+                    setting.SelectionColorRed = red;
+                    setting.SelectionColorGreen = green;
+                    setting.SelectionColorBlue = blue;
+                });
+
+            AddColorSettingTrigger(
+                AreaBulldozerUIBindingConstants.SetConfirmationColor,
+                (setting, red, green, blue) =>
+                {
+                    setting.ConfirmationColorRed = red;
+                    setting.ConfirmationColorGreen = green;
+                    setting.ConfirmationColorBlue = blue;
+                });
+
+            AddColorSettingTrigger(
+                AreaBulldozerUIBindingConstants.SetDeleteColor,
+                (setting, red, green, blue) =>
+                {
+                    setting.DeleteColorRed = red;
+                    setting.DeleteColorGreen = green;
+                    setting.DeleteColorBlue = blue;
+                });
+
+            AddColorSettingTrigger(
+                AreaBulldozerUIBindingConstants.SetSurfaceColor,
+                (setting, red, green, blue) =>
+                {
+                    setting.SurfaceColorRed = red;
+                    setting.SurfaceColorGreen = green;
+                    setting.SurfaceColorBlue = blue;
+                });
+
+            AddBinding(
+                new TriggerBinding<int>(
+                    group,
+                    AreaBulldozerUIBindingConstants.SetColorEditorPositionX,
+                    value => ChangeSetting(
+                        setting => setting.ColorEditorPositionX = value)));
+
+            AddBinding(
+                new TriggerBinding<int>(
+                    group,
+                    AreaBulldozerUIBindingConstants.SetColorEditorPositionY,
+                    value => ChangeSetting(
+                        setting => setting.ColorEditorPositionY = value)));
+
+            AddBinding(
+                new TriggerBinding(
+                    group,
+                    AreaBulldozerUIBindingConstants.ResetColors,
+                    () => ChangeSetting(
+                        setting => setting.ResetColorsToDefaults())));
         }
 
         private void SetSelectionShape(
@@ -499,6 +600,31 @@ namespace AreaBulldozer.UISystems
                     getter));
         }
 
+        private void AddColorValueBinding(
+            string key,
+            Func<Setting, int> getter,
+            int fallback)
+        {
+            AddUpdateBinding(
+                new GetterValueBinding<int>(
+                    AreaBulldozerUIBindingConstants.ModId,
+                    key,
+                    () => Mod.Settings is Setting setting
+                        ? getter(setting)
+                        : fallback));
+        }
+
+        private static int PackColor(
+            int red,
+            int green,
+            int blue)
+        {
+            return
+                (math.clamp(red, 0, 255) << 16) |
+                (math.clamp(green, 0, 255) << 8) |
+                math.clamp(blue, 0, 255);
+        }
+
         private void AddBooleanSettingTrigger(
             string key,
             Action<Setting, bool> change)
@@ -509,6 +635,22 @@ namespace AreaBulldozer.UISystems
                     key,
                     value => ChangeSetting(
                         setting => change(setting, value))));
+        }
+
+        private void AddColorSettingTrigger(
+            string key,
+            Action<Setting, int, int, int> change)
+        {
+            AddBinding(
+                new TriggerBinding<int>(
+                    AreaBulldozerUIBindingConstants.ModId,
+                    key,
+                    value => ChangeSetting(
+                        setting => change(
+                            setting,
+                            math.clamp((value >> 16) & 0xFF, 0, 255),
+                            math.clamp((value >> 8) & 0xFF, 0, 255),
+                            math.clamp(value & 0xFF, 0, 255)))));
         }
 
         private void ChangeSetting(

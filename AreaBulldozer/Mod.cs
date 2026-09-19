@@ -13,7 +13,7 @@ namespace AreaBulldozer
 {
     public class Mod : IMod
     {
-        public const string ModVersion = "1.6.1";
+        public const string ModVersion = "1.7.0";
 
         public static readonly ILog Log = LogManager
             .GetLogger(
@@ -122,6 +122,9 @@ namespace AreaBulldozer
                 SystemUpdatePhase.ToolUpdate);
 
             updateSystem.UpdateAt<AreaBulldozerPolygonOverlaySystem>(
+                SystemUpdatePhase.ToolUpdate);
+
+            updateSystem.UpdateAt<AreaBulldozerHighlightColorSystem>(
                 SystemUpdatePhase.ToolUpdate);
 
             updateSystem.UpdateAt<AreaBulldozerUISystem>(
