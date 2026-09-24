@@ -277,6 +277,14 @@ namespace AreaBulldozer.UISystems
                 0xFFD91A);
 
             AddColorValueBinding(
+                AreaBulldozerUIBindingConstants.InvalidPolygonColor,
+                setting => PackColor(
+                    setting.InvalidPolygonColorRed,
+                    setting.InvalidPolygonColorGreen,
+                    setting.InvalidPolygonColorBlue),
+                0xFF4C91);
+
+            AddColorValueBinding(
                 AreaBulldozerUIBindingConstants.DeleteColor,
                 setting => PackColor(
                     setting.DeleteColorRed,
@@ -516,6 +524,15 @@ namespace AreaBulldozer.UISystems
                     setting.ConfirmationColorRed = red;
                     setting.ConfirmationColorGreen = green;
                     setting.ConfirmationColorBlue = blue;
+                });
+
+            AddColorSettingTrigger(
+                AreaBulldozerUIBindingConstants.SetInvalidPolygonColor,
+                (setting, red, green, blue) =>
+                {
+                    setting.InvalidPolygonColorRed = red;
+                    setting.InvalidPolygonColorGreen = green;
+                    setting.InvalidPolygonColorBlue = blue;
                 });
 
             AddColorSettingTrigger(

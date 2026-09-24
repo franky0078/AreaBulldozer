@@ -7,6 +7,7 @@ import {
     BindingKeys,
     confirmationColor$,
     deleteColor$,
+    invalidPolygonColor$,
     selectionColor$,
     surfaceColor$,
 } from "../bindings";
@@ -18,6 +19,7 @@ import { useSafeValue } from "./useSafeValue";
 type ColorKey =
     | "selection"
     | "confirmation"
+    | "invalidPolygon"
     | "delete"
     | "surface";
 
@@ -116,6 +118,12 @@ export function AreaBulldozerColorEditor({
         0x1ff238
     );
 
+    const invalidPolygonColor = useSafeValue(
+        "invalidPolygonColor$",
+        invalidPolygonColor$,
+        0xff4c91
+    );
+
     const surfaceColor = useSafeValue(
         "surfaceColor$",
         surfaceColor$,
@@ -139,6 +147,13 @@ export function AreaBulldozerColorEditor({
             value: confirmationColor,
             defaultValue: 0xffd91a,
             triggerKey: BindingKeys.setConfirmationColor,
+        },
+        {
+            key: "invalidPolygon",
+            label: text("ColorInvalidPolygon", "Ungültiges Polygon"),
+            value: invalidPolygonColor,
+            defaultValue: 0xff4c91,
+            triggerKey: BindingKeys.setInvalidPolygonColor,
         },
         {
             key: "delete",

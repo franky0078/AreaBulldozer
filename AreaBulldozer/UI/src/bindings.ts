@@ -43,6 +43,7 @@ export const BindingKeys = {
 
     setSelectionColor: "setSelectionColor",
     setConfirmationColor: "setConfirmationColor",
+    setInvalidPolygonColor: "setInvalidPolygonColor",
     setDeleteColor: "setDeleteColor",
     setSurfaceColor: "setSurfaceColor",
     setColorEditorPositionX: "setColorEditorPositionX",
@@ -275,6 +276,12 @@ export const confirmationColor$ = bindValue<number>(
     mod.id,
     "confirmationColor",
     0xffd91a
+);
+
+export const invalidPolygonColor$ = bindValue<number>(
+    mod.id,
+    "invalidPolygonColor",
+    0xff4c91
 );
 
 export const deleteColor$ = bindValue<number>(

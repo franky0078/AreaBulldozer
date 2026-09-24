@@ -11,10 +11,10 @@ namespace AreaBulldozer.Tools
 
     public partial class AreaBulldozerToolSystem
     {
-        private const float kFreeAreaPolygonMinimumSegmentLength = 0.5f;
+        private const float kFreeAreaPolygonMinimumSegmentLength = 0.75f;
         private const float kFreeAreaPolygonDoubleClickSeconds = 0.35f;
         private const float kFreeAreaPolygonDoubleClickDistance = 2.5f;
-        private const float kFreeAreaPolygonCloseDistance = 2.5f;
+        private const float kFreeAreaPolygonCloseDistance = 3f;
         private const float kFreeAreaPolygonMinimumAreaTwice = 0.25f;
 
         private bool m_FreeAreaPolygonPreviewInvalid;
@@ -485,6 +485,7 @@ namespace AreaBulldozer.Tools
             if (!m_PolylineSelectionLocked &&
                 HasValidPosition &&
                 count > 0 &&
+                !m_FreeAreaPolygonCloseCandidate &&
                 !m_FreeAreaPolygonPreviewInvalid)
             {
                 count++;
@@ -525,7 +526,10 @@ namespace AreaBulldozer.Tools
                 target.Add(point);
             }
 
-            if (!m_PolylineSelectionLocked)
+            // At the first vertex, snap to the stored point. Drawing the
+            // cursor as another vertex makes a doubled edge at closure.
+            if (!m_PolylineSelectionLocked &&
+                !m_FreeAreaPolygonCloseCandidate)
             {
                 target.Add(
                     CurrentPosition);

@@ -95,7 +95,9 @@ namespace AreaBulldozer.Tools
                     PolylineControlPoints =
                         polylineControlPoints,
                     CurvedPolyline =
-                        UseCurvedPolyline
+                        UseCurvedPolyline,
+                    FreeAreaPolygon =
+                        UseFreeAreaPolygon
                 };
 
             JobHandle jobHandle =
@@ -231,6 +233,7 @@ namespace AreaBulldozer.Tools
             BuildPolylineBrushPreviewPoints()
         {
             if (!UsePolylineBrush ||
+                UseFreeAreaPolygon ||
                 !HasValidPosition)
             {
                 return new NativeArray<float3>(
@@ -280,6 +283,7 @@ namespace AreaBulldozer.Tools
             BuildPolylineControlPreviewPoints()
         {
             if (!UsePolylineBrush ||
+                UseFreeAreaPolygon ||
                 !HasValidPosition)
             {
                 return new NativeArray<float3>(
@@ -473,6 +477,7 @@ namespace AreaBulldozer.Tools
                 PolylineControlPoints;
 
             public bool CurvedPolyline;
+            public bool FreeAreaPolygon;
 
             public void Execute()
             {
@@ -523,9 +528,12 @@ namespace AreaBulldozer.Tools
                         return;
 
                     case AreaBulldozerSelectionShape.Polyline:
-                        DrawPolylineSelection(
-                            selectionColor,
-                            lineWidth);
+                        if (!FreeAreaPolygon)
+                        {
+                            DrawPolylineSelection(
+                                selectionColor,
+                                lineWidth);
+                        }
                         return;
 
                     default:

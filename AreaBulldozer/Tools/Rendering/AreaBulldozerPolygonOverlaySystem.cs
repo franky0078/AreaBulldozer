@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
+using UnityEngine;
 
 namespace AreaBulldozer.Tools
 {
@@ -53,18 +54,28 @@ namespace AreaBulldozer.Tools
                     Allocator.TempJob,
                     NativeArrayOptions.UninitializedMemory);
 
-            const float verticalOffset = 0.24f;
+            // Move towards the camera instead of only upwards so the outline
+            // stays visible on sloped ground at shallow viewing angles.
+            const float previewDepthOffset = 0.22f;
+            Camera camera = Camera.main;
+            bool hasCamera = camera != null;
+            float3 cameraPosition = default;
+            if (hasCamera)
+            {
+                Vector3 position = camera.transform.position;
+                cameraPosition = new float3(position.x, position.y, position.z);
+            }
 
             for (int index = 0;
                  index < m_PreviewPoints.Count;
                  index++)
             {
-                points[index] =
-                    m_PreviewPoints[index] +
-                    new float3(
-                        0f,
-                        verticalOffset,
-                        0f);
+                float3 point = m_PreviewPoints[index];
+                float3 direction = hasCamera
+                    ? math.normalizesafe(cameraPosition - point,
+                        new float3(0f, 1f, 0f))
+                    : new float3(0f, 1f, 0f);
+                points[index] = point + direction * previewDepthOffset;
             }
 
             OverlayRenderSystem.Buffer overlayBuffer =
@@ -99,7 +110,11 @@ namespace AreaBulldozer.Tools
                     CloseColor = CreateOverlayColor(
                         settings?.DeleteColorRed ?? 31,
                         settings?.DeleteColorGreen ?? 242,
-                        settings?.DeleteColorBlue ?? 56)
+                        settings?.DeleteColorBlue ?? 56),
+                    InvalidColor = CreateOverlayColor(
+                        settings?.InvalidPolygonColorRed ?? 255,
+                        settings?.InvalidPolygonColorGreen ?? 76,
+                        settings?.InvalidPolygonColorBlue ?? 145)
                 };
 
             JobHandle jobHandle =
@@ -154,18 +169,14 @@ namespace AreaBulldozer.Tools
             public UnityEngine.Color NormalColor;
             public UnityEngine.Color ConfirmationColor;
             public UnityEngine.Color CloseColor;
+            public UnityEngine.Color InvalidColor;
 
             public void Execute()
             {
                 UnityEngine.Color normalColor =
                     NormalColor;
 
-                UnityEngine.Color invalidColor =
-                    new(
-                        1f,
-                        0.05f,
-                        0.05f,
-                        1f);
+                UnityEngine.Color invalidColor = InvalidColor;
 
                 UnityEngine.Color closeColor =
                     CloseColor;
@@ -182,9 +193,10 @@ namespace AreaBulldozer.Tools
                                 ? closeColor
                                 : normalColor;
 
-                const float lineWidth = 0.72f;
-                const float markerDiameter = 1.45f;
-                const float markerBorderWidth = 0.11f;
+                const float lineWidth = 0.7f;
+                const float closingLineWidth = 0.18f;
+                const float markerDiameter = 1.4f;
+                const float markerBorderWidth = 0.1f;
 
                 if (Points.Length == 1)
                 {
@@ -231,7 +243,7 @@ namespace AreaBulldozer.Tools
                         new Line3.Segment(
                             Points[lastIndex],
                             Points[0]),
-                        lineWidth);
+                        closingLineWidth);
                 }
 
                 int markerCount =

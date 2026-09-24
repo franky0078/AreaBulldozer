@@ -26,8 +26,6 @@ The freeform area allows you to create custom deletion zones of almost any shape
 - Adjustable selection size and corridor width
 - Rotation for square and triangle selections
 - Multi-point corridors with up to 25 points
-- Compact in-game tool interface
-- Configurable interface scaling
 - Optional launcher button in the universal mod menu
 - Color editor options for customizing selection shapes and preview
 - Configurable keyboard shortcut
@@ -124,12 +122,6 @@ When reporting a problem, include:
 - The selected safety settings
 - Steps that reproduce the problem
 
-
-## Changes
-
-Version 1.7.0
-
-- added new color editor options for customizing selection shapes and preview
 
 
 ## License

@@ -231,6 +231,15 @@ namespace AreaBulldozer
         public int ConfirmationColorBlue { get; set; }
 
         [SettingsUIHidden]
+        public int InvalidPolygonColorRed { get; set; }
+
+        [SettingsUIHidden]
+        public int InvalidPolygonColorGreen { get; set; }
+
+        [SettingsUIHidden]
+        public int InvalidPolygonColorBlue { get; set; }
+
+        [SettingsUIHidden]
         public int DeleteColorRed { get; set; }
 
         [SettingsUIHidden]
@@ -346,6 +355,10 @@ namespace AreaBulldozer
             ConfirmationColorRed = 255;
             ConfirmationColorGreen = 217;
             ConfirmationColorBlue = 26;
+
+            InvalidPolygonColorRed = 231;
+            InvalidPolygonColorGreen = 76;
+            InvalidPolygonColorBlue = 255;
 
             DeleteColorRed = 31;
             DeleteColorGreen = 242;

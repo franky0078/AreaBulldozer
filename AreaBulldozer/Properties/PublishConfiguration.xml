@@ -38,8 +38,6 @@
 		- Adjustable selection size and corridor width
 		- Rotation for square and triangle selections
 		- Multi-point corridors with up to 25 points
-		- Compact in-game tool interface
-		- Configurable interface scaling
 		- Optional launcher button in the universal mod menu
 		- Color editor options for customizing selection shapes and preview
 		- Configurable keyboard shortcut
@@ -155,7 +153,7 @@
 	<ForumLink Value="https://forum.paradoxplaza.com/forum/threads/mod-area-bulldozer-area-deletion-tool-with-object-filters.1937211/" />
 
 	<!-- Mod version -->
-	<ModVersion Value="1.7.0" />
+	<ModVersion Value="1.7.5" />
 
 	<!--
 	Recommended game version.
@@ -184,9 +182,9 @@
 	-->
 
 	<ChangeLog>
-		Version 1.7.0
+		Version 1.7.5
 
-		- added new color editor options for customizing selection shapes and preview
+		- added new shape for freeform area selection
 
 
 	</ChangeLog>

@@ -49,6 +49,7 @@ namespace AreaBulldozer.UISystems
 
         public const string SelectionColor = "selectionColor";
         public const string ConfirmationColor = "confirmationColor";
+        public const string InvalidPolygonColor = "invalidPolygonColor";
         public const string DeleteColor = "deleteColor";
         public const string SurfaceColor = "surfaceColor";
         public const string ColorEditorPositionX = "colorEditorPositionX";
@@ -96,6 +97,7 @@ namespace AreaBulldozer.UISystems
 
         public const string SetSelectionColor = "setSelectionColor";
         public const string SetConfirmationColor = "setConfirmationColor";
+        public const string SetInvalidPolygonColor = "setInvalidPolygonColor";
         public const string SetDeleteColor = "setDeleteColor";
         public const string SetSurfaceColor = "setSurfaceColor";
         public const string SetColorEditorPositionX = "setColorEditorPositionX";
