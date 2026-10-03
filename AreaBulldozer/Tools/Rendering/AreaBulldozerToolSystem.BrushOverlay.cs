@@ -765,9 +765,6 @@ namespace AreaBulldozer.Tools
 
                 if (CurvedPolyline)
                 {
-                    // The sampled curve already has closely spaced joints.
-                    // Only endpoint caps are required visually; drawing a
-                    // full circle at every curve sample would clutter the UI.
                     OverlayBuffer.DrawCircle(
                         selectionColor,
                         default,
@@ -789,8 +786,6 @@ namespace AreaBulldozer.Tools
                 }
                 else
                 {
-                    // Straight mode uses a round capsule at every clicked
-                    // corner, matching the existing corridor geometry.
                     for (int index = 0;
                          index < PolylineControlPoints.Length;
                          index++)

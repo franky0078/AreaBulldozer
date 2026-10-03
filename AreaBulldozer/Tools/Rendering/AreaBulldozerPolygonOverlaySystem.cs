@@ -54,8 +54,6 @@ namespace AreaBulldozer.Tools
                     Allocator.TempJob,
                     NativeArrayOptions.UninitializedMemory);
 
-            // Move towards the camera instead of only upwards so the outline
-            // stays visible on sloped ground at shallow viewing angles.
             const float previewDepthOffset = 0.22f;
             Camera camera = Camera.main;
             bool hasCamera = camera != null;

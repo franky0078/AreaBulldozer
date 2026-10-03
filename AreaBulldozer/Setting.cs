@@ -68,6 +68,9 @@ namespace AreaBulldozer
         public bool DeleteTrees { get; set; }
 
         [SettingsUIHidden]
+        public bool DeleteMissingAssets { get; set; }
+
+        [SettingsUIHidden]
         public bool IncludeOverriddenVegetation { get; set; }
 
         [SettingsUIHidden]
@@ -291,6 +294,7 @@ namespace AreaBulldozer
         public override void SetDefaults()
         {
             DeleteTrees = true;
+            DeleteMissingAssets = false;
             IncludeOverriddenVegetation = false;
             DeleteBuildings = false;
             DeleteRoads = false;

@@ -23,6 +23,7 @@ import {
     deleteStaticObjects$,
     deleteStreetLights$,
     deleteSurfaces$,
+    deleteMissingAssets$,
     deleteTrees$,
     dimMarkerBackground$,
     isToolActive$,
@@ -300,6 +301,12 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
             "uiScale$",
             uiScale$,
             100
+        );
+
+        const deleteMissingAssets = useSafeValue(
+            "deleteMissingAssets$",
+            deleteMissingAssets$,
+            false
         );
 
         const deleteTrees = useSafeValue(
@@ -805,6 +812,13 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
 
                 <Section title={text("MainFilters", "Filter")}>
                     <IconToolButton
+                        icon="missingAsset"
+                        selected={deleteMissingAssets}
+                        tooltipTitle={text("MissingAssets", "Fehlende Assets")}
+                        tooltipText={text("MissingAssetsTooltip", "Weiße Platzhalter bestätigter fehlender Fahrzeuge, Pflanzen und Objekte löschen, auch als Unterobjekte. Gebäude und Netzwerke sind nicht enthalten.")}
+                        onSelect={() => toggle(BindingKeys.setDeleteMissingAssets, deleteMissingAssets)}
+                    />
+                    <IconToolButton
                         icon="vegetation"
                         selected={deleteTrees}
                         tooltipTitle={text("VegetationShort", "Vegetation")}
@@ -1028,13 +1042,17 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
                             }
                         />
 
+                    </Section>
+                )}
+                {(deleteStaticObjects || deleteMissingAssets) && (
+                    <Section title={text("DimBackground", "Hintergrund abdunkeln")}>
                         <IconToolButton
                             marker
                             icon="dim"
                             selected={dimMarkerBackground}
                             tooltipTitle={text(
                                 "DimBackground",
-                                "Marker-Hintergrund abdunkeln"
+                                "Hintergrund abdunkeln"
                             )}
                             onSelect={() =>
                                 toggle(

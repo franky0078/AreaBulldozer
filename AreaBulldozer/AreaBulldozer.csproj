@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<Configurations>Debug;Release</Configurations>
@@ -7,9 +7,9 @@
 		<RootNamespace>AreaBulldozer</RootNamespace>
 
 		<!-- Keep synchronized with Mod.ModVersion and PublishConfiguration.xml. -->
-		<Version>1.7.5</Version>
-		<AssemblyVersion>1.7.5.0</AssemblyVersion>
-		<FileVersion>1.7.5.0</FileVersion>
+		<Version>1.8.0</Version>
+		<AssemblyVersion>1.8.0.0</AssemblyVersion>
+		<FileVersion>1.8.0.0</FileVersion>
 
 		<!--
 		The file where mod information required for publishing
@@ -31,9 +31,6 @@
 		"1 aktuell" und ueberspringt das Projekt komplett - damit laeuft auch
 		der Target BuildAreaBulldozerUI nicht und es entsteht keine neue
 		AreaBulldozer.mjs.
-
-		Das Ausschalten dieser Pruefung kostet ein paar Sekunden pro Build,
-		garantiert aber, dass die UI immer mitgebaut wird.
 		-->
 		<DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
 	</PropertyGroup>
@@ -72,6 +69,15 @@
 		</Reference>
 
 		<Reference Include="Unity.InputSystem">
+			<Private>false</Private>
+		</Reference>
+
+		<!-- Native background pass, inserted before the game's outline pass. -->
+		<Reference Include="Unity.RenderPipelines.Core.Runtime">
+			<Private>false</Private>
+		</Reference>
+
+		<Reference Include="Unity.RenderPipelines.HighDefinition.Runtime">
 			<Private>false</Private>
 		</Reference>
 

@@ -15,6 +15,7 @@ export const BindingKeys = {
     setLauncherPositionX: "setLauncherPositionX",
     setLauncherPositionY: "setLauncherPositionY",
 
+    setDeleteMissingAssets: "setDeleteMissingAssets",
     setDeleteTrees: "setDeleteTrees",
     setIncludeOverriddenVegetation: "setIncludeOverriddenVegetation",
     setDeleteBuildings: "setDeleteBuildings",
@@ -133,6 +134,8 @@ export const launcherPositionY$ = bindValue<number>(
     "launcherPositionY",
     8
 );
+
+export const deleteMissingAssets$ = bindValue<boolean>(mod.id, "deleteMissingAssets", false);
 
 export const deleteTrees$ = bindValue<boolean>(
     mod.id,

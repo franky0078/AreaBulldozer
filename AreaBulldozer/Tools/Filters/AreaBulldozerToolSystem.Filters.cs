@@ -91,6 +91,14 @@ namespace AreaBulldozer.Tools
             in SpatialCandidate candidate,
             in FilterSnapshot filters)
         {
+            // A confirmed missing instance can be removed independently of its
+            // healthy owner. Do not extend this exception to normal sub-objects.
+            if (candidate.IsMissingAsset && filters.DeleteMissingAssets &&
+                IsMissingAssetObject(candidate.Entity))
+            {
+                return false;
+            }
+
             if (candidate.IsStaticObject &&
                 candidate.StaticCategory !=
                     StaticObjectCategory.ActivityLocation)

@@ -185,6 +185,9 @@ namespace AreaBulldozer.UISystems
                         8192)));
 
             AddBooleanValueBinding(
+                AreaBulldozerUIBindingConstants.DeleteMissingAssets,
+                () => Mod.Settings?.DeleteMissingAssets ?? false);
+            AddBooleanValueBinding(
                 AreaBulldozerUIBindingConstants.DeleteTrees,
                 () => Mod.Settings?.DeleteTrees ?? true);
             AddBooleanValueBinding(
@@ -428,6 +431,9 @@ namespace AreaBulldozer.UISystems
                         setting => setting.LauncherPositionY =
                             math.clamp(value, 0, 8192))));
 
+            AddBooleanSettingTrigger(
+                AreaBulldozerUIBindingConstants.SetDeleteMissingAssets,
+                (setting, value) => setting.DeleteMissingAssets = value);
             AddBooleanSettingTrigger(
                 AreaBulldozerUIBindingConstants.SetDeleteTrees,
                 (setting, value) => setting.DeleteTrees = value);

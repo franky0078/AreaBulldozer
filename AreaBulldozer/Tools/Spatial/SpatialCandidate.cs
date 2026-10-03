@@ -6,6 +6,7 @@ namespace AreaBulldozer.Tools
 
     internal enum SpatialCandidateKind
     {
+        MissingAsset,
         Vegetation,
         Building,
         Road,
@@ -79,6 +80,9 @@ namespace AreaBulldozer.Tools
         {
             get;
         }
+
+        public bool IsMissingAsset =>
+            Kind == SpatialCandidateKind.MissingAsset;
 
         public bool IsVegetation =>
             Kind == SpatialCandidateKind.Vegetation;

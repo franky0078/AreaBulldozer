@@ -71,8 +71,8 @@ namespace AreaBulldozer.Localization
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DeleteMarkerNetworks)), "Asset-Lanes / SubLanes – grün und blau" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.DeleteMarkerNetworks)), "Erfasst die grünen und blauen gestrichelten Fahr-, Fuß- und Parkspuren innerhalb von Gebäude-Assets. Technisch werden nur SubLanes mit NetLanePrefab oder NetLaneGeometryPrefab ausgewählt; normale Straßen-Edges bleiben unberührt." },
 
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DimMarkerBackground)), "Marker-Hintergrund abdunkeln" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.DimMarkerBackground)), "Dunkelt die Spielansicht ab, solange Aktivitätspunkte, Spawnpunkte oder Asset-Lanes aktiviert sind. Menüs bleiben bedienbar." },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DimMarkerBackground)), "Hintergrund abdunkeln" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.DimMarkerBackground)), "Dunkelt den Hintergrund vor den Spiel-Umrandungen ab, wenn Markerfilter oder fehlende Assets aktiviert sind. Umrandungen und Menüs bleiben sichtbar." },
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.MarkerBackgroundDarkness)), "Abdunkelungsstärke" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.MarkerBackgroundDarkness)), "Legt die Abdunkelung der Spielansicht in Prozent fest." },
@@ -169,6 +169,8 @@ namespace AreaBulldozer.Localization
                 { "AreaBulldozer.UI.IncreaseSize", "Auswahl vergrößern" },
                 { "AreaBulldozer.UI.RotateLeft", "Gegen den Uhrzeigersinn drehen" },
                 { "AreaBulldozer.UI.RotateRight", "Im Uhrzeigersinn drehen" },
+                { "AreaBulldozer.UI.MissingAssets", "Fehlende Assets" },
+                { "AreaBulldozer.UI.MissingAssetsTooltip", "Weiße Platzhalter bestätigter fehlender Fahrzeuge, Pflanzen und Objekte löschen, auch als Unterobjekte. Gebäude und Netzwerke sind nicht enthalten." },
                 { "AreaBulldozer.UI.VegetationTooltip", "Bäume, Büsche und Pflanzen löschen." },
                 { "AreaBulldozer.UI.BuildingsTooltip", "Gebäude im Bereich löschen." },
                 { "AreaBulldozer.UI.RoadsTooltip", "Straßen im Bereich löschen." },
@@ -204,7 +206,7 @@ namespace AreaBulldozer.Localization
                 { "AreaBulldozer.UI.ActivityLocations", "Aktivit\u00E4tspunkte" },
                 { "AreaBulldozer.UI.SpawnLocations", "Spawnpunkte" },
                 { "AreaBulldozer.UI.AssetLanes", "Asset-Lanes / SubLanes" },
-                { "AreaBulldozer.UI.DimBackground", "Marker-Hintergrund abdunkeln" },
+                { "AreaBulldozer.UI.DimBackground", "Hintergrund abdunkeln" },
                 { "AreaBulldozer.UI.BackgroundDarkness", "Abdunkelungsst\u00E4rke" },
                 { "AreaBulldozer.UI.Safety", "Sicherheit" },
                 { "AreaBulldozer.UI.BuildingSubObjects", "Geb\u00E4ude-Unterobjekte" },

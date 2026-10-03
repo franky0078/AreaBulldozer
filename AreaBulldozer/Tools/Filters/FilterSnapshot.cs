@@ -10,6 +10,7 @@ namespace AreaBulldozer.Tools
 
         // Primäre Objektfilter
         public readonly bool DeleteTrees;
+        public readonly bool DeleteMissingAssets;
         public readonly bool IncludeOverriddenVegetation;
         public readonly bool DeleteBuildings;
         public readonly bool DeleteRoads;
@@ -38,6 +39,7 @@ namespace AreaBulldozer.Tools
         {
             DeleteTrees =
                 settings.DeleteTrees;
+            DeleteMissingAssets = settings.DeleteMissingAssets;
 
             IncludeOverriddenVegetation =
                 settings.IncludeOverriddenVegetation;
@@ -100,6 +102,7 @@ namespace AreaBulldozer.Tools
         }
 
         public bool HasAnyPrimaryFilter =>
+            DeleteMissingAssets ||
             DeleteTrees ||
             DeleteBuildings ||
             DeleteRoads ||
@@ -112,6 +115,7 @@ namespace AreaBulldozer.Tools
             FilterSnapshot other)
         {
             return
+                DeleteMissingAssets == other.DeleteMissingAssets &&
                 DeleteTrees == other.DeleteTrees &&
                 IncludeOverriddenVegetation ==
                     other.IncludeOverriddenVegetation &&
@@ -143,6 +147,7 @@ namespace AreaBulldozer.Tools
         public override int GetHashCode()
         {
             int hash = 0;
+            hash |= DeleteMissingAssets ? 1 << 18 : 0;
 
             hash |= DeleteTrees ? 1 << 0 : 0;
             hash |= DeleteBuildings ? 1 << 1 : 0;

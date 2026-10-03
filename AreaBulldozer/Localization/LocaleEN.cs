@@ -71,8 +71,8 @@ namespace AreaBulldozer.Localization
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DeleteMarkerNetworks)), "Asset lanes / SubLanes – green and blue" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.DeleteMarkerNetworks)), "Targets green and blue dashed vehicle, pedestrian, and parking lanes inside building assets. Only SubLanes using NetLanePrefab or NetLaneGeometryPrefab are selected; normal road edges remain excluded." },
 
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DimMarkerBackground)), "Dim marker background" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.DimMarkerBackground)), "Dims the game view while activity locations, spawn locations, or asset lanes are enabled. Menus remain interactive." },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DimMarkerBackground)), "Dim background" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.DimMarkerBackground)), "Dims the background before the game outlines while marker filters or missing assets are enabled. Outlines and menus stay visible." },
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.MarkerBackgroundDarkness)), "Background darkness" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.MarkerBackgroundDarkness)), "Sets the game-view dimming strength in percent." },
@@ -169,6 +169,8 @@ namespace AreaBulldozer.Localization
                 { "AreaBulldozer.UI.IncreaseSize", "Grow selection" },
                 { "AreaBulldozer.UI.RotateLeft", "Rotate counter-clockwise" },
                 { "AreaBulldozer.UI.RotateRight", "Rotate clockwise" },
+                { "AreaBulldozer.UI.MissingAssets", "Missing assets" },
+                { "AreaBulldozer.UI.MissingAssetsTooltip", "Delete white placeholders of confirmed missing vehicles, plants and objects, including sub-objects. Buildings and networks are excluded." },
                 { "AreaBulldozer.UI.VegetationTooltip", "Delete trees, bushes and plants." },
                 { "AreaBulldozer.UI.BuildingsTooltip", "Delete buildings in the area." },
                 { "AreaBulldozer.UI.RoadsTooltip", "Delete roads in the area." },
@@ -204,7 +206,7 @@ namespace AreaBulldozer.Localization
                 { "AreaBulldozer.UI.ActivityLocations", "Activity locations" },
                 { "AreaBulldozer.UI.SpawnLocations", "Spawn locations" },
                 { "AreaBulldozer.UI.AssetLanes", "Asset lanes / SubLanes" },
-                { "AreaBulldozer.UI.DimBackground", "Dim marker background" },
+                { "AreaBulldozer.UI.DimBackground", "Dim background" },
                 { "AreaBulldozer.UI.BackgroundDarkness", "Background darkness" },
                 { "AreaBulldozer.UI.Safety", "Safety" },
                 { "AreaBulldozer.UI.BuildingSubObjects", "Building sub-objects" },

@@ -43,7 +43,8 @@ namespace AreaBulldozer.Tools
                  Mod.Settings.DeleteMarkerNetworks);
 
             UpdateMarkerFocusOverlay(
-                markerFilterActive);
+                markerFilterActive ||
+                (Mod.Settings?.DeleteMissingAssets ?? false));
 
             if (m_RenderingSystem == null)
             {
@@ -52,7 +53,7 @@ namespace AreaBulldozer.Tools
 
             if (!markerFilterActive)
             {
-                RestoreMarkerVisibility();
+                RestoreMarkerVisibility(removeFocusOverlay: false);
                 return;
             }
 
@@ -79,9 +80,12 @@ namespace AreaBulldozer.Tools
             }
         }
 
-        private void RestoreMarkerVisibility()
+        private void RestoreMarkerVisibility(bool removeFocusOverlay = true)
         {
-            RemoveMarkerFocusOverlay();
+            if (removeFocusOverlay)
+            {
+                RemoveMarkerFocusOverlay();
+            }
 
             if (!m_ControlsMarkerVisibility)
             {

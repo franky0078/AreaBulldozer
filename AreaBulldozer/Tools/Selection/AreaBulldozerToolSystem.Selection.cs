@@ -56,6 +56,7 @@ namespace AreaBulldozer.Tools
                 new();
 
             int vegetationCount = 0;
+            int missingAssetCount = 0;
             int buildingCount = 0;
             int roadCount = 0;
             int pathCount = 0;
@@ -126,7 +127,15 @@ namespace AreaBulldozer.Tools
                 SpatialCandidate candidate
                 in candidates)
             {
-                if (candidate.IsBuilding)
+                if (candidate.IsMissingAsset)
+                {
+                    // Recheck at use time; an asset may have become available again.
+                    if (!filters.DeleteMissingAssets || !IsMissingAssetObject(candidate.Entity))
+                    {
+                        continue;
+                    }
+                }
+                else if (candidate.IsBuilding)
                 {
                     if (!filters.DeleteBuildings)
                     {
@@ -205,8 +214,8 @@ namespace AreaBulldozer.Tools
                 if (!IsEntityUsable(
                         entity,
                         allowOverridden:
-                            candidate.IsVegetation &&
-                            filters.IncludeOverriddenVegetation))
+                            candidate.IsMissingAsset ||
+                            (candidate.IsVegetation && filters.IncludeOverriddenVegetation)))
                 {
                     continue;
                 }
@@ -267,7 +276,11 @@ namespace AreaBulldozer.Tools
                     continue;
                 }
 
-                if (candidate.IsBuilding)
+                if (candidate.IsMissingAsset)
+                {
+                    missingAssetCount++;
+                }
+                else if (candidate.IsBuilding)
                 {
                     buildingCount++;
                 }
@@ -517,6 +530,7 @@ namespace AreaBulldozer.Tools
             }
 
             SafeLogInfo(
+                $"missing asset objects: {missingAssetCount}, " +
                 $"buildings: {buildingCount}, " +
                 $"roads: {roadCount}, " +
                 $"pedestrian paths: {pathCount}, " +

@@ -25,6 +25,7 @@ namespace AreaBulldozer.Tools
         private OverlayRenderSystem m_OverlayRenderSystem;
         private ToolOutputBarrier m_ToolOutputBarrier;
 
+        private EntityQuery m_MissingAssetObjectQuery;
         private EntityQuery m_PlantQuery;
         private EntityQuery m_BuildingQuery;
         private EntityQuery m_RoadEdgeQuery;
@@ -288,6 +289,26 @@ namespace AreaBulldozer.Tools
             InitializeMarkerVisibility();
             InitializeToolStateCleanup();
             InitializeEditorTool();
+
+            m_MissingAssetObjectQuery = GetEntityQuery(new EntityQueryDesc
+            {
+                All = new ComponentType[]
+                {
+                    ComponentType.ReadOnly<Transform>(),
+                    ComponentType.ReadOnly<PrefabRef>()
+                },
+                None = new ComponentType[]
+                {
+                    ComponentType.ReadOnly<Deleted>(),
+                    ComponentType.ReadOnly<Temp>(),
+                    ComponentType.ReadOnly<PrefabData>(),
+                    ComponentType.ReadOnly<Game.Buildings.Building>(),
+                    ComponentType.ReadOnly<Game.Net.Edge>(),
+                    ComponentType.ReadOnly<Game.Net.Node>(),
+                    ComponentType.ReadOnly<Game.Effects.EffectInstance>(),
+                    ComponentType.ReadOnly<Game.Routes.LivePath>()
+                }
+            });
 
             m_PlantQuery = GetEntityQuery(
                 new EntityQueryDesc

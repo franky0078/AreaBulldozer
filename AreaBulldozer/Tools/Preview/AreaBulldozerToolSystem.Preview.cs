@@ -237,7 +237,15 @@ namespace AreaBulldozer.Tools
                 Entity entity =
                     candidate.Entity;
 
-                if (candidate.IsBuilding)
+                if (candidate.IsMissingAsset)
+                {
+                    // Recheck at use time; an asset may have become available again.
+                    if (!filters.DeleteMissingAssets || !IsMissingAssetObject(candidate.Entity))
+                    {
+                        continue;
+                    }
+                }
+                else if (candidate.IsBuilding)
                 {
                     if (!filters.DeleteBuildings)
                     {
@@ -313,8 +321,8 @@ namespace AreaBulldozer.Tools
                 if (!IsEntityUsable(
                         entity,
                         allowOverridden:
-                            candidate.IsVegetation &&
-                            filters.IncludeOverriddenVegetation))
+                            candidate.IsMissingAsset ||
+                            (candidate.IsVegetation && filters.IncludeOverriddenVegetation)))
                 {
                     continue;
                 }

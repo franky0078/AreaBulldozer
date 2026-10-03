@@ -1,29 +1,35 @@
 using Game.SceneFlow;
 using System;
 using System.Reflection;
+using UnityEngine;
+using UnityEngine.Rendering.HighDefinition;
 
 namespace AreaBulldozer.Tools
 {
     public partial class AreaBulldozerToolSystem
     {
-        // ------------------------------------------------------------
-        // Abgedunkelte Marker-Fokusansicht
-        // ------------------------------------------------------------
-
         private const string kMarkerFocusOverlayId =
             "area-bulldozer-marker-focus-overlay";
+        private const string kOutlinePassTypeName =
+            "Game.Rendering.OutlinesWorldUIPass";
 
+        private AreaBulldozerMarkerFocusPass m_MarkerFocusPass;
+        private CustomPassVolume m_MarkerFocusVolume;
         private bool m_MarkerFocusOverlayVisible;
         private bool m_MarkerFocusOverlayFailureLogged;
         private int m_AppliedMarkerBackgroundDarkness;
+        private float m_NextMarkerFocusAttachAttempt;
 
         private void InitializeMarkerFocusOverlay()
         {
             m_MarkerFocusOverlayVisible = false;
             m_MarkerFocusOverlayFailureLogged = false;
             m_AppliedMarkerBackgroundDarkness = -1;
+            m_NextMarkerFocusAttachAttempt = 0f;
 
-            RemoveMarkerFocusOverlay();
+            TryExecuteUiScript(
+                "(function(){var e=document.getElementById('" +
+                kMarkerFocusOverlayId + "');if(e){e.remove();}})();");
         }
 
         private void DisposeMarkerFocusOverlay()
@@ -31,13 +37,10 @@ namespace AreaBulldozer.Tools
             RemoveMarkerFocusOverlay();
         }
 
-        private void UpdateMarkerFocusOverlay(
-            bool markerFilterActive)
+        private void UpdateMarkerFocusOverlay(bool focusFilterActive)
         {
-            bool shouldDimBackground =
-                markerFilterActive &&
-                Mod.Settings != null &&
-                Mod.Settings.DimMarkerBackground;
+            bool shouldDimBackground = focusFilterActive &&
+                Mod.Settings != null && Mod.Settings.DimMarkerBackground;
 
             if (!shouldDimBackground)
             {
@@ -45,101 +48,137 @@ namespace AreaBulldozer.Tools
                 return;
             }
 
-            int darkness =
-                Unity.Mathematics.math.clamp(
-                    Mod.Settings.MarkerBackgroundDarkness,
-                    10,
-                    70);
+            int darkness = Unity.Mathematics.math.clamp(
+                Mod.Settings.MarkerBackgroundDarkness, 10, 70);
 
-            if (m_MarkerFocusOverlayVisible &&
-                m_AppliedMarkerBackgroundDarkness ==
-                    darkness)
-            {
-                return;
-            }
-
-            ShowMarkerFocusOverlay(
-                darkness);
+            ShowMarkerFocusOverlay(darkness);
         }
 
-        private void ShowMarkerFocusOverlay(
-            int darknessPercent)
+        private void ShowMarkerFocusOverlay(int darknessPercent)
         {
-            float alpha =
-                darknessPercent / 100f;
+            // Reattach if a scene change replaced the game's render volume.
+            bool isAttached = m_MarkerFocusPass != null &&
+                m_MarkerFocusVolume != null &&
+                m_MarkerFocusVolume.isActiveAndEnabled &&
+                m_MarkerFocusVolume.customPasses.Contains(m_MarkerFocusPass);
 
-            string alphaText =
-                alpha.ToString(
-                    "0.00",
-                    System.Globalization.CultureInfo.InvariantCulture);
-
-            string script =
-                "(function(){" +
-                "var id='" + kMarkerFocusOverlayId + "';" +
-                "var e=document.getElementById(id);" +
-                "if(!e){" +
-                    "e=document.createElement('div');" +
-                    "e.id=id;" +
-                    "e.setAttribute('aria-hidden','true');" +
-                    "e.style.position='fixed';" +
-                    "e.style.left='0';" +
-                    "e.style.top='0';" +
-                    "e.style.width='100vw';" +
-                    "e.style.height='100vh';" +
-                    "e.style.pointerEvents='none';" +
-                    "e.style.zIndex='0';" +
-                    "e.style.transition='background 100ms linear';" +
-                    "if(document.body.firstChild){" +
-                        "document.body.insertBefore(" +
-                            "e,document.body.firstChild);" +
-                    "}else{" +
-                        "document.body.appendChild(e);" +
-                    "}" +
-                "}" +
-                "e.style.display='block';" +
-                "e.style.background='rgba(0,0,0," +
-                    alphaText + ")';" +
-                "})();";
-
-            if (!TryExecuteUiScript(script))
+            if (!isAttached)
             {
-                return;
+                if (UnityEngine.Time.realtimeSinceStartup < m_NextMarkerFocusAttachAttempt)
+                {
+                    return;
+                }
+
+                m_NextMarkerFocusAttachAttempt = UnityEngine.Time.realtimeSinceStartup + 2f;
+                if (!TryAttachMarkerFocusPass())
+                {
+                    return;
+                }
+            }
+
+            m_MarkerFocusPass.TargetCamera = Camera.main;
+            float remainingBrightness = 1f - darknessPercent / 100f;
+            m_MarkerFocusPass.BrightnessMultiplier =
+                Unity.Mathematics.math.pow(remainingBrightness, 2.2f);
+            m_MarkerFocusPass.enabled = true;
+
+            if (!m_MarkerFocusOverlayVisible ||
+                m_AppliedMarkerBackgroundDarkness != darknessPercent)
+            {
+                Mod.LogDiagnosticInfo(
+                    $"Native marker background dimming enabled at {darknessPercent}%. " +
+                    "The background pass precedes the game's outlines and world UI.");
             }
 
             m_MarkerFocusOverlayVisible = true;
-            m_AppliedMarkerBackgroundDarkness =
-                darknessPercent;
+            m_AppliedMarkerBackgroundDarkness = darknessPercent;
+        }
 
-            Mod.LogDiagnosticInfo(
-                $"Marker background dimming enabled at " +
-                $"{darknessPercent}%.");
+        private bool TryAttachMarkerFocusPass()
+        {
+            if (m_MarkerFocusPass != null)
+            {
+                m_MarkerFocusPass.enabled = false;
+                if (m_MarkerFocusVolume != null)
+                {
+                    m_MarkerFocusVolume.customPasses.Remove(m_MarkerFocusPass);
+                }
+            }
+            m_MarkerFocusVolume = null;
+
+            CustomPassVolume[] volumes =
+                UnityEngine.Object.FindObjectsOfType<CustomPassVolume>();
+
+            foreach (CustomPassVolume volume in volumes)
+            {
+                if (!volume.isActiveAndEnabled)
+                {
+                    continue;
+                }
+
+                for (int index = 0; index < volume.customPasses.Count; index++)
+                {
+                    CustomPass pass = volume.customPasses[index];
+                    if (pass == null || !pass.enabled ||
+                        pass.GetType().FullName != kOutlinePassTypeName)
+                    {
+                        continue;
+                    }
+
+                    if (m_MarkerFocusPass == null)
+                    {
+                        m_MarkerFocusPass = new AreaBulldozerMarkerFocusPass();
+                    }
+
+                    if (!m_MarkerFocusPass.TryInitialize())
+                    {
+                        LogMarkerFocusOverlayFailure(new InvalidOperationException(
+                            "The HDRP/Unlit shader or its ForwardOnly pass is unavailable. " +
+                            "Background dimming has been left off."));
+                        return false;
+                    }
+
+                    volume.customPasses.Insert(index, m_MarkerFocusPass);
+                    m_MarkerFocusVolume = volume;
+                    m_MarkerFocusOverlayFailureLogged = false;
+                    Mod.LogDiagnosticInfo(
+                        "Native background pass attached before OutlinesWorldUIPass " +
+                        $"at {volume.injectionPoint} in volume {volume.name}.");
+                    return true;
+                }
+            }
+
+            LogMarkerFocusOverlayFailure(new InvalidOperationException(
+                "No active OutlinesWorldUIPass was found. " +
+                "Background dimming is off; attachment will be retried."));
+            return false;
         }
 
         private void RemoveMarkerFocusOverlay()
         {
-            if (!m_MarkerFocusOverlayVisible &&
-                m_AppliedMarkerBackgroundDarkness < 0)
+            if (m_MarkerFocusPass != null)
             {
-                return;
+                // Disable first so a queued render cannot draw another dim frame.
+                m_MarkerFocusPass.enabled = false;
+                m_MarkerFocusPass.BrightnessMultiplier = 1f;
+                m_MarkerFocusPass.TargetCamera = null;
+                if (m_MarkerFocusVolume != null)
+                {
+                    m_MarkerFocusVolume.customPasses.Remove(m_MarkerFocusPass);
+                }
+                m_MarkerFocusPass.ReleaseResources();
+                m_MarkerFocusPass = null;
             }
-
-            string script =
-                "(function(){" +
-                "var e=document.getElementById('" +
-                    kMarkerFocusOverlayId + "');" +
-                "if(e){e.remove();}" +
-                "})();";
-
-            TryExecuteUiScript(script);
+            m_MarkerFocusVolume = null;
 
             if (m_MarkerFocusOverlayVisible)
             {
-                Mod.LogDiagnosticInfo(
-                    "Marker background dimming removed.");
+                Mod.LogDiagnosticInfo("Native marker background dimming removed.");
             }
 
             m_MarkerFocusOverlayVisible = false;
             m_AppliedMarkerBackgroundDarkness = -1;
+            m_NextMarkerFocusAttachAttempt = 0f;
         }
 
         private bool TryExecuteUiScript(

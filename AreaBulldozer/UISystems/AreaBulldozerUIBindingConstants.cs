@@ -21,6 +21,7 @@ namespace AreaBulldozer.UISystems
         public const string LauncherPositionX = "launcherPositionX";
         public const string LauncherPositionY = "launcherPositionY";
 
+        public const string DeleteMissingAssets = "deleteMissingAssets";
         public const string DeleteTrees = "deleteTrees";
         public const string IncludeOverriddenVegetation = "includeOverriddenVegetation";
         public const string DeleteBuildings = "deleteBuildings";
@@ -69,6 +70,7 @@ namespace AreaBulldozer.UISystems
         public const string SetLauncherPositionX = "setLauncherPositionX";
         public const string SetLauncherPositionY = "setLauncherPositionY";
 
+        public const string SetDeleteMissingAssets = "setDeleteMissingAssets";
         public const string SetDeleteTrees = "setDeleteTrees";
         public const string SetIncludeOverriddenVegetation = "setIncludeOverriddenVegetation";
         public const string SetDeleteBuildings = "setDeleteBuildings";

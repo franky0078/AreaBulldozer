@@ -9,6 +9,7 @@ export type AreaBulldozerIconType =
     | "palette"
     | "straight"
     | "curve"
+    | "missingAsset"
     | "vegetation"
     | "anarchy"
     | "building"
@@ -40,6 +41,14 @@ const common = {
 
 export function AreaBulldozerIcon({ type }: { type: AreaBulldozerIconType }) {
     switch (type) {
+        case "missingAsset":
+            return (
+                <svg {...common}>
+                    <path d="M16 3 28 10v13l-12 7L4 23V10L16 3Z M4 10l12 7 12-7 M16 17v13" />
+                    <path d="M16 7v4 M16 14h.01" />
+                </svg>
+            );
+
         case "circle":
             return (
                 <svg {...common}>

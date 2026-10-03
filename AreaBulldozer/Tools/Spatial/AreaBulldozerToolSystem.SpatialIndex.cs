@@ -25,6 +25,7 @@ namespace AreaBulldozer.Tools
 
         private bool m_SpatialIndexReady;
         private int m_SpatialIndexedObjectCount;
+        private int m_SpatialMissingAssetCount;
         private int m_SpatialSourceEntityCount = -1;
         private float m_NextSpatialRefreshCheckTime;
 
@@ -99,6 +100,7 @@ namespace AreaBulldozer.Tools
             }
 
             ClearSpatialIndex();
+            m_SpatialMissingAssetsEnabled = Mod.Settings?.DeleteMissingAssets ?? false;
 
             System.Diagnostics.Stopwatch stopwatch =
                 System.Diagnostics.Stopwatch.StartNew();
@@ -124,6 +126,18 @@ namespace AreaBulldozer.Tools
                 SpatialCandidateKind.SpawnLocation);
 
             AddAssetLanesToSpatialIndex();
+            if (m_SpatialMissingAssetsEnabled)
+            {
+                AddQueryToSpatialIndex(
+                    m_MissingAssetObjectQuery,
+                    SpatialCandidateKind.MissingAsset);
+            }
+
+            if (m_SpatialMissingAssetsEnabled)
+            {
+                Mod.LogDiagnosticInfo(
+                    $"Missing-assets filter: {m_SpatialMissingAssetCount} confirmed missing object instances indexed.");
+            }
 
             stopwatch.Stop();
 
@@ -232,9 +246,12 @@ namespace AreaBulldozer.Tools
             }
         }
 
+        private bool m_SpatialMissingAssetsEnabled;
+
         private void EnsureSpatialIndexReady()
         {
-            if (!m_SpatialIndexReady)
+            if (!m_SpatialIndexReady ||
+                m_SpatialMissingAssetsEnabled != (Mod.Settings?.DeleteMissingAssets ?? false))
             {
                 RebuildSpatialIndex();
             }
@@ -243,6 +260,7 @@ namespace AreaBulldozer.Tools
         private int ComputeSpatialSourceEntityCount()
         {
             return
+                (m_SpatialMissingAssetsEnabled ? m_MissingAssetObjectQuery.CalculateEntityCount() : 0) +
                 m_PlantQuery.CalculateEntityCount() +
                 m_BuildingQuery.CalculateEntityCount() +
                 m_RoadEdgeQuery.CalculateEntityCount() +
@@ -324,7 +342,8 @@ namespace AreaBulldozer.Tools
             int currentCount =
                 ComputeSpatialSourceEntityCount();
 
-            if (currentCount == m_SpatialSourceEntityCount)
+            if (currentCount == m_SpatialSourceEntityCount &&
+                !m_SpatialMissingAssetsEnabled)
             {
                 return;
             }
@@ -341,6 +360,7 @@ namespace AreaBulldozer.Tools
         private void ClearSpatialIndex()
         {
             m_SpatialIndex?.Clear();
+            m_SpatialMissingAssetCount = 0;
 
             ResetSpatialIndexCounters();
             m_SpatialIndexReady = false;
@@ -398,13 +418,20 @@ namespace AreaBulldozer.Tools
                     if (!IsEntityUsable(
                             entity,
                             allowOverridden:
-                                kind == SpatialCandidateKind.Vegetation))
+                                kind == SpatialCandidateKind.Vegetation ||
+                                kind == SpatialCandidateKind.MissingAsset))
                     {
                         continue;
                     }
 
                     if (m_PendingDeletion != null &&
                         m_PendingDeletion.Contains(entity))
+                    {
+                        continue;
+                    }
+
+                    bool missingAsset = m_SpatialMissingAssetsEnabled && IsMissingAssetObject(entity);
+                    if (kind == SpatialCandidateKind.MissingAsset ? !missingAsset : missingAsset)
                     {
                         continue;
                     }
@@ -989,6 +1016,11 @@ namespace AreaBulldozer.Tools
             m_SpatialIndex.Add(
                 candidate);
 
+            if (candidate.IsMissingAsset)
+            {
+                m_SpatialMissingAssetCount++;
+            }
+
             m_SpatialIndexedObjectCount++;
 
             if (candidate.IsBuilding)
@@ -1044,10 +1076,25 @@ namespace AreaBulldozer.Tools
         }
 
         private bool IsCandidateInsideSelection(
-            in SpatialCandidate candidate,
+            in SpatialCandidate indexedCandidate,
             float2 selectionCenter,
             float selectionSize)
         {
+            SpatialCandidate candidate = indexedCandidate;
+
+            // Missing vehicle placeholders may move after the index was built.
+            // Always validate the current position before previewing or deleting.
+            if (candidate.IsMissingAsset)
+            {
+                if (!TryGetTransformPosition(candidate.Entity, out float2 currentPosition) ||
+                    !math.all(math.isfinite(currentPosition)))
+                {
+                    return false;
+                }
+                candidate = new SpatialCandidate(candidate.Entity, currentPosition,
+                    SpatialCandidateKind.MissingAsset, StaticObjectCategory.None);
+            }
+
             float safeSize =
                 math.max(
                     5f,
