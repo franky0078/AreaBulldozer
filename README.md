@@ -4,8 +4,11 @@ Area Bulldozer is an area deletion tool for **Cities: Skylines II**.
 Instead of removing objects individually, you can select and delete multiple objects using circular, square, triangular or multi-point corridor selections. The tool includes configurable object filters, marker visualization and several safety options.
 
 
-![Area Bulldozer thumbnail](AreaBulldozer/Properties/Thumbnail.jpg)
-
+<p align="center">
+  <img src="AreaBulldozer/Properties/Screenshot01.jpg"
+       alt="Enhanced Graphics and Textures"
+       width="600">
+</p>
 
 
 ## Selection shapes
@@ -42,6 +45,7 @@ The following object categories can be enabled or disabled individually:
 - Railway tracks
 - Surfaces and areas
 - Props and markers
+- Missing Assets
 
 Additional filters are available for:
 
