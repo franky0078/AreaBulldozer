@@ -13,7 +13,12 @@ namespace AreaBulldozer
 {
     public class Mod : IMod
     {
-        public const string ModVersion = "1.8.0";
+        // Generated assembly metadata comes from modversion.props.
+        public static readonly string ModVersion =
+            System.Reflection.CustomAttributeExtensions.GetCustomAttribute<
+                System.Reflection.AssemblyInformationalVersionAttribute>(typeof(Mod).Assembly)
+                ?.InformationalVersion.Split('+')[0]
+            ?? typeof(Mod).Assembly.GetName().Version.ToString(3);
 
         public static readonly ILog Log = LogManager
             .GetLogger(

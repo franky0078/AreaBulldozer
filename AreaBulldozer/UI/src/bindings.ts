@@ -1,7 +1,15 @@
 import { bindValue } from "cs2/api";
 import mod from "mod.json";
 
+export const heightFilter$ = bindValue<number>(mod.id, "heightFilter", 0);
+export const undergroundView$ = bindValue<boolean>(mod.id, "undergroundView", false);
+
+export const undergroundColor$ = bindValue<number>(mod.id, "undergroundColor", 0xb3b3b3);
+
 export const BindingKeys = {
+    setUndergroundColor: "setUndergroundColor",
+    setHeightFilter: "setHeightFilter",
+    setUndergroundView: "setUndergroundView",
     toggleTool: "toggleTool",
     deactivateTool: "deactivateTool",
     setPointerOverUI: "setPointerOverUI",

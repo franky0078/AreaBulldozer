@@ -8,6 +8,8 @@ namespace AreaBulldozer.Tools
         : IEquatable<FilterSnapshot>
     {
 
+        public readonly AreaBulldozerHeightFilter HeightFilter;
+
         // Primäre Objektfilter
         public readonly bool DeleteTrees;
         public readonly bool DeleteMissingAssets;
@@ -37,6 +39,7 @@ namespace AreaBulldozer.Tools
         private FilterSnapshot(
             Setting settings)
         {
+            HeightFilter = settings.HeightFilter;
             DeleteTrees =
                 settings.DeleteTrees;
             DeleteMissingAssets = settings.DeleteMissingAssets;
@@ -115,6 +118,7 @@ namespace AreaBulldozer.Tools
             FilterSnapshot other)
         {
             return
+                HeightFilter == other.HeightFilter &&
                 DeleteMissingAssets == other.DeleteMissingAssets &&
                 DeleteTrees == other.DeleteTrees &&
                 IncludeOverriddenVegetation ==
@@ -146,7 +150,7 @@ namespace AreaBulldozer.Tools
 
         public override int GetHashCode()
         {
-            int hash = 0;
+            int hash = ((int)HeightFilter & 3) << 19;
             hash |= DeleteMissingAssets ? 1 << 18 : 0;
 
             hash |= DeleteTrees ? 1 << 0 : 0;

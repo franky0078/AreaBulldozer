@@ -98,6 +98,16 @@ namespace AreaBulldozer.Localization
                 { m_Setting.GetBindingMapLocaleID(), "Area Bulldozer" },
                 { "Editor.TOOL[AreaBulldozerTool]", "Area Bulldozer" },
 
+                { "AreaBulldozer.UI.ColorUnderground", "Fond souterrain" },
+                { "AreaBulldozer.UI.ColorUndergroundHint", "Vue souterraine uniquement : blanc = original, couleurs sombres = assombrissement / teinte. Interface et contours de sélection inchangés." },
+                { "AreaBulldozer.UI.HeightFilter", "Filtre de hauteur" },
+                { "AreaBulldozer.UI.HeightAll", "Toutes les hauteurs" },
+                { "AreaBulldozer.UI.HeightAbove", "Sur / au-dessus du terrain" },
+                { "AreaBulldozer.UI.HeightBelow", "Sous le terrain" },
+                { "AreaBulldozer.UI.HeightFilterTooltip", "Filtre commun à l’aperçu et à la suppression. Les objets sont classés selon leur origine, les réseaux le long de leur courbe. Une profondeur de 0,5 m maximum compte comme surface. Les segments mixtes nécessitent Toutes les hauteurs. Les bâtiments et leurs sous-objets restent une unité." },
+                { "AreaBulldozer.UI.UndergroundView", "Vue souterraine" },
+                { "AreaBulldozer.UI.UndergroundViewTooltip", "Affiche les objets souterrains avec la vue du jeu, sans modifier le filtre. Sous le terrain active automatiquement cette vue." },
+
                 { "AreaBulldozer.UI.Title", "Area Bulldozer" },
                 { "AreaBulldozer.UI.Colors", "Couleurs" },
                 { "AreaBulldozer.UI.OpenColorEditor", "Ouvrir l'éditeur de couleurs" },

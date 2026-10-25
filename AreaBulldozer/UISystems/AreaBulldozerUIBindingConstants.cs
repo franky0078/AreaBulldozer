@@ -4,6 +4,14 @@ namespace AreaBulldozer.UISystems
     {
         public const string ModId = "AreaBulldozer";
 
+        public const string HeightFilter = "heightFilter";
+        public const string SetHeightFilter = "setHeightFilter";
+        public const string UndergroundView = "undergroundView";
+        public const string SetUndergroundView = "setUndergroundView";
+
+        public const string UndergroundColor = "undergroundColor";
+        public const string SetUndergroundColor = "setUndergroundColor";
+
         // Values
         public const string IsToolActive = "isToolActive";
         public const string BrushRadius = "brushRadius";

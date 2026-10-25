@@ -9,6 +9,8 @@ import { AreaBulldozerIcon, AreaBulldozerIconType } from "./AreaBulldozerIcons";
 import { useSafeValue } from "./useSafeValue";
 import {
     BindingKeys,
+    heightFilter$,
+    undergroundView$,
     brushRadius$,
     deleteActivityLocations$,
     deleteBrandingObjects$,
@@ -302,6 +304,9 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
             uiScale$,
             100
         );
+
+        const heightFilter = useSafeValue("heightFilter$", heightFilter$, 0);
+        const undergroundView = useSafeValue("undergroundView$", undergroundView$, false);
 
         const deleteMissingAssets = useSafeValue(
             "deleteMissingAssets$",
@@ -809,6 +814,25 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
                         />
                     </Section>
                 )}
+
+                <Section title={text("HeightFilter", "Höhenfilter")}>
+                    <IconToolButton icon="heightAll" selected={heightFilter === 0}
+                        tooltipTitle={text("HeightAll", "Alle Höhen")}
+                        tooltipText={text("HeightFilterTooltip", "Höhenfilter für Vorschau und Löschen. Gemischte Übergänge nur bei Alle Höhen.")}
+                        onSelect={() => trigger(mod.id, BindingKeys.setHeightFilter, 0)} />
+                    <IconToolButton icon="heightAbove" selected={heightFilter === 1}
+                        tooltipTitle={text("HeightAbove", "Oberhalb / auf Gelände")}
+                        tooltipText={text("HeightFilterTooltip", "Höhenfilter für Vorschau und Löschen. Gemischte Übergänge nur bei Alle Höhen.")}
+                        onSelect={() => trigger(mod.id, BindingKeys.setHeightFilter, 1)} />
+                    <IconToolButton icon="heightBelow" selected={heightFilter === 2}
+                        tooltipTitle={text("HeightBelow", "Unterhalb Gelände")}
+                        tooltipText={text("HeightFilterTooltip", "Höhenfilter für Vorschau und Löschen. Gemischte Übergänge nur bei Alle Höhen.")}
+                        onSelect={() => trigger(mod.id, BindingKeys.setHeightFilter, 2)} />
+                    <IconToolButton icon="undergroundView" selected={undergroundView}
+                        tooltipTitle={text("UndergroundView", "Untergrundansicht")}
+                        tooltipText={text("UndergroundViewTooltip", "Unterirdische Objekte anzeigen. Ändert den Höhenfilter nicht.")}
+                        onSelect={() => trigger(mod.id, BindingKeys.setUndergroundView, !undergroundView)} />
+                </Section>
 
                 <Section title={text("MainFilters", "Filter")}>
                     <IconToolButton

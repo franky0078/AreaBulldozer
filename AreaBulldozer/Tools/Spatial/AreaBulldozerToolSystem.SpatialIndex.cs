@@ -1069,6 +1069,7 @@ namespace AreaBulldozer.Tools
                 float radius)
         {
             EnsureSpatialIndexReady();
+            PrepareHeightFilter();
 
             return m_SpatialIndex.Query(
                 center,
@@ -1080,6 +1081,11 @@ namespace AreaBulldozer.Tools
             float2 selectionCenter,
             float selectionSize)
         {
+            if (!MatchesHeightFilter(indexedCandidate.Entity))
+            {
+                return false;
+            }
+
             SpatialCandidate candidate = indexedCandidate;
 
             // Missing vehicle placeholders may move after the index was built.

@@ -10,6 +10,7 @@ import {
     invalidPolygonColor$,
     selectionColor$,
     surfaceColor$,
+    undergroundColor$,
 } from "../bindings";
 
 import styles from "./AreaBulldozerColorEditor.module.scss";
@@ -21,7 +22,8 @@ type ColorKey =
     | "confirmation"
     | "invalidPolygon"
     | "delete"
-    | "surface";
+    | "surface"
+    | "underground";
 
 
 interface ColorEditorProps {
@@ -130,6 +132,8 @@ export function AreaBulldozerColorEditor({
         0x14dbff
     );
 
+    const undergroundColor = useSafeValue("undergroundColor$", undergroundColor$, 0xb3b3b3);
+
     const [activeKey, setActiveKey] =
         React.useState<ColorKey>("selection");
 
@@ -168,6 +172,13 @@ export function AreaBulldozerColorEditor({
             value: surfaceColor,
             defaultValue: 0x14dbff,
             triggerKey: BindingKeys.setSurfaceColor,
+        },
+        {
+            key: "underground",
+            label: text("ColorUnderground", "Untergrund"),
+            value: undergroundColor,
+            defaultValue: 0xb3b3b3,
+            triggerKey: BindingKeys.setUndergroundColor,
         },
     ];
 
@@ -340,6 +351,10 @@ export function AreaBulldozerColorEditor({
                         end={`rgb(${channels.red}, ${channels.green}, 255)`}
                         onChange={value => setChannel("blue", value)}
                     />
+
+                    {activeKey === "underground" && (
+                        <div>{text("ColorUndergroundHint", "Nur in der Untergrundansicht: Weiß = Original, dunklere Farben = Abdunklung / Tönung.")}</div>
+                    )}
 
                     <div className={styles.hexRow}>
                         <label htmlFor="area-bulldozer-color-hex">

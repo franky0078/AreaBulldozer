@@ -5,6 +5,13 @@ using Game.Settings;
 
 namespace AreaBulldozer
 {
+    public enum AreaBulldozerHeightFilter
+    {
+        All = 0,
+        AboveGround = 1,
+        BelowGround = 2
+    }
+
     public enum AreaBulldozerLauncherMode
     {
         Standalone = 0,
@@ -63,6 +70,9 @@ namespace AreaBulldozer
         {
             SetDefaults();
         }
+
+        [SettingsUIHidden]
+        public AreaBulldozerHeightFilter HeightFilter { get; set; }
 
         [SettingsUIHidden]
         public bool DeleteTrees { get; set; }
@@ -252,6 +262,15 @@ namespace AreaBulldozer
         public int DeleteColorBlue { get; set; }
 
         [SettingsUIHidden]
+        public int UndergroundColorRed { get; set; }
+
+        [SettingsUIHidden]
+        public int UndergroundColorGreen { get; set; }
+
+        [SettingsUIHidden]
+        public int UndergroundColorBlue { get; set; }
+
+        [SettingsUIHidden]
         public int SurfaceColorRed { get; set; }
 
         [SettingsUIHidden]
@@ -293,6 +312,7 @@ namespace AreaBulldozer
 
         public override void SetDefaults()
         {
+            HeightFilter = AreaBulldozerHeightFilter.All;
             DeleteTrees = true;
             DeleteMissingAssets = false;
             IncludeOverriddenVegetation = false;
@@ -367,6 +387,10 @@ namespace AreaBulldozer
             DeleteColorRed = 31;
             DeleteColorGreen = 242;
             DeleteColorBlue = 56;
+
+            UndergroundColorRed = 179;
+            UndergroundColorGreen = 179;
+            UndergroundColorBlue = 179;
 
             SurfaceColorRed = 20;
             SurfaceColorGreen = 219;

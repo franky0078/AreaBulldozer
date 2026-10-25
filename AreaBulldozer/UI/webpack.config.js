@@ -1,6 +1,8 @@
 const fs = require("fs");
 const path = require("path");
 
+// Synchronize before loading mod.json (also covers standalone npm builds).
+require("./tools/sync-version")();
 const MOD = require("./mod.json");
 
 const MiniCssExtractPlugin =

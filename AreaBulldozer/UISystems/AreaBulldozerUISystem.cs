@@ -92,6 +92,13 @@ namespace AreaBulldozer.UISystems
                     AreaBulldozerUIBindingConstants.IsToolActive,
                     () => m_Tool != null && m_Tool.IsToolActive));
 
+            AddUpdateBinding(new GetterValueBinding<int>(group,
+                AreaBulldozerUIBindingConstants.HeightFilter,
+                () => (int)(Mod.Settings?.HeightFilter ?? AreaBulldozerHeightFilter.All)));
+            AddUpdateBinding(new GetterValueBinding<bool>(group,
+                AreaBulldozerUIBindingConstants.UndergroundView,
+                () => m_Tool?.UndergroundView ?? false));
+
             AddUpdateBinding(
                 new GetterValueBinding<int>(
                     group,
@@ -296,6 +303,12 @@ namespace AreaBulldozer.UISystems
                 0x1FF238);
 
             AddColorValueBinding(
+                AreaBulldozerUIBindingConstants.UndergroundColor,
+                setting => PackColor(setting.UndergroundColorRed,
+                    setting.UndergroundColorGreen, setting.UndergroundColorBlue),
+                0xB3B3B3);
+
+            AddColorValueBinding(
                 AreaBulldozerUIBindingConstants.SurfaceColor,
                 setting => PackColor(
                     setting.SurfaceColorRed,
@@ -320,6 +333,18 @@ namespace AreaBulldozer.UISystems
         {
             string group =
                 AreaBulldozerUIBindingConstants.ModId;
+
+            AddBinding(new TriggerBinding<int>(group,
+                AreaBulldozerUIBindingConstants.SetHeightFilter, value =>
+                {
+                    ChangeSetting(setting => setting.HeightFilter =
+                        (AreaBulldozerHeightFilter)math.clamp(value, 0, 2));
+                    m_Tool?.InvalidateSelectionGeometry();
+                    m_Tool?.UpdateHeightView(resetView: true);
+                }));
+            AddBinding(new TriggerBinding<bool>(group,
+                AreaBulldozerUIBindingConstants.SetUndergroundView,
+                value => m_Tool?.SetUnderground(value)));
 
             AddBinding(
                 new TriggerBinding(
@@ -548,6 +573,15 @@ namespace AreaBulldozer.UISystems
                     setting.DeleteColorRed = red;
                     setting.DeleteColorGreen = green;
                     setting.DeleteColorBlue = blue;
+                });
+
+            AddColorSettingTrigger(
+                AreaBulldozerUIBindingConstants.SetUndergroundColor,
+                (setting, red, green, blue) =>
+                {
+                    setting.UndergroundColorRed = red;
+                    setting.UndergroundColorGreen = green;
+                    setting.UndergroundColorBlue = blue;
                 });
 
             AddColorSettingTrigger(

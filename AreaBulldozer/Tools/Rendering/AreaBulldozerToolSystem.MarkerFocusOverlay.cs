@@ -42,19 +42,27 @@ namespace AreaBulldozer.Tools
             bool shouldDimBackground = focusFilterActive &&
                 Mod.Settings != null && Mod.Settings.DimMarkerBackground;
 
-            if (!shouldDimBackground)
+            Color tint = Color.white;
+            if (IsToolActive && UndergroundView && Mod.Settings != null)
+            {
+                tint = new Color(
+                    Mathf.Clamp(Mod.Settings.UndergroundColorRed, 0, 255) / 255f,
+                    Mathf.Clamp(Mod.Settings.UndergroundColorGreen, 0, 255) / 255f,
+                    Mathf.Clamp(Mod.Settings.UndergroundColorBlue, 0, 255) / 255f);
+            }
+            if (!shouldDimBackground && tint == Color.white)
             {
                 RemoveMarkerFocusOverlay();
                 return;
             }
 
-            int darkness = Unity.Mathematics.math.clamp(
-                Mod.Settings.MarkerBackgroundDarkness, 10, 70);
-
-            ShowMarkerFocusOverlay(darkness);
+            int darkness = shouldDimBackground
+                ? Unity.Mathematics.math.clamp(Mod.Settings.MarkerBackgroundDarkness, 10, 70)
+                : 0;
+            ShowMarkerFocusOverlay(darkness, tint);
         }
 
-        private void ShowMarkerFocusOverlay(int darknessPercent)
+        private void ShowMarkerFocusOverlay(int darknessPercent, Color tint)
         {
             // Reattach if a scene change replaced the game's render volume.
             bool isAttached = m_MarkerFocusPass != null &&
@@ -78,7 +86,7 @@ namespace AreaBulldozer.Tools
 
             m_MarkerFocusPass.TargetCamera = Camera.main;
             float remainingBrightness = 1f - darknessPercent / 100f;
-            m_MarkerFocusPass.BrightnessMultiplier =
+            m_MarkerFocusPass.ColorMultiplier = tint.linear *
                 Unity.Mathematics.math.pow(remainingBrightness, 2.2f);
             m_MarkerFocusPass.enabled = true;
 
@@ -160,7 +168,7 @@ namespace AreaBulldozer.Tools
             {
                 // Disable first so a queued render cannot draw another dim frame.
                 m_MarkerFocusPass.enabled = false;
-                m_MarkerFocusPass.BrightnessMultiplier = 1f;
+                m_MarkerFocusPass.ColorMultiplier = Color.white;
                 m_MarkerFocusPass.TargetCamera = null;
                 if (m_MarkerFocusVolume != null)
                 {

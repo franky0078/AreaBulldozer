@@ -15,7 +15,7 @@ namespace AreaBulldozer.Tools
             new MaterialPropertyBlock();
 
         public Camera TargetCamera { get; set; }
-        public float BrightnessMultiplier { get; set; } = 1f;
+        public Color ColorMultiplier { get; set; } = Color.white;
 
         public AreaBulldozerMarkerFocusPass()
         {
@@ -96,15 +96,16 @@ namespace AreaBulldozer.Tools
         protected override void Execute(CustomPassContext ctx)
         {
             if (TargetCamera == null || ctx.hdCamera.camera != TargetCamera ||
-                BrightnessMultiplier >= 1f || m_Material == null ||
+                (ColorMultiplier.r >= 1f && ColorMultiplier.g >= 1f && ColorMultiplier.b >= 1f) ||
+                m_Material == null ||
                 m_FullscreenMesh == null)
             {
                 return;
             }
 
-            float brightness = Mathf.Clamp01(BrightnessMultiplier);
             m_Properties.SetVector("_EmissiveColor",
-                new Vector4(brightness, brightness, brightness, 1f));
+                new Vector4(Mathf.Clamp01(ColorMultiplier.r),
+                    Mathf.Clamp01(ColorMultiplier.g), Mathf.Clamp01(ColorMultiplier.b), 1f));
 
             Camera camera = ctx.hdCamera.camera;
             camera.CalculateFrustumCorners(new Rect(-0.01f, -0.01f, 1.02f, 1.02f),

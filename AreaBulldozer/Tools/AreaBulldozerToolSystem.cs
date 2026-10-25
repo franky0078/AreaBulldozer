@@ -596,6 +596,7 @@ namespace AreaBulldozer.Tools
         protected override void OnStartRunning()
         {
             base.OnStartRunning();
+            UpdateHeightView(resetView: true);
 
             CurrentPosition = float3.zero;
             HasValidPosition = false;
@@ -662,6 +663,8 @@ namespace AreaBulldozer.Tools
 
         protected override void OnStopRunning()
         {
+            requireUnderground = false;
+            m_HeightClassifications.Clear();
             m_ApplyAction?.Disable();
             m_RotateSquareHoldAction?.Disable();
             m_RotateSquareDeltaAction?.Disable();
@@ -866,6 +869,7 @@ namespace AreaBulldozer.Tools
         private JobHandle OnToolUpdate(
             JobHandle inputDeps)
         {
+            UpdateHeightView();
             CleanupPendingDeletions();
             RefreshSpatialIndexIfNeeded();
             UpdateLargeSelectionConfirmationState();

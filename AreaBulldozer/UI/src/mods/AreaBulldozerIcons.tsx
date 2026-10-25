@@ -1,6 +1,10 @@
 import React from "react";
 
 export type AreaBulldozerIconType =
+    | "heightAll"
+    | "heightAbove"
+    | "heightBelow"
+    | "undergroundView"
     | "circle"
     | "square"
     | "triangle"
@@ -41,6 +45,21 @@ const common = {
 
 export function AreaBulldozerIcon({ type }: { type: AreaBulldozerIconType }) {
     switch (type) {
+        case "heightAll":
+        case "heightAbove":
+        case "heightBelow":
+        case "undergroundView":
+            return (
+                <svg {...common}>
+                    <path d="M3 16h26" strokeDasharray="3 2" />
+                    {(type === "heightAll" || type === "heightAbove") &&
+                        <path d="M16 12V3 M11 8l5-5 5 5" />}
+                    {(type === "heightAll" || type === "heightBelow") &&
+                        <path d="M16 20v9 M11 24l5 5 5-5" />}
+                    {type === "undergroundView" &&
+                        <><path d="M5 24q11-12 22 0-11 12-22 0Z" /><circle cx="16" cy="24" r="3" /></>}
+                </svg>
+            );
         case "missingAsset":
             return (
                 <svg {...common}>

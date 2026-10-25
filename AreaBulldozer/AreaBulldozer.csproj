@@ -1,15 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+	<Import Project="modversion.props" />
+
 	<PropertyGroup>
 		<Configurations>Debug;Release</Configurations>
 
 		<AssemblyName>AreaBulldozer</AssemblyName>
 		<RootNamespace>AreaBulldozer</RootNamespace>
 
-		<!-- Keep synchronized with Mod.ModVersion and PublishConfiguration.xml. -->
-		<Version>1.8.0</Version>
-		<AssemblyVersion>1.8.0.0</AssemblyVersion>
-		<FileVersion>1.8.0.0</FileVersion>
+		<!-- All version properties are imported from modversion.props. -->
 
 		<!--
 		The file where mod information required for publishing
@@ -141,6 +140,8 @@
 	<ItemGroup>
 		<UpToDateCheckInput Include="UI\src\**\*.ts;UI\src\**\*.tsx;UI\src\**\*.scss;UI\src\**\*.css" Exclude="UI\node_modules\**" />
 		<UpToDateCheckInput Include="UI\types\**\*.ts" />
+		<UpToDateCheckInput Include="modversion.props" />
+		<UpToDateCheckInput Include="UI\tools\sync-version.js" />
 		<UpToDateCheckInput Include="UI\mod.json" />
 		<UpToDateCheckInput Include="UI\package.json" />
 		<UpToDateCheckInput Include="UI\tsconfig.json" />
@@ -170,6 +171,13 @@
 		<Touch
 			Files="$(UIProjectDirectory)\node_modules\.area-bulldozer-restored"
 			AlwaysCreate="true" />
+	</Target>
+
+	<!-- Synchronize before compilation/publishing, even when UI compilation is disabled. -->
+	<Target Name="SyncAreaBulldozerVersion" BeforeTargets="PrepareForBuild;Publish"
+		Condition="'$(DesignTimeBuild)' != 'true'">
+		<Exec Command="node &quot;$(UIProjectDirectory)\tools\sync-version.js&quot;"
+			WorkingDirectory="$(MSBuildProjectDirectory)" />
 	</Target>
 
 	<!-- Builds AreaBulldozer.mjs and AreaBulldozer.css after every C# build. -->

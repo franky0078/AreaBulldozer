@@ -132,6 +132,16 @@ namespace AreaBulldozer.Localization
                 { "Editor.TOOL[AreaBulldozerTool]", "Area Bulldozer" },
 
                 // In-game tool interface
+                { "AreaBulldozer.UI.ColorUnderground", "Untergrund" },
+                { "AreaBulldozer.UI.ColorUndergroundHint", "Nur in der Untergrundansicht: Weiß = Original, dunklere Farben = Abdunklung / Tönung. UI und Auswahlumrisse bleiben unverändert." },
+                { "AreaBulldozer.UI.HeightFilter", "Höhenfilter" },
+                { "AreaBulldozer.UI.HeightAll", "Alle Höhen" },
+                { "AreaBulldozer.UI.HeightAbove", "Oberhalb / auf Gelände" },
+                { "AreaBulldozer.UI.HeightBelow", "Unterhalb Gelände" },
+                { "AreaBulldozer.UI.HeightFilterTooltip", "Gilt für Vorschau und Löschen. Objekte werden nach ihrem Ursprung eingeordnet, Netzwerke entlang ihrer Kurve. Bis 0,5 m unter Gelände zählt als Oberfläche. Gemischte Übergangssegmente sind nur bei Alle Höhen auswählbar. Gebäude samt Unterobjekten bleiben eine Einheit." },
+                { "AreaBulldozer.UI.UndergroundView", "Untergrundansicht" },
+                { "AreaBulldozer.UI.UndergroundViewTooltip", "Zeigt unterirdische Objekte mit der Untergrundansicht des Spiels. Ändert nur die Ansicht, nicht den Höhenfilter. Unterhalb schaltet diese Ansicht automatisch ein." },
+
                 { "AreaBulldozer.UI.Title", "Area Bulldozer" },
                 { "AreaBulldozer.UI.Colors", "Farben" },
                 { "AreaBulldozer.UI.OpenColorEditor", "Farbeditor öffnen" },
