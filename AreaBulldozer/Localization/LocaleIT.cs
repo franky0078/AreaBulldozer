@@ -31,6 +31,9 @@ namespace AreaBulldozer.Localization
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.IncludeOverriddenVegetation)), "Consente di rimuovere alberi e vegetazione sovrascritti o posizionati con Anarchy. Questa opzione è disattivata per impostazione predefinita." },
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DeleteBuildings)), "Rimuovi edifici" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.DeleteBuildings)), "Seleziona edifici radice completi nell'area. Oggetti decorativi, indicatori e corsie appartenenti agli edifici non vengono conteggiati come edifici separati." },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DeleteCars)), "Rimuovi auto" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.DeleteCars)), "Rimuove i veicoli stradali in movimento o parcheggiati. Il gioco viene messo in pausa automaticamente." },
+
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DeleteRoads)), "Rimuovi strade" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.DeleteRoads)), "Seleziona segmenti completi delle strade principali la cui curva interseca l'area. Percorsi, ferrovie, reti di indicatori e reti appartenenti agli edifici restano esclusi." },
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DeletePaths)), "Rimuovi percorsi pedonali" },
@@ -149,6 +152,8 @@ namespace AreaBulldozer.Localization
                 { "AreaBulldozer.UI.MissingAssetsTooltip", "Elimina i segnaposto bianchi di veicoli, piante e oggetti confermati mancanti, inclusi i sotto-oggetti. Edifici e reti esclusi." },
                 { "AreaBulldozer.UI.VegetationTooltip", "Elimina alberi, cespugli e piante." },
                 { "AreaBulldozer.UI.BuildingsTooltip", "Elimina gli edifici nell'area." },
+                { "AreaBulldozer.UI.Cars", "Auto" },
+                { "AreaBulldozer.UI.CarsTooltip", "Rimuove veicoli stradali in movimento o parcheggiati. Ripristina la velocità solo se la mod aveva messo in pausa il gioco." },
                 { "AreaBulldozer.UI.RoadsTooltip", "Elimina le strade nell'area." },
                 { "AreaBulldozer.UI.PathsTooltip", "Elimina i percorsi pedonali e ciclabili." },
                 { "AreaBulldozer.UI.RailwaysTooltip", "Elimina i binari ferroviari." },

@@ -31,6 +31,9 @@ namespace AreaBulldozer.Localization
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.IncludeOverriddenVegetation)), "Permet de supprimer les arbres et végétaux remplacés ou placés avec Anarchy. Cette option est désactivée par défaut." },
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DeleteBuildings)), "Supprimer les bâtiments" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.DeleteBuildings)), "Cible les bâtiments racines complets dans la zone. Les accessoires, marqueurs et voies appartenant aux bâtiments ne sont pas comptés comme des bâtiments distincts." },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DeleteCars)), "Supprimer les voitures" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.DeleteCars)), "Supprime les véhicules routiers en circulation ou stationnés. Le jeu se met en pause automatiquement." },
+
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DeleteRoads)), "Supprimer les routes" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.DeleteRoads)), "Cible les tronçons complets des routes principales dont la courbe croise la zone. Les chemins, voies ferrées, réseaux de marqueurs et réseaux appartenant aux bâtiments sont exclus." },
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DeletePaths)), "Supprimer les chemins piétons" },
@@ -149,6 +152,8 @@ namespace AreaBulldozer.Localization
                 { "AreaBulldozer.UI.MissingAssetsTooltip", "Supprime les espaces réservés blancs des véhicules, plantes et objets confirmés manquants, y compris les sous-objets. Bâtiments et réseaux exclus." },
                 { "AreaBulldozer.UI.VegetationTooltip", "Supprime les arbres, buissons et plantes." },
                 { "AreaBulldozer.UI.BuildingsTooltip", "Supprime les bâtiments de la zone." },
+                { "AreaBulldozer.UI.Cars", "Voitures" },
+                { "AreaBulldozer.UI.CarsTooltip", "Supprime les véhicules routiers en circulation ou stationnés. Rétablit la vitesse uniquement si le mod avait créé la pause." },
                 { "AreaBulldozer.UI.RoadsTooltip", "Supprime les routes de la zone." },
                 { "AreaBulldozer.UI.PathsTooltip", "Supprime les chemins piétons et cyclables." },
                 { "AreaBulldozer.UI.RailwaysTooltip", "Supprime les voies ferrées." },

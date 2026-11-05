@@ -29,6 +29,21 @@ $iconSize: 21rem;
     -webkit-appearance: none;
 }
 
+// Only wrapped filter rows need a small gap. Compensate the first row
+// so single-row controls and spacing between sections keep their layout.
+.filterButtons {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: -1rem;
+}
+
+.filterButtons .iconButton {
+    margin-top: 1rem;
+}
+
     .iconButton:hover {
         border-color: rgba(226, 240, 252, 0.7);
         background-color: rgba(52, 82, 105, 0.75);

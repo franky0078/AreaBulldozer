@@ -36,6 +36,7 @@ The following object categories can be enabled or disabled individually:
 - Surfaces and areas
 - Props and markers
 - Missing Assets
+- Vehicles (moving and parked road vehicles)
 
 Additional filters are available for:
 

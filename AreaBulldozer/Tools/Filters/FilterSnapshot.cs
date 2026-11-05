@@ -15,6 +15,7 @@ namespace AreaBulldozer.Tools
         public readonly bool DeleteMissingAssets;
         public readonly bool IncludeOverriddenVegetation;
         public readonly bool DeleteBuildings;
+        public readonly bool DeleteCars;
         public readonly bool DeleteRoads;
         public readonly bool DeletePaths;
         public readonly bool DeleteRailways;
@@ -49,6 +50,8 @@ namespace AreaBulldozer.Tools
 
             DeleteBuildings =
                 settings.DeleteBuildings;
+
+            DeleteCars = settings.DeleteCars;
 
             DeleteRoads =
                 settings.DeleteRoads;
@@ -108,6 +111,7 @@ namespace AreaBulldozer.Tools
             DeleteMissingAssets ||
             DeleteTrees ||
             DeleteBuildings ||
+            DeleteCars ||
             DeleteRoads ||
             DeletePaths ||
             DeleteRailways ||
@@ -124,6 +128,7 @@ namespace AreaBulldozer.Tools
                 IncludeOverriddenVegetation ==
                     other.IncludeOverriddenVegetation &&
                 DeleteBuildings == other.DeleteBuildings &&
+                DeleteCars == other.DeleteCars &&
                 DeleteRoads == other.DeleteRoads &&
                 DeletePaths == other.DeletePaths &&
                 DeleteRailways == other.DeleteRailways &&
@@ -155,6 +160,7 @@ namespace AreaBulldozer.Tools
 
             hash |= DeleteTrees ? 1 << 0 : 0;
             hash |= DeleteBuildings ? 1 << 1 : 0;
+            hash |= DeleteCars ? 1 << 20 : 0;
             hash |= DeleteRoads ? 1 << 2 : 0;
             hash |= DeletePaths ? 1 << 3 : 0;
             hash |= DeleteRailways ? 1 << 4 : 0;

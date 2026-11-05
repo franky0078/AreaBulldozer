@@ -19,6 +19,7 @@ namespace AreaBulldozer.Tools
             HashSet<Entity> selectedEntities,
             int vegetationCount,
             int buildingCount,
+            int carCount,
             int roadCount,
             int pathCount,
             int railwayCount,
@@ -96,6 +97,8 @@ namespace AreaBulldozer.Tools
             m_ConfirmationBuildingCount =
                 buildingCount;
 
+            m_ConfirmationCarCount = carCount;
+
             m_ConfirmationRoadCount =
                 roadCount;
 
@@ -126,6 +129,7 @@ namespace AreaBulldozer.Tools
                     $"to confirm the same selection. " +
                     $"Vegetation: {vegetationCount}, " +
                     $"buildings: {buildingCount}, " +
+                    $"cars: {carCount}, " +
                     $"roads: {roadCount}, " +
                     $"pedestrian paths: {pathCount}, " +
                     $"railway tracks: {railwayCount}, " +
@@ -141,6 +145,7 @@ namespace AreaBulldozer.Tools
             HashSet<Entity> selectedEntities,
             int vegetationCount,
             int buildingCount,
+            int carCount,
             int roadCount,
             int pathCount,
             int railwayCount,
@@ -283,6 +288,7 @@ namespace AreaBulldozer.Tools
                     m_ConfirmationVegetationCount &&
                 buildingCount ==
                     m_ConfirmationBuildingCount &&
+                carCount == m_ConfirmationCarCount &&
                 roadCount ==
                     m_ConfirmationRoadCount &&
                 pathCount ==
@@ -386,6 +392,8 @@ namespace AreaBulldozer.Tools
 
             m_ConfirmationBuildingCount =
                 0;
+
+            m_ConfirmationCarCount = 0;
 
             m_ConfirmationRoadCount =
                 0;

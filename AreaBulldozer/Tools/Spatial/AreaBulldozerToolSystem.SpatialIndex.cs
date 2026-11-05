@@ -30,6 +30,8 @@ namespace AreaBulldozer.Tools
         private float m_NextSpatialRefreshCheckTime;
 
         private int m_SpatialBuildingCount;
+        private int m_SpatialCarCount;
+        private bool m_SpatialCarsEnabled;
         private int m_SpatialRoadCount;
         private int m_SpatialRoadQueryCount;
         private int m_SpatialRejectedRoadOwnerCount;
@@ -101,6 +103,7 @@ namespace AreaBulldozer.Tools
 
             ClearSpatialIndex();
             m_SpatialMissingAssetsEnabled = Mod.Settings?.DeleteMissingAssets ?? false;
+            m_SpatialCarsEnabled = Mod.Settings?.DeleteCars ?? false;
 
             System.Diagnostics.Stopwatch stopwatch =
                 System.Diagnostics.Stopwatch.StartNew();
@@ -112,6 +115,11 @@ namespace AreaBulldozer.Tools
             AddQueryToSpatialIndex(
                 m_BuildingQuery,
                 SpatialCandidateKind.Building);
+
+            if (m_SpatialCarsEnabled)
+            {
+                AddQueryToSpatialIndex(m_CarQuery, SpatialCandidateKind.Car);
+            }
 
             AddRoadEdgesToSpatialIndex();
             AddPathAndRailwayEdgesToSpatialIndex();
@@ -174,6 +182,7 @@ namespace AreaBulldozer.Tools
                 $"{m_SpatialIndex.CellCount} cells, " +
                 $"{stopwatch.ElapsedMilliseconds} ms. " +
                 $"Buildings: {m_SpatialBuildingCount}, " +
+                $"cars: {m_SpatialCarCount}, " +
                 $"roads: {m_SpatialRoadCount}, " +
                 $"pedestrian paths: {m_SpatialPathCount}, " +
                 $"railway tracks: {m_SpatialRailwayCount}, " +
@@ -251,7 +260,8 @@ namespace AreaBulldozer.Tools
         private void EnsureSpatialIndexReady()
         {
             if (!m_SpatialIndexReady ||
-                m_SpatialMissingAssetsEnabled != (Mod.Settings?.DeleteMissingAssets ?? false))
+                m_SpatialMissingAssetsEnabled != (Mod.Settings?.DeleteMissingAssets ?? false) ||
+                m_SpatialCarsEnabled != (Mod.Settings?.DeleteCars ?? false))
             {
                 RebuildSpatialIndex();
             }
@@ -263,6 +273,7 @@ namespace AreaBulldozer.Tools
                 (m_SpatialMissingAssetsEnabled ? m_MissingAssetObjectQuery.CalculateEntityCount() : 0) +
                 m_PlantQuery.CalculateEntityCount() +
                 m_BuildingQuery.CalculateEntityCount() +
+                (m_SpatialCarsEnabled ? m_CarQuery.CalculateEntityCount() : 0) +
                 m_RoadEdgeQuery.CalculateEntityCount() +
                 m_NetEdgeQuery.CalculateEntityCount() +
                 m_SurfaceAreaQuery.CalculateEntityCount() +
@@ -342,8 +353,13 @@ namespace AreaBulldozer.Tools
             int currentCount =
                 ComputeSpatialSourceEntityCount();
 
+            bool carsMayMove = m_SpatialCarsEnabled &&
+                m_CarFilterSimulationSystem != null &&
+                m_CarFilterSimulationSystem.selectedSpeed > 0f;
+
             if (currentCount == m_SpatialSourceEntityCount &&
-                !m_SpatialMissingAssetsEnabled)
+                !m_SpatialMissingAssetsEnabled &&
+                !carsMayMove)
             {
                 return;
             }
@@ -371,6 +387,7 @@ namespace AreaBulldozer.Tools
             m_SpatialIndexedObjectCount = 0;
 
             m_SpatialBuildingCount = 0;
+            m_SpatialCarCount = 0;
             m_SpatialRoadCount = 0;
             m_SpatialRoadQueryCount = 0;
             m_SpatialRejectedRoadOwnerCount = 0;
@@ -1027,6 +1044,10 @@ namespace AreaBulldozer.Tools
             {
                 m_SpatialBuildingCount++;
             }
+            else if (candidate.IsCar)
+            {
+                m_SpatialCarCount++;
+            }
             else if (candidate.IsRoad)
             {
                 m_SpatialRoadCount++;
@@ -1090,7 +1111,7 @@ namespace AreaBulldozer.Tools
 
             // Missing vehicle placeholders may move after the index was built.
             // Always validate the current position before previewing or deleting.
-            if (candidate.IsMissingAsset)
+            if (candidate.IsMissingAsset || candidate.IsCar)
             {
                 if (!TryGetTransformPosition(candidate.Entity, out float2 currentPosition) ||
                     !math.all(math.isfinite(currentPosition)))
@@ -1098,7 +1119,7 @@ namespace AreaBulldozer.Tools
                     return false;
                 }
                 candidate = new SpatialCandidate(candidate.Entity, currentPosition,
-                    SpatialCandidateKind.MissingAsset, StaticObjectCategory.None);
+                    candidate.Kind, candidate.StaticCategory);
             }
 
             float safeSize =

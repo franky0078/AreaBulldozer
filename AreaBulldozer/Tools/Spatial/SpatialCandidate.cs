@@ -9,6 +9,7 @@ namespace AreaBulldozer.Tools
         MissingAsset,
         Vegetation,
         Building,
+        Car,
         Road,
         PedestrianPath,
         Railway,
@@ -89,6 +90,9 @@ namespace AreaBulldozer.Tools
 
         public bool IsBuilding =>
             Kind == SpatialCandidateKind.Building;
+
+        public bool IsCar =>
+            Kind == SpatialCandidateKind.Car;
 
         public bool IsRoad =>
             Kind == SpatialCandidateKind.Road;

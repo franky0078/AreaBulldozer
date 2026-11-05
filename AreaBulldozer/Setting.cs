@@ -87,6 +87,9 @@ namespace AreaBulldozer
         public bool DeleteBuildings { get; set; }
 
         [SettingsUIHidden]
+        public bool DeleteCars { get; set; }
+
+        [SettingsUIHidden]
         public bool DeleteRoads { get; set; }
 
         [SettingsUIHidden]
@@ -160,7 +163,7 @@ namespace AreaBulldozer
         public int PolylineRounding { get; set; }
 
         [SettingsUISlider(
-            min = 25,
+            min = 10,
             max = 150,
             step = 5)]
         [SettingsUISection(kSection, kToolGroup)]
@@ -317,6 +320,7 @@ namespace AreaBulldozer
             DeleteMissingAssets = false;
             IncludeOverriddenVegetation = false;
             DeleteBuildings = false;
+            DeleteCars = false;
             DeleteRoads = false;
             DeletePaths = false;
             DeleteRailways = false;

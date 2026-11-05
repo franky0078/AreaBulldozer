@@ -35,7 +35,7 @@ namespace AreaBulldozer.Tools
             float selectionLineWidth =
                 math.clamp(
                     Mod.Settings?.SelectionLineThickness ?? 65,
-                    25,
+                    10,
                     150) /
                 100f;
 
@@ -489,7 +489,7 @@ namespace AreaBulldozer.Tools
                 float lineWidth =
                     math.clamp(
                         SelectionLineWidth,
-                        0.25f,
+                        0.1f,
                         1.5f);
 
                 UnityEngine.Color selectionColor;
@@ -627,7 +627,7 @@ namespace AreaBulldozer.Tools
                 float cornerOverlap =
                     math.clamp(
                         lineWidth * 0.5f,
-                        0.15f,
+                        0.05f,
                         1f);
 
                 for (int index = 0;
@@ -686,7 +686,7 @@ namespace AreaBulldozer.Tools
                 float overlap =
                     math.clamp(
                         lineWidth * 0.5f,
-                        0.15f,
+                        0.05f,
                         1f);
 
                 for (int index = 0;

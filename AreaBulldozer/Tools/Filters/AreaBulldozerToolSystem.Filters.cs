@@ -91,10 +91,14 @@ namespace AreaBulldozer.Tools
             in SpatialCandidate candidate,
             in FilterSnapshot filters)
         {
-            // A confirmed missing instance can be removed independently of its
-            // healthy owner. Do not extend this exception to normal sub-objects.
             if (candidate.IsMissingAsset && filters.DeleteMissingAssets &&
                 IsMissingAssetObject(candidate.Entity))
+            {
+                return false;
+            }
+
+            // Explicitly selected road vehicles may have a household or depot owner.
+            if (candidate.IsCar)
             {
                 return false;
             }

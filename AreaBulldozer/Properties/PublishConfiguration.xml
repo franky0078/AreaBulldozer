@@ -55,6 +55,7 @@
 		- Surfaces and areas
 		- Props and markers
 		- Missing Assets
+		- Vehicles (moving and parked road vehicles)
 
 		Additional filters are available for:
 
@@ -154,7 +155,7 @@
 	<ForumLink Value="https://forum.paradoxplaza.com/forum/threads/mod-area-bulldozer-area-deletion-tool-with-object-filters.1937211/" />
 
 	<!-- Mod version -->
-	<ModVersion Value="1.9.0" />
+	<ModVersion Value="1.9.1" />
 
 	<!--
 	Recommended game version.
@@ -185,8 +186,8 @@
 	<ChangeLog>
 		**Latest changes**
 
-		- added height filters: all heights, above / on terrain, and below terrain.
-		- added customizable underground background color to the color editor,
+		- added a car filter to remove moving and parked road vehicles.
+		- Reduced the minimum selection outline thickness from 25 to 10.
 
 
 	</ChangeLog>

@@ -35,6 +35,9 @@ namespace AreaBulldozer.Localization
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DeleteBuildings)), "Gebäude entfernen" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.DeleteBuildings)), "Erfasst vollständige Hauptgebäude innerhalb des Auswahlbereichs. Gebäudeeigene Props, Marker und Lanes werden nicht zusätzlich als einzelne Gebäude gezählt." },
 
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DeleteCars)), "Autos entfernen" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.DeleteCars)), "Entfernt fahrende und geparkte Straßenfahrzeuge im Auswahlbereich. Die Simulation pausiert bei Aktivierung automatisch." },
+
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DeleteRoads)), "Straßen entfernen" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.DeleteRoads)), "Erfasst vollständige Hauptstraßensegmente, deren Verlauf den Auswahlbereich berührt. Fußwege, Bahnstrecken, Marker-Netzwerke und gebäudeeigene Netze bleiben ausgeschlossen." },
 
@@ -183,6 +186,8 @@ namespace AreaBulldozer.Localization
                 { "AreaBulldozer.UI.MissingAssetsTooltip", "Weiße Platzhalter bestätigter fehlender Fahrzeuge, Pflanzen und Objekte löschen, auch als Unterobjekte. Gebäude und Netzwerke sind nicht enthalten." },
                 { "AreaBulldozer.UI.VegetationTooltip", "Bäume, Büsche und Pflanzen löschen." },
                 { "AreaBulldozer.UI.BuildingsTooltip", "Gebäude im Bereich löschen." },
+                { "AreaBulldozer.UI.Cars", "Autos" },
+                { "AreaBulldozer.UI.CarsTooltip", "Fahrende und geparkte Straßenfahrzeuge entfernen. Pausiert automatisch und stellt die vorherige Geschwindigkeit nur wieder her, wenn die Mod selbst pausiert hat." },
                 { "AreaBulldozer.UI.RoadsTooltip", "Straßen im Bereich löschen." },
                 { "AreaBulldozer.UI.PathsTooltip", "Fuß- und Radwege löschen." },
                 { "AreaBulldozer.UI.RailwaysTooltip", "Schienenwege löschen." },

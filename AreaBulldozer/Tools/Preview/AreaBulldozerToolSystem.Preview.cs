@@ -252,6 +252,13 @@ namespace AreaBulldozer.Tools
                         continue;
                     }
                 }
+                else if (candidate.IsCar)
+                {
+                    if (!filters.DeleteCars)
+                    {
+                        continue;
+                    }
+                }
                 else if (candidate.IsRoad)
                 {
                     if (!filters.DeleteRoads)

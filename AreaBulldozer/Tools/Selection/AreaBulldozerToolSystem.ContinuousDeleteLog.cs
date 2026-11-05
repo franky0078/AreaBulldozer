@@ -7,6 +7,7 @@ namespace AreaBulldozer.Tools
         private int m_ContinuousDeleteTotalObjects;
         private int m_ContinuousDeleteVegetation;
         private int m_ContinuousDeleteBuildings;
+        private int m_ContinuousDeleteCars;
         private int m_ContinuousDeleteRoads;
         private int m_ContinuousDeletePaths;
         private int m_ContinuousDeleteRailways;
@@ -23,6 +24,7 @@ namespace AreaBulldozer.Tools
             int totalObjects,
             int vegetation,
             int buildings,
+            int cars,
             int roads,
             int paths,
             int railways,
@@ -47,6 +49,7 @@ namespace AreaBulldozer.Tools
             m_ContinuousDeleteTotalObjects += totalObjects;
             m_ContinuousDeleteVegetation += vegetation;
             m_ContinuousDeleteBuildings += buildings;
+            m_ContinuousDeleteCars += cars;
             m_ContinuousDeleteRoads += roads;
             m_ContinuousDeletePaths += paths;
             m_ContinuousDeleteRailways += railways;
@@ -79,6 +82,7 @@ namespace AreaBulldozer.Tools
                 $"{m_ContinuousDeleteTotalObjects} objects total. " +
                 $"Vegetation: {m_ContinuousDeleteVegetation}, " +
                 $"buildings: {m_ContinuousDeleteBuildings}, " +
+                $"cars: {m_ContinuousDeleteCars}, " +
                 $"roads: {m_ContinuousDeleteRoads}, " +
                 $"pedestrian paths: {m_ContinuousDeletePaths}, " +
                 $"railway tracks: {m_ContinuousDeleteRailways}, " +
@@ -101,6 +105,7 @@ namespace AreaBulldozer.Tools
             m_ContinuousDeleteTotalObjects = 0;
             m_ContinuousDeleteVegetation = 0;
             m_ContinuousDeleteBuildings = 0;
+            m_ContinuousDeleteCars = 0;
             m_ContinuousDeleteRoads = 0;
             m_ContinuousDeletePaths = 0;
             m_ContinuousDeleteRailways = 0;

@@ -15,6 +15,7 @@ import {
     deleteActivityLocations$,
     deleteBrandingObjects$,
     deleteBuildings$,
+    deleteCars$,
     deleteGeneralProps$,
     deleteMarkerNetworks$,
     deletePaths$,
@@ -323,6 +324,12 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
         const deleteBuildings = useSafeValue(
             "deleteBuildings$",
             deleteBuildings$,
+            false
+        );
+
+        const deleteCars = useSafeValue(
+            "deleteCars$",
+            deleteCars$,
             false
         );
 
@@ -835,6 +842,7 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
                 </Section>
 
                 <Section title={text("MainFilters", "Filter")}>
+                    <div className={styles.filterButtons}>
                     <IconToolButton
                         icon="missingAsset"
                         selected={deleteMissingAssets}
@@ -872,6 +880,14 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
                                 deleteBuildings
                             )
                         }
+                    />
+
+                    <IconToolButton
+                        icon="car"
+                        selected={deleteCars}
+                        tooltipTitle={text("Cars", "Autos")}
+                        tooltipText={text("CarsTooltip", "Fahrende und geparkte Straßenfahrzeuge löschen. Die Simulation pausiert bei Aktivierung automatisch.")}
+                        onSelect={() => toggle(BindingKeys.setDeleteCars, deleteCars)}
                     />
 
                     <IconToolButton
@@ -956,10 +972,12 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
                             )
                         }
                     />
+                    </div>
                 </Section>
 
                 {deleteStaticObjects && (
                     <Section title={text("AdvancedFiltersShort", "Props / Marker")}>
+                        <div className={styles.filterButtons}>
                         <IconToolButton
                             marker
                             icon="generalProps"
@@ -1066,6 +1084,7 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
                             }
                         />
 
+                        </div>
                     </Section>
                 )}
                 {(deleteStaticObjects || deleteMissingAssets) && (
