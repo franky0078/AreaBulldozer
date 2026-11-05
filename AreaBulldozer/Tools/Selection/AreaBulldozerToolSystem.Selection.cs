@@ -403,6 +403,7 @@ namespace AreaBulldozer.Tools
                         entitiesToDelete,
                         vegetationCount,
                         buildingCount,
+                        carCount,
                         roadCount,
                         pathCount,
                         railwayCount,
