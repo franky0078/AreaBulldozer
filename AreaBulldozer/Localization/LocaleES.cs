@@ -31,6 +31,9 @@ namespace AreaBulldozer.Localization
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.IncludeOverriddenVegetation)), "Permite eliminar árboles y vegetación sobrescritos o colocados con Anarchy. Esta opción está desactivada de forma predeterminada." },
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DeleteBuildings)), "Eliminar edificios" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.DeleteBuildings)), "Selecciona edificios raíz completos dentro del área. Los accesorios, marcadores y carriles pertenecientes a edificios no se cuentan como edificios separados." },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DeleteCars)), "Eliminar coches" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.DeleteCars)), "Elimina vehículos de carretera en movimiento o aparcados. El juego se pausa automáticamente." },
+
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DeleteRoads)), "Eliminar carreteras" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.DeleteRoads)), "Selecciona tramos completos de carreteras principales cuya curva intersecta el área. Se excluyen caminos, vías férreas, redes de marcadores y redes pertenecientes a edificios." },
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DeletePaths)), "Eliminar caminos peatonales" },
@@ -149,6 +152,8 @@ namespace AreaBulldozer.Localization
                 { "AreaBulldozer.UI.MissingAssetsTooltip", "Elimina los marcadores blancos de vehículos, plantas y objetos confirmados como ausentes, incluidos los subobjetos. Se excluyen edificios y redes." },
                 { "AreaBulldozer.UI.VegetationTooltip", "Elimina árboles, arbustos y plantas." },
                 { "AreaBulldozer.UI.BuildingsTooltip", "Elimina edificios del área." },
+                { "AreaBulldozer.UI.Cars", "Coches" },
+                { "AreaBulldozer.UI.CarsTooltip", "Elimina vehículos de carretera en movimiento o aparcados. Restaura la velocidad solo si el mod pausó el juego." },
                 { "AreaBulldozer.UI.RoadsTooltip", "Elimina carreteras del área." },
                 { "AreaBulldozer.UI.PathsTooltip", "Elimina caminos peatonales y ciclistas." },
                 { "AreaBulldozer.UI.RailwaysTooltip", "Elimina vías férreas." },

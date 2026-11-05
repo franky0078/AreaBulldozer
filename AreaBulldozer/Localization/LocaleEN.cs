@@ -35,6 +35,9 @@ namespace AreaBulldozer.Localization
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DeleteBuildings)), "Remove buildings" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.DeleteBuildings)), "Targets complete root buildings inside the selection area. Building-owned props, markers, and lanes are not counted as separate buildings." },
 
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DeleteCars)), "Remove cars" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.DeleteCars)), "Removes moving and parked road vehicles in the selection area. The game pauses automatically when enabled." },
+
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DeleteRoads)), "Remove roads" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.DeleteRoads)), "Targets complete main road edges whose curve intersects the selection area. Paths, railways, marker networks, and building-owned networks remain excluded." },
 
@@ -183,6 +186,8 @@ namespace AreaBulldozer.Localization
                 { "AreaBulldozer.UI.MissingAssetsTooltip", "Delete white placeholders of confirmed missing vehicles, plants and objects, including sub-objects. Buildings and networks are excluded." },
                 { "AreaBulldozer.UI.VegetationTooltip", "Delete trees, bushes and plants." },
                 { "AreaBulldozer.UI.BuildingsTooltip", "Delete buildings in the area." },
+                { "AreaBulldozer.UI.Cars", "Cars" },
+                { "AreaBulldozer.UI.CarsTooltip", "Removes moving and parked road vehicles. The game pauses automatically and restores its previous speed only if the mod paused it." },
                 { "AreaBulldozer.UI.RoadsTooltip", "Delete roads in the area." },
                 { "AreaBulldozer.UI.PathsTooltip", "Delete pedestrian and cycle paths." },
                 { "AreaBulldozer.UI.RailwaysTooltip", "Delete railway tracks." },

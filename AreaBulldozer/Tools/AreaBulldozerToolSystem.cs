@@ -28,6 +28,7 @@ namespace AreaBulldozer.Tools
         private EntityQuery m_MissingAssetObjectQuery;
         private EntityQuery m_PlantQuery;
         private EntityQuery m_BuildingQuery;
+        private EntityQuery m_CarQuery;
         private EntityQuery m_RoadEdgeQuery;
         private EntityQuery m_NetEdgeQuery;
         private EntityQuery m_SurfaceAreaQuery;
@@ -67,6 +68,7 @@ namespace AreaBulldozer.Tools
         private int m_ConfirmationObjectCount;
         private int m_ConfirmationVegetationCount;
         private int m_ConfirmationBuildingCount;
+        private int m_ConfirmationCarCount;
         private int m_ConfirmationRoadCount;
         private int m_ConfirmationPathCount;
         private int m_ConfirmationRailwayCount;
@@ -326,6 +328,26 @@ namespace AreaBulldozer.Tools
                     }
                 });
 
+            m_CarQuery = GetEntityQuery(
+                new EntityQueryDesc
+                {
+                    All = new ComponentType[]
+                    {
+                        ComponentType.ReadOnly<Transform>()
+                    },
+                    Any = new ComponentType[]
+                    {
+                        ComponentType.ReadOnly<Game.Vehicles.Car>(),
+                        ComponentType.ReadOnly<Game.Vehicles.ParkedCar>()
+                    },
+                    None = new ComponentType[]
+                    {
+                        ComponentType.ReadOnly<Deleted>(),
+                        ComponentType.ReadOnly<Temp>(),
+                        ComponentType.ReadOnly<Overridden>()
+                    }
+                });
+
             m_BuildingQuery = GetEntityQuery(
                 new EntityQueryDesc
                 {
@@ -581,6 +603,7 @@ namespace AreaBulldozer.Tools
             m_ConfirmationEntities = null;
 
             DisposeSpatialIndex();
+            ReleaseCarFilterPause();
 
             if (Instance == this)
             {
@@ -608,6 +631,7 @@ namespace AreaBulldozer.Tools
             ClearPreviousToolSelection();
             ResetPreviewState();
 
+            UpdateCarFilterPause();
             RebuildSpatialIndex();
             UpdateMarkerVisibility();
 
@@ -640,6 +664,7 @@ namespace AreaBulldozer.Tools
                     $"Active filters - vegetation: {Mod.Settings?.DeleteTrees}, " +
                     $"Anarchy vegetation: {Mod.Settings?.IncludeOverriddenVegetation}, " +
                     $"buildings: {Mod.Settings?.DeleteBuildings}, " +
+                    $"cars: {Mod.Settings?.DeleteCars}, " +
                     $"roads: {Mod.Settings?.DeleteRoads}, " +
                     $"pedestrian paths: {Mod.Settings?.DeletePaths}, " +
                     $"railway tracks: {Mod.Settings?.DeleteRailways}, " +
@@ -684,6 +709,7 @@ namespace AreaBulldozer.Tools
             m_IsPointerOverUI = false;
 
             MarkSpatialIndexStale();
+            ReleaseCarFilterPause();
 
             SafeLogInfo(
                 "Area Bulldozer tool deactivated.");
@@ -870,6 +896,7 @@ namespace AreaBulldozer.Tools
             JobHandle inputDeps)
         {
             UpdateHeightView();
+            ObserveCarFilterPauseOverride();
             CleanupPendingDeletions();
             RefreshSpatialIndexIfNeeded();
             UpdateLargeSelectionConfirmationState();

@@ -99,6 +99,12 @@ namespace AreaBulldozer.Tools
                 return false;
             }
 
+            // Explicitly selected road vehicles may have a household or depot owner.
+            if (candidate.IsCar)
+            {
+                return false;
+            }
+
             if (candidate.IsStaticObject &&
                 candidate.StaticCategory !=
                     StaticObjectCategory.ActivityLocation)

@@ -204,6 +204,9 @@ namespace AreaBulldozer.UISystems
                 AreaBulldozerUIBindingConstants.DeleteBuildings,
                 () => Mod.Settings?.DeleteBuildings ?? false);
             AddBooleanValueBinding(
+                AreaBulldozerUIBindingConstants.DeleteCars,
+                () => Mod.Settings?.DeleteCars ?? false);
+            AddBooleanValueBinding(
                 AreaBulldozerUIBindingConstants.DeleteRoads,
                 () => Mod.Settings?.DeleteRoads ?? false);
             AddBooleanValueBinding(
@@ -469,6 +472,15 @@ namespace AreaBulldozer.UISystems
             AddBooleanSettingTrigger(
                 AreaBulldozerUIBindingConstants.SetDeleteBuildings,
                 (setting, value) => setting.DeleteBuildings = value);
+            AddBinding(
+                new TriggerBinding<bool>(
+                    group,
+                    AreaBulldozerUIBindingConstants.SetDeleteCars,
+                    value =>
+                    {
+                        ChangeSetting(setting => setting.DeleteCars = value);
+                        m_Tool?.OnCarFilterChanged();
+                    }));
             AddBooleanSettingTrigger(
                 AreaBulldozerUIBindingConstants.SetDeleteRoads,
                 (setting, value) => setting.DeleteRoads = value);

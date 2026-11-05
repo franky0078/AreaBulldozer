@@ -15,6 +15,7 @@ import {
     deleteActivityLocations$,
     deleteBrandingObjects$,
     deleteBuildings$,
+    deleteCars$,
     deleteGeneralProps$,
     deleteMarkerNetworks$,
     deletePaths$,
@@ -323,6 +324,12 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
         const deleteBuildings = useSafeValue(
             "deleteBuildings$",
             deleteBuildings$,
+            false
+        );
+
+        const deleteCars = useSafeValue(
+            "deleteCars$",
+            deleteCars$,
             false
         );
 
@@ -872,6 +879,14 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
                                 deleteBuildings
                             )
                         }
+                    />
+
+                    <IconToolButton
+                        icon="car"
+                        selected={deleteCars}
+                        tooltipTitle={text("Cars", "Autos")}
+                        tooltipText={text("CarsTooltip", "Fahrende und geparkte Straßenfahrzeuge löschen. Die Simulation pausiert bei Aktivierung automatisch.")}
+                        onSelect={() => toggle(BindingKeys.setDeleteCars, deleteCars)}
                     />
 
                     <IconToolButton

@@ -87,6 +87,9 @@ namespace AreaBulldozer
         public bool DeleteBuildings { get; set; }
 
         [SettingsUIHidden]
+        public bool DeleteCars { get; set; }
+
+        [SettingsUIHidden]
         public bool DeleteRoads { get; set; }
 
         [SettingsUIHidden]
@@ -317,6 +320,7 @@ namespace AreaBulldozer
             DeleteMissingAssets = false;
             IncludeOverriddenVegetation = false;
             DeleteBuildings = false;
+            DeleteCars = false;
             DeleteRoads = false;
             DeletePaths = false;
             DeleteRailways = false;

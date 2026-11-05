@@ -58,6 +58,7 @@ namespace AreaBulldozer.Tools
             int vegetationCount = 0;
             int missingAssetCount = 0;
             int buildingCount = 0;
+            int carCount = 0;
             int roadCount = 0;
             int pathCount = 0;
             int railwayCount = 0;
@@ -138,6 +139,13 @@ namespace AreaBulldozer.Tools
                 else if (candidate.IsBuilding)
                 {
                     if (!filters.DeleteBuildings)
+                    {
+                        continue;
+                    }
+                }
+                else if (candidate.IsCar)
+                {
+                    if (!filters.DeleteCars)
                     {
                         continue;
                     }
@@ -284,6 +292,10 @@ namespace AreaBulldozer.Tools
                 {
                     buildingCount++;
                 }
+                else if (candidate.IsCar)
+                {
+                    carCount++;
+                }
                 else if (candidate.IsRoad)
                 {
                     roadCount++;
@@ -376,6 +388,7 @@ namespace AreaBulldozer.Tools
                         entitiesToDelete,
                         vegetationCount,
                         buildingCount,
+                        carCount,
                         roadCount,
                         pathCount,
                         railwayCount,
@@ -514,6 +527,7 @@ namespace AreaBulldozer.Tools
                     queuedCount,
                     vegetationCount,
                     buildingCount,
+                    carCount,
                     roadCount,
                     pathCount,
                     railwayCount,
@@ -532,6 +546,7 @@ namespace AreaBulldozer.Tools
             SafeLogInfo(
                 $"missing asset objects: {missingAssetCount}, " +
                 $"buildings: {buildingCount}, " +
+                $"cars: {carCount}, " +
                 $"roads: {roadCount}, " +
                 $"pedestrian paths: {pathCount}, " +
                 $"railway tracks: {railwayCount}, " +
