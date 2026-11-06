@@ -353,13 +353,8 @@ namespace AreaBulldozer.Tools
             int currentCount =
                 ComputeSpatialSourceEntityCount();
 
-            bool carsMayMove = m_SpatialCarsEnabled &&
-                m_CarFilterSimulationSystem != null &&
-                m_CarFilterSimulationSystem.selectedSpeed > 0f;
-
             if (currentCount == m_SpatialSourceEntityCount &&
-                !m_SpatialMissingAssetsEnabled &&
-                !carsMayMove)
+                !m_SpatialMissingAssetsEnabled)
             {
                 return;
             }
@@ -1003,6 +998,33 @@ namespace AreaBulldozer.Tools
             return false;
         }
 
+        private bool TryGetVehicleSelectionPosition(Entity entity, out float3 position)
+        {
+            position = default;
+            if (entity == Entity.Null || !EntityManager.Exists(entity))
+            {
+                return false;
+            }
+
+            // Match the rendered vehicle, whose simulation transform may be ahead.
+            if (EntityManager.HasComponent<Game.Rendering.InterpolatedTransform>(entity))
+            {
+                position = EntityManager.GetComponentData<Game.Rendering.InterpolatedTransform>(entity).m_Position;
+                if (math.all(math.isfinite(position)))
+                {
+                    return true;
+                }
+            }
+
+            if (!EntityManager.HasComponent<Transform>(entity))
+            {
+                return false;
+            }
+
+            position = EntityManager.GetComponentData<Transform>(entity).m_Position;
+            return math.all(math.isfinite(position));
+        }
+
         private bool TryGetTransformPosition(
             Entity entity,
             out float2 position)
@@ -1092,9 +1114,38 @@ namespace AreaBulldozer.Tools
             EnsureSpatialIndexReady();
             PrepareHeightFilter();
 
-            return m_SpatialIndex.Query(
-                center,
-                radius);
+            List<SpatialCandidate> candidates = m_SpatialIndex.Query(center, radius);
+            if (Mod.Settings?.DeleteCars ?? false)
+            {
+                // Vehicles can enter another cell without changing the entity count.
+                // Replace cached car positions before both preview and deletion.
+                candidates.RemoveAll(candidate => candidate.IsCar);
+                NativeArray<Entity> cars = m_CarQuery.ToEntityArray(Allocator.Temp);
+                try
+                {
+                    float radiusSquared = radius * radius;
+                    foreach (Entity car in cars)
+                    {
+                        if (!IsEntityUsable(car) ||
+                            (m_PendingDeletion != null && m_PendingDeletion.Contains(car)) ||
+                            (m_SpatialMissingAssetsEnabled && IsMissingAssetObject(car)) ||
+                            !TryGetVehicleSelectionPosition(car, out float3 visiblePosition) ||
+                            math.distancesq(new float2(visiblePosition.x, visiblePosition.z), center) > radiusSquared)
+                        {
+                            continue;
+                        }
+
+                        candidates.Add(new SpatialCandidate(car,
+                            new float2(visiblePosition.x, visiblePosition.z), SpatialCandidateKind.Car, StaticObjectCategory.None));
+                    }
+                }
+                finally
+                {
+                    cars.Dispose();
+                }
+            }
+
+            return candidates;
         }
 
         private bool IsCandidateInsideSelection(
@@ -1111,7 +1162,17 @@ namespace AreaBulldozer.Tools
 
             // Missing vehicle placeholders may move after the index was built.
             // Always validate the current position before previewing or deleting.
-            if (candidate.IsMissingAsset || candidate.IsCar)
+            if (candidate.IsCar)
+            {
+                if (!TryGetVehicleSelectionPosition(candidate.Entity, out float3 visiblePosition))
+                {
+                    return false;
+                }
+                candidate = new SpatialCandidate(candidate.Entity,
+                    new float2(visiblePosition.x, visiblePosition.z),
+                    candidate.Kind, candidate.StaticCategory);
+            }
+            else if (candidate.IsMissingAsset)
             {
                 if (!TryGetTransformPosition(candidate.Entity, out float2 currentPosition) ||
                     !math.all(math.isfinite(currentPosition)))

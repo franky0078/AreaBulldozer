@@ -129,6 +129,14 @@ namespace AreaBulldozer.Tools
                 return result;
             }
 
+            if (EntityManager.HasComponent<Game.Vehicles.Car>(entity) ||
+                EntityManager.HasComponent<Game.Vehicles.ParkedCar>(entity))
+            {
+                return TryGetVehicleSelectionPosition(entity, out float3 visiblePosition)
+                    ? ClassifyHeight(visiblePosition)
+                    : 0;
+            }
+
             if (EntityManager.HasComponent<Game.Objects.Transform>(entity))
                 return ClassifyHeight(EntityManager.GetComponentData<Game.Objects.Transform>(entity).m_Position);
             if (EntityManager.HasComponent<Game.Net.Node>(entity))

@@ -55,7 +55,7 @@
 		- Surfaces and areas
 		- Props and markers
 		- Missing Assets
-		- Vehicles (moving and parked road vehicles)
+		- Vehicles (moving and parked road vehicles) (automatically paused while the tool is active)
 
 		Additional filters are available for:
 
@@ -155,7 +155,7 @@
 	<ForumLink Value="https://forum.paradoxplaza.com/forum/threads/mod-area-bulldozer-area-deletion-tool-with-object-filters.1937211/" />
 
 	<!-- Mod version -->
-	<ModVersion Value="1.9.1" />
+	<ModVersion Value="1.9.2" />
 
 	<!--
 	Recommended game version.
@@ -184,10 +184,10 @@
 	-->
 
 	<ChangeLog>
-		**Latest changes**
+		Latest changes
 
-		- added a car filter to remove moving and parked road vehicles.
-		- Reduced the minimum selection outline thickness from 25 to 10.
+		- fixed moving road vehicles dont get deleted. 
+		  
 
 
 	</ChangeLog>

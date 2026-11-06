@@ -118,14 +118,12 @@ namespace AreaBulldozer.Tools
                     previousPosition) >=
                 movementThresholdSquared;
 
-            if (!movedEnough &&
-                !radiusChanged &&
-                !rotationChanged &&
-                !lineWidthChanged &&
-                !polylineCurveModeChanged &&
-                !polylineRoundingChanged &&
-                !shapeChanged &&
-                !filtersChanged)
+            bool selectionChanged = movedEnough || radiusChanged || rotationChanged ||
+                lineWidthChanged || polylineCurveModeChanged || polylineRoundingChanged ||
+                shapeChanged || filtersChanged;
+
+            // Refresh moving cars at the normal preview interval even with a still cursor.
+            if (!selectionChanged && !filters.DeleteCars)
             {
                 return;
             }
@@ -144,7 +142,7 @@ namespace AreaBulldozer.Tools
             }
 
             if (m_LargeSelectionConfirmationPending &&
-                !UsePolylineBrush)
+                !UsePolylineBrush && selectionChanged)
             {
                 CancelLargeSelectionConfirmation();
             }
