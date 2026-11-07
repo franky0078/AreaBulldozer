@@ -5,9 +5,9 @@ Instead of removing objects individually, you can select and delete multiple obj
 
 
 <p align="center">
-  <img src="AreaBulldozer/Properties/Screenshot01.jpg"
+  <img src="AreaBulldozer/Properties/Thumbnail.jpg"
        alt="Enhanced Graphics and Textures"
-       width="600">
+       width="450">
 </p>
 
 

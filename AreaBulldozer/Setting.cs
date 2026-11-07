@@ -139,6 +139,9 @@ namespace AreaBulldozer
         public bool DeleteBuildingSubObjects { get; set; }
 
         [SettingsUISection(kSection, kSubObjectGroup)]
+        public bool ProtectAssetVegetation { get; set; }
+
+        [SettingsUISection(kSection, kSubObjectGroup)]
         public bool DeleteNetworkSubObjects { get; set; }
 
         [SettingsUISection(kSection, kSubObjectGroup)]
@@ -340,6 +343,7 @@ namespace AreaBulldozer
             MarkerBackgroundDarkness = 40;
 
             DeleteBuildingSubObjects = false;
+            ProtectAssetVegetation = true;
             DeleteNetworkSubObjects = false;
             ProtectOwnedObjects = true;
 

@@ -83,6 +83,8 @@ namespace AreaBulldozer.Localization
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.SelectionLineThickness)), "Selection line thickness" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.SelectionLineThickness)), "Sets a fixed outline thickness for the circular and square selection shapes. The thickness no longer changes with the selection size." },
 
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.ProtectAssetVegetation)), "Protect asset vegetation" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.ProtectAssetVegetation)), "Keeps plants that belong to buildings or other assets when deleting with the vegetation filter." },
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DeleteBuildingSubObjects)), "Include building sub-objects" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.DeleteBuildingSubObjects)), "Allows the selected object types when they belong to a building. The matching object filter must also be enabled. Sub-objects may regenerate after building updates." },
 
@@ -202,6 +204,8 @@ namespace AreaBulldozer.Localization
                 { "AreaBulldozer.UI.ChooseFilters", "Choose filters" },
                 { "AreaBulldozer.UI.Vegetation", "Trees and vegetation" },
                 { "AreaBulldozer.UI.VegetationShort", "Vegetation" },
+                { "AreaBulldozer.UI.ProtectAssetVegetation", "Protect asset vegetation" },
+                { "AreaBulldozer.UI.ProtectAssetVegetationTooltip", "Keeps plants that belong to buildings or other assets when deleting with the vegetation filter." },
                 { "AreaBulldozer.UI.AnarchyVegetation", "Anarchy" },
                 { "AreaBulldozer.UI.AnarchyVegetationTooltip", "Together with the vegetation filter, allows overridden or Anarchy-placed trees to be removed." },
                 { "AreaBulldozer.UI.Buildings", "Buildings" },

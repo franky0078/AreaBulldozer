@@ -83,6 +83,8 @@ namespace AreaBulldozer.Localization
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.SelectionLineThickness)), "Linienstärke der Auswahl" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.SelectionLineThickness)), "Legt eine feste Linienstärke für die kreisförmige und quadratische Auswahl fest. Die Linienstärke ändert sich nicht mehr mit der Auswahlgröße." },
 
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.ProtectAssetVegetation)), "Asset-Vegetation schützen" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.ProtectAssetVegetation)), "Schützt Pflanzen, die zu Gebäuden oder anderen Assets gehören, beim Löschen mit dem Vegetationsfilter." },
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DeleteBuildingSubObjects)), "Gebäude-Unterobjekte einschließen" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.DeleteBuildingSubObjects)), "Erlaubt die ausgewählten Objektarten auch dann, wenn sie zu einem Gebäude gehören. Der passende Objektfilter muss ebenfalls aktiviert sein. Unterobjekte können nach Gebäudeaktualisierungen erneut erscheinen." },
 
@@ -202,6 +204,8 @@ namespace AreaBulldozer.Localization
                 { "AreaBulldozer.UI.ChooseFilters", "Auswahl festlegen" },
                 { "AreaBulldozer.UI.Vegetation", "B\u00E4ume und Vegetation" },
                 { "AreaBulldozer.UI.VegetationShort", "Vegetation" },
+                { "AreaBulldozer.UI.ProtectAssetVegetation", "Asset-Vegetation schützen" },
+                { "AreaBulldozer.UI.ProtectAssetVegetationTooltip", "Schützt Pflanzen, die zu Gebäuden oder anderen Assets gehören, beim Löschen mit dem Vegetationsfilter." },
                 { "AreaBulldozer.UI.AnarchyVegetation", "Anarchy" },
                 { "AreaBulldozer.UI.AnarchyVegetationTooltip", "Erlaubt zusammen mit dem Vegetationsfilter das Löschen von überschriebenen beziehungsweise mit Anarchy platzierten Bäumen." },
                 { "AreaBulldozer.UI.Buildings", "Geb\u00E4ude" },

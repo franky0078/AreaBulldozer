@@ -28,6 +28,7 @@ import {
     deleteSurfaces$,
     deleteMissingAssets$,
     deleteTrees$,
+    protectAssetVegetation$,
     dimMarkerBackground$,
     isToolActive$,
     launcherMode$,
@@ -319,6 +320,12 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
             "deleteTrees$",
             deleteTrees$,
             false
+        );
+
+        const protectAssetVegetation = useSafeValue(
+            "protectAssetVegetation$",
+            protectAssetVegetation$,
+            true
         );
 
         const deleteBuildings = useSafeValue(
@@ -974,6 +981,21 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
                     />
                     </div>
                 </Section>
+
+                {deleteTrees && (
+                    <Section title={text("VegetationShort", "Vegetation")}>
+                        <IconToolButton
+                            icon="protectVegetation"
+                            selected={protectAssetVegetation}
+                            tooltipTitle={text("ProtectAssetVegetation", "Asset-Vegetation schützen")}
+                            tooltipText={text(
+                                "ProtectAssetVegetationTooltip",
+                                "Schützt Pflanzen, die zu Gebäuden oder anderen Assets gehören, beim Löschen mit dem Vegetationsfilter."
+                            )}
+                            onSelect={() => toggle(BindingKeys.setProtectAssetVegetation, protectAssetVegetation)}
+                        />
+                    </Section>
+                )}
 
                 {deleteStaticObjects && (
                     <Section title={text("AdvancedFiltersShort", "Props / Marker")}>

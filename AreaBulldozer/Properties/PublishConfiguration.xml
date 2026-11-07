@@ -47,7 +47,7 @@
 
 		The following object categories can be enabled or disabled individually:
 
-		- Vegetation
+		- Vegetation (incl. protect asset vegetation toggle)
 		- Buildings
 		- Roads
 		- Pedestrian paths
@@ -147,6 +147,7 @@
 	<Screenshot Value="Properties/Screenshot07.jpg" />
 	<Screenshot Value="Properties/Screenshot08.jpg" />
 	<Screenshot Value="Properties/Screenshot09.jpg" />
+	<Screenshot Value="Properties/Screenshot10.jpg" />
 
 	<!-- Add supported Paradox Mods tags here if required.-->
 	<Tag Value="Code Mod" />
@@ -155,7 +156,7 @@
 	<ForumLink Value="https://forum.paradoxplaza.com/forum/threads/mod-area-bulldozer-area-deletion-tool-with-object-filters.1937211/" />
 
 	<!-- Mod version -->
-	<ModVersion Value="1.9.2" />
+	<ModVersion Value="1.9.3" />
 
 	<!--
 	Recommended game version.
@@ -186,10 +187,8 @@
 	<ChangeLog>
 		Latest changes
 
-		- fixed moving road vehicles dont get deleted. 
-		  
-
-
+		- added the protect asset vegetation toggle to the vegetation filter
+		  (protection is enabled by default)
 	</ChangeLog>
 
 	<!--Optional external links for your own mod.-->

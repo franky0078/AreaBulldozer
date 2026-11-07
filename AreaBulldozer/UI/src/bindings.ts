@@ -26,6 +26,7 @@ export const BindingKeys = {
     setDeleteMissingAssets: "setDeleteMissingAssets",
     setDeleteTrees: "setDeleteTrees",
     setIncludeOverriddenVegetation: "setIncludeOverriddenVegetation",
+    setProtectAssetVegetation: "setProtectAssetVegetation",
     setDeleteBuildings: "setDeleteBuildings",
     setDeleteCars: "setDeleteCars",
     setDeleteRoads: "setDeleteRoads",
@@ -149,6 +150,12 @@ export const deleteMissingAssets$ = bindValue<boolean>(mod.id, "deleteMissingAss
 export const deleteTrees$ = bindValue<boolean>(
     mod.id,
     "deleteTrees",
+    true
+);
+
+export const protectAssetVegetation$ = bindValue<boolean>(
+    mod.id,
+    "protectAssetVegetation",
     true
 );
 

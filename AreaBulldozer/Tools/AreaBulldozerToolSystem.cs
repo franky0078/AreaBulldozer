@@ -27,6 +27,7 @@ namespace AreaBulldozer.Tools
 
         private EntityQuery m_MissingAssetObjectQuery;
         private EntityQuery m_PlantQuery;
+        private EntityQuery m_SubObjectOwnerQuery;
         private EntityQuery m_BuildingQuery;
         private EntityQuery m_CarQuery;
         private EntityQuery m_RoadEdgeQuery;
@@ -321,6 +322,20 @@ namespace AreaBulldozer.Tools
                         ComponentType.ReadOnly<Plant>()
                     },
 
+                    None = new ComponentType[]
+                    {
+                        ComponentType.ReadOnly<Deleted>(),
+                        ComponentType.ReadOnly<Temp>()
+                    }
+                });
+
+            m_SubObjectOwnerQuery = GetEntityQuery(
+                new EntityQueryDesc
+                {
+                    All = new ComponentType[]
+                    {
+                        ComponentType.ReadOnly<Game.Objects.SubObject>()
+                    },
                     None = new ComponentType[]
                     {
                         ComponentType.ReadOnly<Deleted>(),

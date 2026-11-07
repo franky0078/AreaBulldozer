@@ -68,11 +68,19 @@ namespace AreaBulldozer.Tools
         }
 
         private bool IsOwnedObjectProtected(
-            Entity entity,
+            in SpatialCandidate candidate,
             in FilterSnapshot filters)
         {
             OwnerScope scope =
-                ResolveOwnerScope(entity);
+                ResolveOwnerScope(candidate.Entity);
+
+            if (candidate.IsVegetation &&
+                filters.ProtectAssetVegetation &&
+                (scope != OwnerScope.None ||
+                 m_SpatialAssetVegetation.Contains(candidate.Entity)))
+            {
+                return true;
+            }
 
             return scope switch
             {
@@ -111,7 +119,7 @@ namespace AreaBulldozer.Tools
             }
 
             return IsOwnedObjectProtected(
-                candidate.Entity,
+                in candidate,
                 in filters);
         }
 

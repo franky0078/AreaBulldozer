@@ -22,6 +22,8 @@ namespace AreaBulldozer.Tools
         private float m_SpatialLastRefreshRebuildTime;
 
         private SpatialCandidateIndex m_SpatialIndex;
+        private readonly HashSet<Entity> m_SpatialAssetVegetation = new();
+        private bool m_SpatialAssetVegetationProtectionEnabled;
 
         private bool m_SpatialIndexReady;
         private int m_SpatialIndexedObjectCount;
@@ -104,9 +106,15 @@ namespace AreaBulldozer.Tools
             ClearSpatialIndex();
             m_SpatialMissingAssetsEnabled = Mod.Settings?.DeleteMissingAssets ?? false;
             m_SpatialCarsEnabled = Mod.Settings?.DeleteCars ?? false;
+            m_SpatialAssetVegetationProtectionEnabled = IsAssetVegetationProtectionEnabled;
 
             System.Diagnostics.Stopwatch stopwatch =
                 System.Diagnostics.Stopwatch.StartNew();
+
+            if (m_SpatialAssetVegetationProtectionEnabled)
+            {
+                IndexAssetVegetation();
+            }
 
             AddQueryToSpatialIndex(
                 m_PlantQuery,
@@ -257,11 +265,17 @@ namespace AreaBulldozer.Tools
 
         private bool m_SpatialMissingAssetsEnabled;
 
+        private bool IsAssetVegetationProtectionEnabled =>
+            Mod.Settings is Setting settings &&
+            settings.DeleteTrees &&
+            settings.ProtectAssetVegetation;
+
         private void EnsureSpatialIndexReady()
         {
             if (!m_SpatialIndexReady ||
                 m_SpatialMissingAssetsEnabled != (Mod.Settings?.DeleteMissingAssets ?? false) ||
-                m_SpatialCarsEnabled != (Mod.Settings?.DeleteCars ?? false))
+                m_SpatialCarsEnabled != (Mod.Settings?.DeleteCars ?? false) ||
+                m_SpatialAssetVegetationProtectionEnabled != IsAssetVegetationProtectionEnabled)
             {
                 RebuildSpatialIndex();
             }
@@ -272,6 +286,7 @@ namespace AreaBulldozer.Tools
             return
                 (m_SpatialMissingAssetsEnabled ? m_MissingAssetObjectQuery.CalculateEntityCount() : 0) +
                 m_PlantQuery.CalculateEntityCount() +
+                (m_SpatialAssetVegetationProtectionEnabled ? m_SubObjectOwnerQuery.CalculateEntityCount() : 0) +
                 m_BuildingQuery.CalculateEntityCount() +
                 (m_SpatialCarsEnabled ? m_CarQuery.CalculateEntityCount() : 0) +
                 m_RoadEdgeQuery.CalculateEntityCount() +
@@ -371,6 +386,7 @@ namespace AreaBulldozer.Tools
         private void ClearSpatialIndex()
         {
             m_SpatialIndex?.Clear();
+            m_SpatialAssetVegetation.Clear();
             m_SpatialMissingAssetCount = 0;
 
             ResetSpatialIndexCounters();
@@ -413,6 +429,31 @@ namespace AreaBulldozer.Tools
             m_SpatialSubLaneEntryCount = 0;
             m_SpatialRejectedNetworkLaneOwnerCount = 0;
             m_SpatialMissingLanePrefabCount = 0;
+        }
+
+        private void IndexAssetVegetation()
+        {
+            // Use the parent buffers as a fallback for plants without an Owner.
+            using NativeArray<Entity> parents = m_SubObjectOwnerQuery.ToEntityArray(Allocator.Temp);
+
+            foreach (Entity parent in parents)
+            {
+                DynamicBuffer<Game.Objects.SubObject> children =
+                    EntityManager.GetBuffer<Game.Objects.SubObject>(parent, true);
+
+                for (int index = 0; index < children.Length; index++)
+                {
+                    Entity plant = children[index].m_SubObject;
+
+                    if (plant != Entity.Null &&
+                        EntityManager.Exists(plant) &&
+                        !EntityManager.HasComponent<Owner>(plant) &&
+                        EntityManager.HasComponent<Plant>(plant))
+                    {
+                        m_SpatialAssetVegetation.Add(plant);
+                    }
+                }
+            }
         }
 
         private void AddQueryToSpatialIndex(
