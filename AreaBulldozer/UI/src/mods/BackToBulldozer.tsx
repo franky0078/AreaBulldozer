@@ -11,13 +11,15 @@ import {
     includeOverriddenVegetation$,
     isToolActive$,
     launcherMode$,
+    useCompactToolPanel$,
 } from "../bindings";
 
 import styles from "./BackToBulldozer.module.scss";
+import { CompactToolSection } from "./AreaBulldozerSections";
 import { AreaBulldozerIcon } from "./AreaBulldozerIcons";
 import {
-    toggleColorEditor,
-    useColorEditorOpen,
+    toggleToolWindow,
+    useToolWindow,
 } from "./AreaBulldozerColorEditorState";
 import { useSafeValue } from "./useSafeValue";
 import { VanillaComponentResolver } from "./VanillaComponentResolver";
@@ -92,7 +94,10 @@ export const BackToBulldozer:
                     false
                 );
 
-            const colorEditorOpen = useColorEditorOpen();
+            const toolWindow = useToolWindow();
+            const colorEditorOpen = toolWindow === "colors";
+            const optionsOpen = toolWindow === "options";
+            const compact = useSafeValue("useCompactToolPanel$", useCompactToolPanel$, false);
 
             const [loadedAnarchyIconSource, setLoadedAnarchyIconSource] =
                 React.useState<string | null>(null);
@@ -347,7 +352,7 @@ export const BackToBulldozer:
                     onClick={(event) => {
                         event.preventDefault();
                         event.stopPropagation();
-                        toggleColorEditor();
+                        toggleToolWindow("colors");
                     }}
                     aria-label={colorTitle}
                     aria-pressed={colorEditorOpen}
@@ -382,9 +387,34 @@ export const BackToBulldozer:
                 : colorButton;
 
 
+            const optionsTitle = text("ToolOptionsTitle", "Optionen");
+            const optionsButton = (
+                <button
+                    type="button"
+                    className={[
+                        toolButtonTheme?.button ?? "",
+                        styles.colorButton,
+                        optionsOpen ? styles.colorButtonActive : "",
+                    ].filter(Boolean).join(" ")}
+                    aria-label={optionsTitle}
+                    aria-pressed={optionsOpen}
+                    title={Tooltip ? undefined : optionsTitle}
+                    onClick={event => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        toggleToolWindow("options");
+                    }}
+                >
+                    <span className={styles.colorIcon} aria-hidden="true">
+                        <AreaBulldozerIcon type="gear" />
+                    </span>
+                </button>
+            );
+
             const backSection =
                 (
-                    <Section
+                    <CompactToolSection
+                        compact={compact}
                         title={
                             translate(
                                 `${UI_PREFIX}Navigation`,
@@ -393,9 +423,17 @@ export const BackToBulldozer:
                             "Navigation"
                         }
                     >
-                        <div className={styles.navigationButtons}>
+                        <div className={[
+                            styles.navigationButtons,
+                            compact ? "" : styles.normalSize,
+                        ].filter(Boolean).join(" ")}>
                             <div className={styles.navigationColorButton}>
                                 {wrappedColorButton}
+                                {Tooltip ? (
+                                    <Tooltip tooltip={<div className={tooltipTheme?.title}>{optionsTitle}</div>}>
+                                        {optionsButton}
+                                    </Tooltip>
+                                ) : optionsButton}
                             </div>
 
                             <div className={styles.navigationRightButtons}>
@@ -403,7 +441,7 @@ export const BackToBulldozer:
                                 {wrappedAnarchyButton}
                             </div>
                         </div>
-                    </Section>
+                    </CompactToolSection>
                 );
 
             try {

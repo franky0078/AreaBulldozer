@@ -11,6 +11,7 @@ export type AreaBulldozerIconType =
     | "polyline"
     | "polygon"
     | "palette"
+    | "gear"
     | "straight"
     | "curve"
     | "missingAsset"
@@ -121,6 +122,14 @@ export function AreaBulldozerIcon({ type }: { type: AreaBulldozerIconType }) {
                     <circle cx="27" cy="12" r="1.8" />
                     <circle cx="24" cy="26" r="1.8" />
                     <circle cx="12" cy="28" r="1.8" />
+                </svg>
+            );
+
+        case "gear":
+            return (
+                <svg {...common}>
+                    <path d="M13 4h6l1 4 3 2 4-1 3 5-3 3v3l2 3-3 5-4-1-3 2h-6l-1-3-3-2-4 1-3-5 3-3v-3l-2-3 3-5 4 1 3-2Z" />
+                    <circle cx="16" cy="16" r="4" />
                 </svg>
             );
 

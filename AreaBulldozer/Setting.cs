@@ -12,6 +12,16 @@ namespace AreaBulldozer
         BelowGround = 2
     }
 
+    public enum AreaBulldozerTreeAgeFilter
+    {
+        All = 0,
+        Sapling = 1,
+        Young = 2,
+        Mature = 3,
+        Elderly = 4,
+        Dead = 5
+    }
+
     public enum AreaBulldozerLauncherMode
     {
         Standalone = 0,
@@ -76,6 +86,9 @@ namespace AreaBulldozer
 
         [SettingsUIHidden]
         public bool DeleteTrees { get; set; }
+
+        [SettingsUIHidden]
+        public AreaBulldozerTreeAgeFilter TreeAgeFilter { get; set; }
 
         [SettingsUIHidden]
         public bool DeleteMissingAssets { get; set; }
@@ -179,6 +192,9 @@ namespace AreaBulldozer
         [SettingsUISection(kSection, kToolGroup)]
         public int UIScale { get; set; }
 
+        [SettingsUIHidden]
+        public bool UseCompactToolPanel { get; set; }
+
         [SettingsUISection(kSection, kToolGroup)]
         public AreaBulldozerLauncherMode LauncherMode
         {
@@ -227,7 +243,7 @@ namespace AreaBulldozer
         [SettingsUISlider(
             min = 50,
             max = 2000,
-            step = 50)]
+            step = 10)]
         [SettingsUISection(kSection, kSubObjectGroup)]
         public int LargeSelectionThreshold { get; set; }
 
@@ -320,6 +336,7 @@ namespace AreaBulldozer
         {
             HeightFilter = AreaBulldozerHeightFilter.All;
             DeleteTrees = true;
+            TreeAgeFilter = AreaBulldozerTreeAgeFilter.All;
             DeleteMissingAssets = false;
             IncludeOverriddenVegetation = false;
             DeleteBuildings = false;
@@ -357,6 +374,7 @@ namespace AreaBulldozer
             SelectionLineThickness = 65;
 
             UIScale = 100;
+            UseCompactToolPanel = false;
 
             LauncherMode = AreaBulldozerLauncherMode.Standalone;
             UseUniversalModMenu = false;

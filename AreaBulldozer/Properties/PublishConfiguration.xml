@@ -67,6 +67,7 @@
 		- Spawn locations
 		- Asset lanes and sublanes
 		- Height filters: All Heights, Above / On Terrain, and Below Terrain.
+		- Tree Age Filter — Remove saplings, young, mature, or old trees from the selected area
 
 
 		**Compatibility**
@@ -156,7 +157,7 @@
 	<ForumLink Value="https://forum.paradoxplaza.com/forum/threads/mod-area-bulldozer-area-deletion-tool-with-object-filters.1937211/" />
 
 	<!-- Mod version -->
-	<ModVersion Value="1.9.3" />
+	<ModVersion Value="1.9.4" />
 
 	<!--
 	Recommended game version.
@@ -187,8 +188,8 @@
 	<ChangeLog>
 		Latest changes
 
-		- added the protect asset vegetation toggle to the vegetation filter
-		  (protection is enabled by default)
+		- added a age option under vegetation with six choices: all plants, saplings, young, mature, old and dead.
+		- added a new ingame option for ui scaling and safety settings.
 	</ChangeLog>
 
 	<!--Optional external links for your own mod.-->

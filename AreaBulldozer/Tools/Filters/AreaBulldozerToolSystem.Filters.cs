@@ -67,6 +67,31 @@ namespace AreaBulldozer.Tools
                 circleCenter) <= radiusSquared;
         }
 
+        private bool MatchesTreeAgeFilter(Entity entity, AreaBulldozerTreeAgeFilter filter)
+        {
+            if (filter == AreaBulldozerTreeAgeFilter.All)
+            {
+                return true;
+            }
+
+            if (!EntityManager.HasComponent<Tree>(entity))
+            {
+                return false;
+            }
+
+            TreeState state = EntityManager.GetComponentData<Tree>(entity).m_State;
+            return filter switch
+            {
+                // The game stores the first growth stage as state 0.
+                AreaBulldozerTreeAgeFilter.Sapling => state == (TreeState)0,
+                AreaBulldozerTreeAgeFilter.Young => state == TreeState.Teen,
+                AreaBulldozerTreeAgeFilter.Mature => state == TreeState.Adult,
+                AreaBulldozerTreeAgeFilter.Elderly => state == TreeState.Elderly,
+                AreaBulldozerTreeAgeFilter.Dead => state == TreeState.Dead,
+                _ => false
+            };
+        }
+
         private bool IsOwnedObjectProtected(
             in SpatialCandidate candidate,
             in FilterSnapshot filters)

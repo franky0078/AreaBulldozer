@@ -13,9 +13,10 @@ import {
 } from "../bindings";
 
 import { AreaBulldozerColorEditor } from "./AreaBulldozerColorEditor";
+import { AreaBulldozerQuickOptions } from "./AreaBulldozerQuickOptions";
 import {
-    closeColorEditor,
-    useColorEditorOpen,
+    closeToolWindow,
+    useToolWindow,
 } from "./AreaBulldozerColorEditorState";
 import styles from "./AreaBulldozerColorEditorWindow.module.scss";
 import { useSafeValue } from "./useSafeValue";
@@ -92,7 +93,7 @@ function resolveSavedPosition(
 
 export function AreaBulldozerColorEditorWindow() {
     const { translate } = useLocalization();
-    const open = useColorEditorOpen();
+    const toolWindow = useToolWindow();
 
     const isToolActive = useSafeValue(
         "isToolActive$",
@@ -118,6 +119,8 @@ export function AreaBulldozerColorEditorWindow() {
         -1
     );
 
+    const visible = toolWindow !== null && isToolActive;
+    const pointerOverPanel = React.useRef(false);
     const panelRef = React.useRef<HTMLDivElement | null>(null);
     const dragSessionRef = React.useRef<DragSession | null>(null);
     const positionRef = React.useRef<EditorPosition>(
@@ -143,9 +146,26 @@ export function AreaBulldozerColorEditorWindow() {
 
     React.useEffect(() => {
         if (!isToolActive) {
-            closeColorEditor();
+            closeToolWindow();
         }
     }, [isToolActive]);
+
+    const setPointerOverPanel = React.useCallback((over: boolean) => {
+        if (pointerOverPanel.current !== over) {
+            pointerOverPanel.current = over;
+            trigger(mod.id, BindingKeys.setPointerOverUI, over);
+        }
+    }, []);
+
+    React.useEffect(() => {
+        if (!visible) {
+            dragSessionRef.current = null;
+            setDragging(false);
+            return;
+        }
+
+        return () => setPointerOverPanel(false);
+    }, [visible, setPointerOverPanel]);
 
     React.useEffect(() => {
         if (dragging) {
@@ -162,7 +182,7 @@ export function AreaBulldozerColorEditorWindow() {
                 rect?.height ?? 320
             )
         );
-    }, [savedX, savedY, dragging, applyPosition]);
+    }, [savedX, savedY, dragging, toolWindow, applyPosition]);
 
     React.useEffect(() => {
         const handleResize = () => {
@@ -232,11 +252,7 @@ export function AreaBulldozerColorEditorWindow() {
                 : false;
 
             if (!pointerInside) {
-                trigger(
-                    mod.id,
-                    BindingKeys.setPointerOverUI,
-                    false
-                );
+                setPointerOverPanel(false);
             }
         };
 
@@ -247,11 +263,36 @@ export function AreaBulldozerColorEditorWindow() {
             window.removeEventListener("mousemove", handleMove);
             window.removeEventListener("mouseup", handleUp);
         };
-    }, [dragging, applyPosition]);
+    }, [dragging, applyPosition, setPointerOverPanel]);
 
-    if (!open || !isToolActive) {
+    if (!visible) {
         return null;
     }
+
+    const startDragging = (event: React.MouseEvent<HTMLDivElement>) => {
+        if (event.button !== 0) {
+            return;
+        }
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        const rect = panelRef.current?.getBoundingClientRect();
+        if (!rect) {
+            return;
+        }
+
+        setPointerOverPanel(true);
+        dragSessionRef.current = {
+            pointerX: event.clientX,
+            pointerY: event.clientY,
+            startX: positionRef.current.x,
+            startY: positionRef.current.y,
+            width: rect.width,
+            height: rect.height,
+        };
+        setDragging(true);
+    };
 
     const panelTheme =
         VanillaComponentResolver.instance
@@ -272,53 +313,27 @@ export function AreaBulldozerColorEditorWindow() {
                 left: `${position.x}px`,
                 top: `${position.y}px`,
             }}
-            onMouseEnter={() => trigger(
-                mod.id,
-                BindingKeys.setPointerOverUI,
-                true
-            )}
+            onMouseEnter={() => setPointerOverPanel(true)}
             onMouseLeave={() => {
                 if (!dragging) {
-                    trigger(
-                        mod.id,
-                        BindingKeys.setPointerOverUI,
-                        false
-                    );
+                    setPointerOverPanel(false);
                 }
             }}
         >
-            <AreaBulldozerColorEditor
-                scale={clamp(uiScalePercent, 50, 125) / 100}
-                text={text}
-                dragging={dragging}
-                onDragStart={event => {
-                    event.preventDefault();
-                    event.stopPropagation();
-
-                    const rect = panelRef.current?.getBoundingClientRect();
-
-                    if (!rect) {
-                        return;
-                    }
-
-                    trigger(
-                        mod.id,
-                        BindingKeys.setPointerOverUI,
-                        true
-                    );
-
-                    dragSessionRef.current = {
-                        pointerX: event.clientX,
-                        pointerY: event.clientY,
-                        startX: positionRef.current.x,
-                        startY: positionRef.current.y,
-                        width: rect.width,
-                        height: rect.height,
-                    };
-
-                    setDragging(true);
-                }}
-            />
+            {toolWindow === "options" ? (
+                <AreaBulldozerQuickOptions
+                    text={text}
+                    dragging={dragging}
+                    onDragStart={startDragging}
+                />
+            ) : (
+                <AreaBulldozerColorEditor
+                    scale={clamp(uiScalePercent, 50, 125) / 100}
+                    text={text}
+                    dragging={dragging}
+                    onDragStart={startDragging}
+                />
+            )}
         </div>
     );
 }

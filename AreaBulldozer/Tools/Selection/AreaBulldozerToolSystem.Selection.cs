@@ -234,6 +234,12 @@ namespace AreaBulldozer.Tools
                     continue;
                 }
 
+                if (candidate.IsVegetation &&
+                    !MatchesTreeAgeFilter(entity, filters.TreeAgeFilter))
+                {
+                    continue;
+                }
+
                 if (!candidate.IsBuilding &&
                     !candidate.IsRoad &&
                     !candidate.IsPedestrianPath &&

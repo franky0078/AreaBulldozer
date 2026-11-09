@@ -25,6 +25,7 @@ export const BindingKeys = {
 
     setDeleteMissingAssets: "setDeleteMissingAssets",
     setDeleteTrees: "setDeleteTrees",
+    setTreeAgeFilter: "setTreeAgeFilter",
     setIncludeOverriddenVegetation: "setIncludeOverriddenVegetation",
     setProtectAssetVegetation: "setProtectAssetVegetation",
     setDeleteBuildings: "setDeleteBuildings",
@@ -49,6 +50,7 @@ export const BindingKeys = {
     setDeleteNetworkSubObjects: "setDeleteNetworkSubObjects",
     setProtectOwnedObjects: "setProtectOwnedObjects",
 
+    setUseCompactToolPanel: "setUseCompactToolPanel",
     setConfirmLargeSelection: "setConfirmLargeSelection",
     setLargeSelectionThreshold: "setLargeSelectionThreshold",
 
@@ -114,6 +116,8 @@ export const uiScale$ = bindValue<number>(
     100
 );
 
+export const useCompactToolPanel$ = bindValue<boolean>(mod.id, "useCompactToolPanel", false);
+
 export const launcherMode$ = bindValue<number>(
     mod.id,
     "launcherMode",
@@ -152,6 +156,8 @@ export const deleteTrees$ = bindValue<boolean>(
     "deleteTrees",
     true
 );
+
+export const treeAgeFilter$ = bindValue<number>(mod.id, "treeAgeFilter", 0);
 
 export const protectAssetVegetation$ = bindValue<boolean>(
     mod.id,

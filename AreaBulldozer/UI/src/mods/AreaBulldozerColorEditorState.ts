@@ -1,44 +1,39 @@
 import React from "react";
 
+type ToolWindow = "colors" | "options";
 
-let colorEditorOpen = false;
-
+let activeWindow: ToolWindow | null = null;
 const listeners = new Set<() => void>();
 
-
-function notifyListeners() {
-    listeners.forEach(listener => listener());
+export function closeToolWindow() {
+    if (activeWindow !== null) {
+        activeWindow = null;
+        listeners.forEach(listener => listener());
+    }
 }
 
-
-export function toggleColorEditor() {
-    colorEditorOpen = !colorEditorOpen;
-    notifyListeners();
-}
-
-
-export function closeColorEditor() {
-    if (!colorEditorOpen) {
+export function toggleToolWindow(window: ToolWindow) {
+    if (activeWindow === window) {
+        closeToolWindow();
         return;
     }
 
-    colorEditorOpen = false;
-    notifyListeners();
+    activeWindow = window;
+    listeners.forEach(listener => listener());
 }
 
-
-export function useColorEditorOpen() {
-    const [open, setOpen] = React.useState(colorEditorOpen);
+export function useToolWindow() {
+    const [window, setWindow] = React.useState(activeWindow);
 
     React.useEffect(() => {
-        const listener = () => setOpen(colorEditorOpen);
-
+        const listener = () => setWindow(activeWindow);
         listeners.add(listener);
+        listener();
 
         return () => {
             listeners.delete(listener);
         };
     }, []);
 
-    return open;
+    return window;
 }

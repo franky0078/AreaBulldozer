@@ -1,6 +1,11 @@
 
-$buttonSize: 32rem;
-$iconSize: 21rem;
+$buttonSize: 28rem;
+$iconSize: 18rem;
+
+.sectionTitle {
+    font-size: 14rem;
+    line-height: 1.15;
+}
 
 .compactColorToolbar {
     width: 100%;
@@ -160,6 +165,12 @@ $iconSize: 21rem;
     line-height: 1;
     font-weight: 700;
     text-align: center;
+}
+
+.valueFieldWide {
+    flex: 0 0 auto;
+    width: auto;
+    white-space: nowrap;
 }
 
 .valueFieldNarrow {

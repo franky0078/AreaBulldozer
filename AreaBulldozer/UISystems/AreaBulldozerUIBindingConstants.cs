@@ -22,6 +22,8 @@ namespace AreaBulldozer.UISystems
         public const string PolylineRounding = "polylineRounding";
         public const string SquareRotationDegrees = "squareRotationDegrees";
         public const string UIScale = "uiScale";
+        public const string UseCompactToolPanel = "useCompactToolPanel";
+        public const string SetUseCompactToolPanel = "setUseCompactToolPanel";
 
         public const string LauncherMode = "launcherMode";
         public const string UseUniversalModMenu = "useUniversalModMenu";
@@ -31,6 +33,7 @@ namespace AreaBulldozer.UISystems
 
         public const string DeleteMissingAssets = "deleteMissingAssets";
         public const string DeleteTrees = "deleteTrees";
+        public const string TreeAgeFilter = "treeAgeFilter";
         public const string IncludeOverriddenVegetation = "includeOverriddenVegetation";
         public const string ProtectAssetVegetation = "protectAssetVegetation";
         public const string DeleteBuildings = "deleteBuildings";
@@ -82,6 +85,7 @@ namespace AreaBulldozer.UISystems
 
         public const string SetDeleteMissingAssets = "setDeleteMissingAssets";
         public const string SetDeleteTrees = "setDeleteTrees";
+        public const string SetTreeAgeFilter = "setTreeAgeFilter";
         public const string SetIncludeOverriddenVegetation = "setIncludeOverriddenVegetation";
         public const string SetProtectAssetVegetation = "setProtectAssetVegetation";
         public const string SetDeleteBuildings = "setDeleteBuildings";

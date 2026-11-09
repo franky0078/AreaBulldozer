@@ -122,8 +122,9 @@ namespace AreaBulldozer.Tools
                 lineWidthChanged || polylineCurveModeChanged || polylineRoundingChanged ||
                 shapeChanged || filtersChanged;
 
-            // Refresh moving cars at the normal preview interval even with a still cursor.
-            if (!selectionChanged && !filters.DeleteCars)
+            // Cars can move and trees can change age even with a still cursor.
+            if (!selectionChanged && !filters.DeleteCars &&
+                filters.TreeAgeFilter == AreaBulldozerTreeAgeFilter.All)
             {
                 return;
             }
@@ -334,6 +335,12 @@ namespace AreaBulldozer.Tools
 
                 if (m_PendingDeletion != null &&
                     m_PendingDeletion.Contains(entity))
+                {
+                    continue;
+                }
+
+                if (candidate.IsVegetation &&
+                    !MatchesTreeAgeFilter(entity, filters.TreeAgeFilter))
                 {
                     continue;
                 }

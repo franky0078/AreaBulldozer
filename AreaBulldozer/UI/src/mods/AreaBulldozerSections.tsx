@@ -28,6 +28,7 @@ import {
     deleteSurfaces$,
     deleteMissingAssets$,
     deleteTrees$,
+    treeAgeFilter$,
     protectAssetVegetation$,
     dimMarkerBackground$,
     isToolActive$,
@@ -38,10 +39,11 @@ import {
     useCurvedPolyline$,
     squareRotationDegrees$,
     uiScale$,
+    useCompactToolPanel$,
 } from "../bindings";
 import {
-    toggleColorEditor,
-    useColorEditorOpen,
+    toggleToolWindow,
+    useToolWindow,
 } from "./AreaBulldozerColorEditorState";
 
 const UI_PREFIX = "AreaBulldozer.UI.";
@@ -79,12 +81,9 @@ const POLYLINE_ROUNDING_STEP = 10;
 
 const ROTATION_STEP = 15;
 
-const BASE_BUTTON = 32;
-const BASE_ICON = 21;
 const BASE_FIELD = 50;
-const BASE_FONT = 12;
 
-const ScaleContext = React.createContext(1);
+const ToolPanelContext = React.createContext({ scale: 1, compact: false });
 
 function clamp(value: number, min: number, max: number) {
     return Math.min(max, Math.max(min, value));
@@ -113,16 +112,18 @@ function IconToolButton({
     const theme = resolver.toolButtonTheme;
     const tooltipTheme = resolver.descriptionTooltipTheme;
     const Tooltip = resolver.Tooltip;
-    const scale = React.useContext(ScaleContext);
+    const { scale, compact } = React.useContext(ToolPanelContext);
+    const buttonSize = (compact ? 28 : 32) * scale;
 
     const buttonStyle: React.CSSProperties = {
-        width: `${(BASE_BUTTON * scale).toFixed(1)}rem`,
-        height: `${(BASE_BUTTON * scale).toFixed(1)}rem`,
+        width: `${buttonSize.toFixed(1)}rem`,
+        height: `${buttonSize.toFixed(1)}rem`,
     };
 
+    const iconSize = (compact ? 18 : 21) * scale;
     const iconStyle: React.CSSProperties = {
-        width: `${(BASE_ICON * scale).toFixed(1)}rem`,
-        height: `${(BASE_ICON * scale).toFixed(1)}rem`,
+        width: `${iconSize.toFixed(1)}rem`,
+        height: `${iconSize.toFixed(1)}rem`,
     };
 
     const className = [
@@ -143,6 +144,7 @@ function IconToolButton({
             type="button"
             className={className}
             style={buttonStyle}
+            aria-label={tooltipTitle}
             aria-pressed={selected}
             disabled={disabled}
             onClick={(event) => {
@@ -176,9 +178,32 @@ function IconToolButton({
     return <Tooltip tooltip={tooltipContent}>{button}</Tooltip>;
 }
 
+export function CompactToolSection({
+    title,
+    children,
+    compact,
+}: {
+    title: string;
+    children: JSX.Element | JSX.Element[];
+    compact?: boolean;
+}) {
+    const Section = VanillaComponentResolver.instance.Section;
+    const panel = React.useContext(ToolPanelContext);
+    const sectionTitle = (compact ?? panel.compact)
+        ? <span className={styles.sectionTitle}>{title}</span>
+        : title;
+
+    return (
+        <Section title={sectionTitle}>
+            {children}
+        </Section>
+    );
+}
+
 interface StepperProps {
     value: string;
     narrow?: boolean;
+    wide?: boolean;
     decreaseTooltip: string;
     increaseTooltip: string;
     onDecrease: () => void;
@@ -188,6 +213,7 @@ interface StepperProps {
 function Stepper({
     value,
     narrow = false,
+    wide = false,
     decreaseTooltip,
     increaseTooltip,
     onDecrease,
@@ -196,12 +222,14 @@ function Stepper({
     const numberFieldClass =
         VanillaComponentResolver.instance.mouseToolOptionsTheme?.numberField;
 
-    const scale = React.useContext(ScaleContext);
+    const { scale, compact } = React.useContext(ToolPanelContext);
+    const buttonSize = (compact ? 28 : 32) * scale;
 
+    const fieldWidth = wide ? 84 : narrow ? BASE_FIELD * 0.85 : BASE_FIELD;
     const fieldStyle: React.CSSProperties = {
-        minWidth: `${(BASE_FIELD * (narrow ? 0.85 : 1) * scale).toFixed(1)}rem`,
-        height: `${(BASE_BUTTON * scale).toFixed(1)}rem`,
-        fontSize: `${(BASE_FONT * scale).toFixed(1)}rem`,
+        minWidth: `${(fieldWidth * scale).toFixed(1)}rem`,
+        height: `${buttonSize.toFixed(1)}rem`,
+        fontSize: `${((compact ? 11 : 12) * scale).toFixed(1)}rem`,
     };
 
     return (
@@ -214,7 +242,7 @@ function Stepper({
 
             <div
                 className={[
-                    numberFieldClass ?? "",
+                    wide ? styles.valueFieldWide : numberFieldClass ?? "",
                     styles.valueField,
                     narrow ? styles.valueFieldNarrow : "",
                 ]
@@ -251,7 +279,9 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
             0
         );
 
-        const colorEditorOpen = useColorEditorOpen();
+        const toolWindow = useToolWindow();
+        const colorEditorOpen = toolWindow === "colors";
+        const compact = useSafeValue("useCompactToolPanel$", useCompactToolPanel$, false);
 
         const brushRadius = useSafeValue(
             "brushRadius$",
@@ -321,6 +351,8 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
             deleteTrees$,
             false
         );
+
+        const treeAgeFilter = useSafeValue("treeAgeFilter$", treeAgeFilter$, 0);
 
         const protectAssetVegetation = useSafeValue(
             "protectAssetVegetation$",
@@ -473,6 +505,22 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
         const scale =
             clamp(uiScalePercent, 50, 125) / 100;
 
+        const treeAgeLabels = [
+            text("TreeAgeAll", "Alle Pflanzen"),
+            text("TreeAgeSapling", "Setzlinge"),
+            text("TreeAgeYoung", "Jung"),
+            text("TreeAgeMature", "Ausgewachsen"),
+            text("TreeAgeElderly", "Alt"),
+            text("TreeAgeDead", "Tot"),
+        ];
+
+        const cycleTreeAge = (direction: number) =>
+            trigger(
+                mod.id,
+                BindingKeys.setTreeAgeFilter,
+                (treeAgeFilter + direction + treeAgeLabels.length) % treeAgeLabels.length
+            );
+
         const setRadius = (next: number) =>
             trigger(
                 mod.id,
@@ -585,7 +633,7 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
                     );
 
         const sections = (
-            <ScaleContext.Provider value={scale}>
+            <ToolPanelContext.Provider value={{ scale, compact }}>
                 {launcherMode !== VANILLA_BULLDOZER_LAUNCHER_MODE && (
                     <div className={styles.compactColorToolbar}>
                         <IconToolButton
@@ -606,12 +654,18 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
                                 "ColorEditorTooltip",
                                 "Farben mit direkter Vorschau anpassen."
                             )}
-                            onSelect={toggleColorEditor}
+                            onSelect={() => toggleToolWindow("colors")}
+                        />
+                        <IconToolButton
+                            icon="gear"
+                            selected={toolWindow === "options"}
+                            tooltipTitle={text("ToolOptionsTitle", "Optionen")}
+                            onSelect={() => toggleToolWindow("options")}
                         />
                     </div>
                 )}
 
-                <Section title={text("Selection", "Auswahl")}>
+                <CompactToolSection title={text("Selection", "Auswahl")}>
                     <IconToolButton
                         icon="circle"
                         selected={isCircle}
@@ -672,10 +726,10 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
                         )}
                         onSelect={setFreeAreaPolygon}
                     />
-                </Section>
+                </CompactToolSection>
 
                 {!isFreeAreaPolygon && (
-                    <Section title={sizeTitle}>
+                    <CompactToolSection title={sizeTitle}>
                         {usesCorridorWidth ? (
                             <Stepper
                                 value={`${lineWidth} m`}
@@ -725,11 +779,11 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
                                 }
                             />
                         )}
-                    </Section>
+                    </CompactToolSection>
                 )}
 
                 {isFreeAreaPolygon && (
-                    <Section
+                    <CompactToolSection
                         title={
                             text(
                                 "FreeAreaPolygon",
@@ -743,11 +797,11 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
                         }
                     >
                         <></>
-                    </Section>
+                    </CompactToolSection>
                 )}
 
                 {isPolyline && (
-                    <Section title={text("PolylineStyle", "Linienform")}>
+                    <CompactToolSection title={text("PolylineStyle", "Linienform")}>
                         <IconToolButton
                             icon="straight"
                             selected={!useCurvedPolyline}
@@ -769,11 +823,11 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
                             )}
                             onSelect={() => setCurvedPolyline(true)}
                         />
-                    </Section>
+                    </CompactToolSection>
                 )}
 
                 {isPolyline && useCurvedPolyline && (
-                    <Section title={text("PolylineRounding", "Kurvenrundung")}>
+                    <CompactToolSection title={text("PolylineRounding", "Kurvenrundung")}>
                         <Stepper
                             value={`${polylineRounding} %`}
                             decreaseTooltip={text(
@@ -797,11 +851,11 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
                                 )
                             }
                         />
-                    </Section>
+                    </CompactToolSection>
                 )}
 
                 {isRotatable && (
-                    <Section title={text("Rotation", "Drehung")}>
+                    <CompactToolSection title={text("Rotation", "Drehung")}>
                         <Stepper
                             narrow
                             value={`${Math.round(squareRotationDegrees)}°`}
@@ -826,10 +880,10 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
                                 )
                             }
                         />
-                    </Section>
+                    </CompactToolSection>
                 )}
 
-                <Section title={text("HeightFilter", "Höhenfilter")}>
+                <CompactToolSection title={text("HeightFilter", "Höhenfilter")}>
                     <IconToolButton icon="heightAll" selected={heightFilter === 0}
                         tooltipTitle={text("HeightAll", "Alle Höhen")}
                         tooltipText={text("HeightFilterTooltip", "Höhenfilter für Vorschau und Löschen. Gemischte Übergänge nur bei Alle Höhen.")}
@@ -846,9 +900,9 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
                         tooltipTitle={text("UndergroundView", "Untergrundansicht")}
                         tooltipText={text("UndergroundViewTooltip", "Unterirdische Objekte anzeigen. Ändert den Höhenfilter nicht.")}
                         onSelect={() => trigger(mod.id, BindingKeys.setUndergroundView, !undergroundView)} />
-                </Section>
+                </CompactToolSection>
 
-                <Section title={text("MainFilters", "Filter")}>
+                <CompactToolSection title={text("MainFilters", "Filter")}>
                     <div className={styles.filterButtons}>
                     <IconToolButton
                         icon="missingAsset"
@@ -980,10 +1034,10 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
                         }
                     />
                     </div>
-                </Section>
+                </CompactToolSection>
 
                 {deleteTrees && (
-                    <Section title={text("VegetationShort", "Vegetation")}>
+                    <CompactToolSection title={text("VegetationShort", "Vegetation")}>
                         <IconToolButton
                             icon="protectVegetation"
                             selected={protectAssetVegetation}
@@ -994,11 +1048,24 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
                             )}
                             onSelect={() => toggle(BindingKeys.setProtectAssetVegetation, protectAssetVegetation)}
                         />
-                    </Section>
+                    </CompactToolSection>
+                )}
+
+                {deleteTrees && (
+                    <CompactToolSection title={text("TreeAgeFilter", "Baumalter")}>
+                        <Stepper
+                            wide
+                            value={treeAgeLabels[treeAgeFilter] ?? treeAgeLabels[0]}
+                            decreaseTooltip={text("TreeAgePrevious", "Vorherige Altersstufe")}
+                            increaseTooltip={text("TreeAgeNext", "Nächste Altersstufe")}
+                            onDecrease={() => cycleTreeAge(-1)}
+                            onIncrease={() => cycleTreeAge(1)}
+                        />
+                    </CompactToolSection>
                 )}
 
                 {deleteStaticObjects && (
-                    <Section title={text("AdvancedFiltersShort", "Props / Marker")}>
+                    <CompactToolSection title={text("AdvancedFiltersShort", "Props / Marker")}>
                         <div className={styles.filterButtons}>
                         <IconToolButton
                             marker
@@ -1107,10 +1174,10 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
                         />
 
                         </div>
-                    </Section>
+                    </CompactToolSection>
                 )}
                 {(deleteStaticObjects || deleteMissingAssets) && (
-                    <Section title={text("DimBackground", "Hintergrund abdunkeln")}>
+                    <CompactToolSection title={text("DimBackground", "Hintergrund abdunkeln")}>
                         <IconToolButton
                             marker
                             icon="dim"
@@ -1126,9 +1193,9 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
                                 )
                             }
                         />
-                    </Section>
+                    </CompactToolSection>
                 )}
-            </ScaleContext.Provider>
+            </ToolPanelContext.Provider>
         );
 
         try {

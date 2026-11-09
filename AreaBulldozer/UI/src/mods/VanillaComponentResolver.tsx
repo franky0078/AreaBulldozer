@@ -18,7 +18,7 @@ type PropsToolButton = {
 } & HTMLAttributes<any>;
 
 type PropsSection = {
-    title?: string | null;
+    title?: string | JSX.Element | null;
     uiTag?: string;
     children: string | JSX.Element | JSX.Element[];
 };

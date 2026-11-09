@@ -153,6 +153,9 @@ namespace AreaBulldozer.UISystems
                     group,
                     AreaBulldozerUIBindingConstants.UIScale,
                     () => math.clamp(Mod.Settings?.UIScale ?? 100, 75, 125)));
+            AddBooleanValueBinding(
+                AreaBulldozerUIBindingConstants.UseCompactToolPanel,
+                () => Mod.Settings?.UseCompactToolPanel ?? false);
 
             AddUpdateBinding(
                 new GetterValueBinding<int>(
@@ -197,6 +200,10 @@ namespace AreaBulldozer.UISystems
             AddBooleanValueBinding(
                 AreaBulldozerUIBindingConstants.DeleteTrees,
                 () => Mod.Settings?.DeleteTrees ?? true);
+            AddUpdateBinding(new GetterValueBinding<int>(
+                group,
+                AreaBulldozerUIBindingConstants.TreeAgeFilter,
+                () => (int)(Mod.Settings?.TreeAgeFilter ?? AreaBulldozerTreeAgeFilter.All)));
             AddBooleanValueBinding(
                 AreaBulldozerUIBindingConstants.ProtectAssetVegetation,
                 () => Mod.Settings?.ProtectAssetVegetation ?? true);
@@ -468,6 +475,12 @@ namespace AreaBulldozer.UISystems
             AddBooleanSettingTrigger(
                 AreaBulldozerUIBindingConstants.SetDeleteTrees,
                 (setting, value) => setting.DeleteTrees = value);
+            AddBinding(new TriggerBinding<int>(
+                group,
+                AreaBulldozerUIBindingConstants.SetTreeAgeFilter,
+                value => ChangeSetting(setting => setting.TreeAgeFilter =
+                    (AreaBulldozerTreeAgeFilter)math.clamp(
+                        value, (int)AreaBulldozerTreeAgeFilter.All, (int)AreaBulldozerTreeAgeFilter.Dead))));
             AddBooleanSettingTrigger(
                 AreaBulldozerUIBindingConstants.SetProtectAssetVegetation,
                 (setting, value) => setting.ProtectAssetVegetation = value);
@@ -545,6 +558,9 @@ namespace AreaBulldozer.UISystems
                 AreaBulldozerUIBindingConstants.SetProtectOwnedObjects,
                 (setting, value) => setting.ProtectOwnedObjects = value);
 
+            AddBooleanSettingTrigger(
+                AreaBulldozerUIBindingConstants.SetUseCompactToolPanel,
+                (setting, value) => setting.UseCompactToolPanel = value);
             AddBooleanSettingTrigger(
                 AreaBulldozerUIBindingConstants.SetConfirmLargeSelection,
                 (setting, value) => setting.ConfirmLargeSelection = value);

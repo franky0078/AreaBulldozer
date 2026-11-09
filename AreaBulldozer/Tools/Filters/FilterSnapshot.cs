@@ -12,6 +12,7 @@ namespace AreaBulldozer.Tools
 
         // Primäre Objektfilter
         public readonly bool DeleteTrees;
+        public readonly AreaBulldozerTreeAgeFilter TreeAgeFilter;
         public readonly bool ProtectAssetVegetation;
         public readonly bool DeleteMissingAssets;
         public readonly bool IncludeOverriddenVegetation;
@@ -44,6 +45,7 @@ namespace AreaBulldozer.Tools
             HeightFilter = settings.HeightFilter;
             DeleteTrees =
                 settings.DeleteTrees;
+            TreeAgeFilter = DeleteTrees ? settings.TreeAgeFilter : AreaBulldozerTreeAgeFilter.All;
             DeleteMissingAssets = settings.DeleteMissingAssets;
             ProtectAssetVegetation = settings.ProtectAssetVegetation;
 
@@ -127,6 +129,7 @@ namespace AreaBulldozer.Tools
                 HeightFilter == other.HeightFilter &&
                 DeleteMissingAssets == other.DeleteMissingAssets &&
                 DeleteTrees == other.DeleteTrees &&
+                TreeAgeFilter == other.TreeAgeFilter &&
                 ProtectAssetVegetation == other.ProtectAssetVegetation &&
                 IncludeOverriddenVegetation ==
                     other.IncludeOverriddenVegetation &&
@@ -163,6 +166,7 @@ namespace AreaBulldozer.Tools
 
             hash |= DeleteTrees ? 1 << 0 : 0;
             hash |= ProtectAssetVegetation ? 1 << 21 : 0;
+            hash |= ((int)TreeAgeFilter & 7) << 22;
             hash |= DeleteBuildings ? 1 << 1 : 0;
             hash |= DeleteCars ? 1 << 20 : 0;
             hash |= DeleteRoads ? 1 << 2 : 0;
