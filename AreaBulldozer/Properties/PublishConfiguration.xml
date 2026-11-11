@@ -17,7 +17,7 @@
 	Supports a limited Markdown subset.
 	-->
 	<LongDescription>
-		Area Bulldozer adds a flexible area deletion tool
+		**Area Bulldozer** adds a flexible area deletion tool
 
 
 		**Selection shapes**
@@ -41,7 +41,7 @@
 		- Optional launcher button in the universal mod menu
 		- Color editor options for customizing selection shapes and preview
 		- Configurable keyboard shortcut
-		- Language support for German, English, French, Italian and Spanish
+		- All ingame languages are supported. The interface follows the game's language setting.
 
 		**Object filters**
 
@@ -188,8 +188,7 @@
 	<ChangeLog>
 		Latest changes
 
-		- added a age option under vegetation with six choices: all plants, saplings, young, mature, old and dead.
-		- added a new ingame option for ui scaling and safety settings.
+		- added language support for all ingame languages
 	</ChangeLog>
 
 	<!--Optional external links for your own mod.-->

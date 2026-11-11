@@ -226,10 +226,12 @@ function Stepper({
     const buttonSize = (compact ? 28 : 32) * scale;
 
     const fieldWidth = wide ? 84 : narrow ? BASE_FIELD * 0.85 : BASE_FIELD;
+    const fontSize = compact ? 11 : 12;
+    const fittedFontSize = wide && value.length > 13 ? fontSize - 1 : fontSize;
     const fieldStyle: React.CSSProperties = {
         minWidth: `${(fieldWidth * scale).toFixed(1)}rem`,
         height: `${buttonSize.toFixed(1)}rem`,
-        fontSize: `${((compact ? 11 : 12) * scale).toFixed(1)}rem`,
+        fontSize: `${(fittedFontSize * scale).toFixed(1)}rem`,
     };
 
     return (

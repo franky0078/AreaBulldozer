@@ -112,17 +112,22 @@
 }
 
 .previewText {
-    min-width: 92rem;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     gap: 3rem;
 }
 
 .previewText strong {
-    overflow: hidden;
     font-weight: 700;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    white-space: normal;
+    overflow-wrap: break-word;
+}
+
+.previewText .longLabel,
+.optionsRow .longLabel {
+    font-size: 11rem;
+    line-height: 14rem;
 }
 
 .previewText span,
@@ -265,6 +270,12 @@
     justify-content: space-between;
     gap: 12rem;
     padding: 4rem 3rem;
+}
+
+.optionsRow > span {
+    min-width: 0;
+    white-space: normal;
+    overflow-wrap: break-word;
 }
 
 .optionsButtons {

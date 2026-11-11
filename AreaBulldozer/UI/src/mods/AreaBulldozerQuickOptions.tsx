@@ -165,7 +165,7 @@ export function AreaBulldozerQuickOptions({ text, dragging, onDragStart }: Quick
                     <React.Fragment key={key}>
                         {withTooltip(
                             <div className={styles.optionsRow}>
-                                <span>{label}</span>
+                                <span className={label.length > 25 ? styles.longLabel : undefined}>{label}</span>
                                 <div className={styles.optionsButtons}>
                                     <button
                                         type="button"
@@ -187,7 +187,7 @@ export function AreaBulldozerQuickOptions({ text, dragging, onDragStart }: Quick
 
                 {withTooltip(
                     <div className={styles.optionsRow} role="group" aria-label={thresholdLabel}>
-                        <span>{thresholdLabel}</span>
+                        <span className={thresholdLabel.length > 25 ? styles.longLabel : undefined}>{thresholdLabel}</span>
                         <div className={styles.optionsButtons}>
                             <button
                                 type="button"

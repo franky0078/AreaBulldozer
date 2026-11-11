@@ -82,6 +82,34 @@ namespace AreaBulldozer
                 "it-IT",
                 new LocaleIT(Settings));
 
+            GameManager.instance.localizationManager.AddSource(
+                "ru-RU",
+                new LocaleRU(Settings));
+
+            GameManager.instance.localizationManager.AddSource(
+                "pl-PL",
+                new LocalePL(Settings));
+
+            GameManager.instance.localizationManager.AddSource(
+                "pt-BR",
+                new LocalePTBR(Settings));
+
+            GameManager.instance.localizationManager.AddSource(
+                "ja-JP",
+                new LocaleJA(Settings));
+
+            GameManager.instance.localizationManager.AddSource(
+                "ko-KR",
+                new LocaleKO(Settings));
+
+            GameManager.instance.localizationManager.AddSource(
+                "zh-HANS",
+                new LocaleZHHANS(Settings));
+
+            GameManager.instance.localizationManager.AddSource(
+                "zh-HANT",
+                new LocaleZHHANT(Settings));
+
             AssetDatabase.global.LoadSettings(
                 nameof(AreaBulldozer),
                 Settings,

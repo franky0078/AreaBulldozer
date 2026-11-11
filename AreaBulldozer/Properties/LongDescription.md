@@ -28,7 +28,7 @@ The freeform area allows you to create custom deletion zones of almost any shape
 
 The following object categories can be enabled or disabled individually:
 
-- Vegetation
+- Vegetation (incl. protect asset vegetation toggle)
 - Buildings
 - Roads
 - Pedestrian paths
@@ -36,7 +36,7 @@ The following object categories can be enabled or disabled individually:
 - Surfaces and areas
 - Props and markers
 - Missing Assets
-- Vehicles (moving and parked road vehicles)
+- Vehicles (moving and parked road vehicles) (automatically paused while the tool is active)
 
 Additional filters are available for:
 
@@ -48,6 +48,7 @@ Additional filters are available for:
 - Spawn locations
 - Asset lanes and sublanes
 - Height filters: All Heights, Above / On Terrain, and Below Terrain.
+- Tree Age Filter — Remove saplings, young, mature, or old trees from the selected area
 
 
 **Compatibility**

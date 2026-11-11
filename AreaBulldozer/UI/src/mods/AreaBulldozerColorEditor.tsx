@@ -292,7 +292,7 @@ export function AreaBulldozerColorEditor({
                     <div className={styles.previewArea}>
                         <div className={styles.previewShape} />
                         <div className={styles.previewText}>
-                            <strong>{activeColor.label}</strong>
+                            <strong className={activeColor.label.length > 20 ? styles.longLabel : undefined}>{activeColor.label}</strong>
                             <span>{colorHex}</span>
                         </div>
                     </div>
