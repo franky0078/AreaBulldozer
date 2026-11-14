@@ -34,6 +34,22 @@ $iconSize: 18rem;
     -webkit-appearance: none;
 }
 
+.selectionButtons,
+.selectionShapes {
+    display: flex;
+    align-items: center;
+}
+
+.selectionButtons {
+    max-width: 100%;
+    justify-content: space-between;
+}
+
+.selectionShapes {
+    justify-content: flex-end;
+    flex-wrap: wrap;
+}
+
 // Only wrapped filter rows need a small gap. Compensate the first row
 // so single-row controls and spacing between sections keep their layout.
 .filterButtons {
@@ -88,9 +104,10 @@ $iconSize: 18rem;
 
 .iconButtonDisabled,
 .iconButtonDisabled:hover {
-    border-color: rgba(160, 180, 196, 0.16);
-    background-color: rgba(6, 15, 22, 0.35);
-    color: rgba(190, 208, 222, 0.35);
+    opacity: 1;
+    border-color: rgba(174, 196, 214, 0.44);
+    background-color: rgba(12, 23, 31, 0.72);
+    color: #a6b8c6;
     cursor: default;
 }
 
@@ -146,7 +163,7 @@ $iconSize: 18rem;
 .iconButtonDisabled .iconGraphic svg line,
 .iconButtonDisabled .iconGraphic svg polyline,
 .iconButtonDisabled .iconGraphic svg polygon {
-    stroke: rgba(190, 208, 222, 0.35) !important;
+    stroke: #a6b8c6 !important;
 }
 
 .valueField {

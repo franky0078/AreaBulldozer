@@ -169,6 +169,8 @@ namespace AreaBulldozer.Localization
                 { "AreaBulldozer.UI.ToolOptionsProtectOwnedTooltip", "Защищает принадлежащие объекты, владелец которых не признан зданием или сетью." },
                 { "AreaBulldozer.UI.ToolOptionsConfirmTooltip", "Требуется второй клик в течение пяти секунд, когда выбран конфигурированный номер объектов. Форма выбора становится желтой, пока ожидается подтверждение." },
                 { "AreaBulldozer.UI.ToolOptionsThresholdTooltip", "Устанавливает количество выбранных объектов, для которых требуется второе подтверждение." },
+                { "AreaBulldozer.UI.UndoVegetation", "Восстановить растительность" },
+                { "AreaBulldozer.UI.UndoVegetationTooltip", "Восстанавливает растительность, удалённую последним действием, включая растения сохранившихся зданий и парков ({count})." },
                 { "AreaBulldozer.UI.ToolOptionsClose", "Закрыть настройки" },
                 { "AreaBulldozer.UI.CloseColorEditor", "Закрыть редактор цветов" },
                 { "AreaBulldozer.UI.ColorEditorTooltip", "Регулирует отбор, подтверждение, обратную связь с удалением, выбранную поверхность и недействительные цвета многоугольника с живым просмотром." },

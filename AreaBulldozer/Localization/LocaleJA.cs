@@ -169,6 +169,8 @@ namespace AreaBulldozer.Localization
                 { "AreaBulldozer.UI.ToolOptionsProtectOwnedTooltip", "建物やネットワークとして所有者が認識されていない所有物を保護する.この安全オプションは有効に維持されるべきです." },
                 { "AreaBulldozer.UI.ToolOptionsConfirmTooltip", "選択したオブジェクトが設定数に達すると、5秒以内にもう一度クリックする必要があります。確認待ちの間は選択範囲が黄色になります。" },
                 { "AreaBulldozer.UI.ToolOptionsThresholdTooltip", "選択されたオブジェクトの数を設定し,第二次確認が必要とする." },
+                { "AreaBulldozer.UI.UndoVegetation", "植生を復元" },
+                { "AreaBulldozer.UI.UndoVegetationTooltip", "直前の削除操作で取り除いた植生を復元します。現存する建物や公園の植生も対象です（{count} 個）。" },
                 { "AreaBulldozer.UI.ToolOptionsClose", "閉じるオプション" },
                 { "AreaBulldozer.UI.CloseColorEditor", "カラーエディタを閉じる" },
                 { "AreaBulldozer.UI.ColorEditorTooltip", "選択,確認,削除フィードバック,選択された表面,無効な多角色をライブプレビューで調整します." },

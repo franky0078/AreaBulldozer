@@ -25,6 +25,7 @@ export const BindingKeys = {
 
     setDeleteMissingAssets: "setDeleteMissingAssets",
     setDeleteTrees: "setDeleteTrees",
+    undoVegetation: "undoVegetation",
     setTreeAgeFilter: "setTreeAgeFilter",
     setIncludeOverriddenVegetation: "setIncludeOverriddenVegetation",
     setProtectAssetVegetation: "setProtectAssetVegetation",
@@ -68,6 +69,12 @@ export const isToolActive$ = bindValue<boolean>(
     mod.id,
     "isToolActive",
     false
+);
+
+export const vegetationUndoCount$ = bindValue<number>(
+    mod.id,
+    "vegetationUndoCount",
+    0
 );
 
 export const brushRadius$ = bindValue<number>(mod.id, "brushRadius", 30);

@@ -9,7 +9,7 @@ namespace AreaBulldozer.Tools
     public partial class AreaBulldozerToolSystem
     {
 
-        private void DeleteSelectedObjects()
+        private void DeleteSelectedObjects(bool continueUndoStroke = false)
         {
             if (!HasValidPosition)
             {
@@ -467,6 +467,11 @@ namespace AreaBulldozer.Tools
             HashSet<Entity> queuedUpdatedEntities =
                 new();
 
+            if (!continueUndoStroke)
+            {
+                m_VegetationUndo.Clear();
+            }
+
             int queuedCount = 0;
 
             HashSet<Entity> deletedRoadNodes =
@@ -520,12 +525,15 @@ namespace AreaBulldozer.Tools
                         commandBuffer);
                 }
 
-                QueueDeletedComponent(
-                    entity,
-                    queuedDeletedEntities,
-                    commandBuffer);
+                if (QueueDeletedComponent(entity, queuedDeletedEntities, commandBuffer))
+                {
+                    if (filters.DeleteTrees)
+                    {
+                        RecordVegetationForUndo(entity);
+                    }
 
-                queuedCount++;
+                    queuedCount++;
+                }
             }
 
             if (m_ContinuousDeleteActive)
@@ -826,7 +834,7 @@ namespace AreaBulldozer.Tools
                 commandBuffer);
         }
 
-        private void QueueDeletedComponent(
+        private bool QueueDeletedComponent(
             Entity entity,
             HashSet<Entity> queuedDeletedEntities,
             EntityCommandBuffer commandBuffer)
@@ -836,11 +844,11 @@ namespace AreaBulldozer.Tools
                 EntityManager.HasComponent<Deleted>(entity) ||
                 !queuedDeletedEntities.Add(entity))
             {
-                return;
+                return false;
             }
 
-            commandBuffer.AddComponent<Deleted>(
-                entity);
+            commandBuffer.AddComponent<Deleted>(entity);
+            return true;
         }
 
         private void QueueUpdatedComponent(

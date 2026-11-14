@@ -169,6 +169,8 @@ namespace AreaBulldozer.Localization
                 { "AreaBulldozer.UI.ToolOptionsProtectOwnedTooltip", "건물이나 네트워크로 소유자가 인정되지 않은 소유물들을 보호합니다. 이 안전 옵션은 여전히 활성화되어 있어야 합니다." },
                 { "AreaBulldozer.UI.ToolOptionsConfirmTooltip", "선택한 오브젝트가 설정한 수에 도달하면 5초 안에 한 번 더 클릭해야 합니다. 확인을 기다리는 동안 선택 영역이 노란색으로 표시됩니다." },
                 { "AreaBulldozer.UI.ToolOptionsThresholdTooltip", "선택된 개체 수를 두 번째 확인이 필요합니다." },
+                { "AreaBulldozer.UI.UndoVegetation", "식생 복원" },
+                { "AreaBulldozer.UI.UndoVegetationTooltip", "마지막 삭제 작업에서 제거한 식생을 복원합니다. 남아 있는 건물과 공원의 식생도 복원합니다({count}개)." },
                 { "AreaBulldozer.UI.ToolOptionsClose", "닫힌 옵션" },
                 { "AreaBulldozer.UI.CloseColorEditor", "꽉 차 있는 색상 편집기" },
                 { "AreaBulldozer.UI.ColorEditorTooltip", "선택, 확인, 삭제 피드백, 선택된 표면 및 라이브 미리보기를 가진 잘못된 다각형 색상을 조정합니다." },

@@ -22,8 +22,8 @@ namespace AreaBulldozer.Tools
         private float m_SpatialLastRefreshRebuildTime;
 
         private SpatialCandidateIndex m_SpatialIndex;
-        private readonly HashSet<Entity> m_SpatialAssetVegetation = new();
-        private bool m_SpatialAssetVegetationProtectionEnabled;
+        private readonly Dictionary<Entity, Entity> m_SpatialAssetVegetation = new();
+        private bool m_SpatialAssetVegetationIndexed;
 
         private bool m_SpatialIndexReady;
         private int m_SpatialIndexedObjectCount;
@@ -106,12 +106,12 @@ namespace AreaBulldozer.Tools
             ClearSpatialIndex();
             m_SpatialMissingAssetsEnabled = Mod.Settings?.DeleteMissingAssets ?? false;
             m_SpatialCarsEnabled = Mod.Settings?.DeleteCars ?? false;
-            m_SpatialAssetVegetationProtectionEnabled = IsAssetVegetationProtectionEnabled;
+            m_SpatialAssetVegetationIndexed = NeedsAssetVegetationIndex;
 
             System.Diagnostics.Stopwatch stopwatch =
                 System.Diagnostics.Stopwatch.StartNew();
 
-            if (m_SpatialAssetVegetationProtectionEnabled)
+            if (m_SpatialAssetVegetationIndexed)
             {
                 IndexAssetVegetation();
             }
@@ -265,17 +265,16 @@ namespace AreaBulldozer.Tools
 
         private bool m_SpatialMissingAssetsEnabled;
 
-        private bool IsAssetVegetationProtectionEnabled =>
-            Mod.Settings is Setting settings &&
-            settings.DeleteTrees &&
-            settings.ProtectAssetVegetation;
+        // Undo must identify asset vegetation even with the protection toggle off.
+        private bool NeedsAssetVegetationIndex =>
+            Mod.Settings?.DeleteTrees ?? false;
 
         private void EnsureSpatialIndexReady()
         {
             if (!m_SpatialIndexReady ||
                 m_SpatialMissingAssetsEnabled != (Mod.Settings?.DeleteMissingAssets ?? false) ||
                 m_SpatialCarsEnabled != (Mod.Settings?.DeleteCars ?? false) ||
-                m_SpatialAssetVegetationProtectionEnabled != IsAssetVegetationProtectionEnabled)
+                m_SpatialAssetVegetationIndexed != NeedsAssetVegetationIndex)
             {
                 RebuildSpatialIndex();
             }
@@ -286,7 +285,7 @@ namespace AreaBulldozer.Tools
             return
                 (m_SpatialMissingAssetsEnabled ? m_MissingAssetObjectQuery.CalculateEntityCount() : 0) +
                 m_PlantQuery.CalculateEntityCount() +
-                (m_SpatialAssetVegetationProtectionEnabled ? m_SubObjectOwnerQuery.CalculateEntityCount() : 0) +
+                (m_SpatialAssetVegetationIndexed ? m_SubObjectOwnerQuery.CalculateEntityCount() : 0) +
                 m_BuildingQuery.CalculateEntityCount() +
                 (m_SpatialCarsEnabled ? m_CarQuery.CalculateEntityCount() : 0) +
                 m_RoadEdgeQuery.CalculateEntityCount() +
@@ -450,7 +449,12 @@ namespace AreaBulldozer.Tools
                         !EntityManager.HasComponent<Owner>(plant) &&
                         EntityManager.HasComponent<Plant>(plant))
                     {
-                        m_SpatialAssetVegetation.Add(plant);
+                        // A plant shared by multiple buffers cannot be restored to an unambiguous parent.
+                        m_SpatialAssetVegetation[plant] =
+                            m_SpatialAssetVegetation.TryGetValue(plant, out Entity indexedParent) &&
+                            indexedParent != parent
+                                ? Entity.Null
+                                : parent;
                     }
                 }
             }

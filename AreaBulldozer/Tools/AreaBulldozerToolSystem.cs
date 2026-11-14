@@ -631,6 +631,15 @@ namespace AreaBulldozer.Tools
             base.OnDestroy();
         }
 
+        protected override void OnGameLoadingComplete(
+            Colossal.Serialization.Entities.Purpose purpose,
+            GameMode mode)
+        {
+            base.OnGameLoadingComplete(purpose, mode);
+            m_VegetationUndo.Clear();
+            m_VegetationUndoRequested = false;
+        }
+
         protected override void OnStartRunning()
         {
             base.OnStartRunning();
@@ -703,6 +712,7 @@ namespace AreaBulldozer.Tools
 
         protected override void OnStopRunning()
         {
+            m_VegetationUndoRequested = false;
             requireUnderground = false;
             m_HeightClassifications.Clear();
             m_ApplyAction?.Disable();
@@ -913,6 +923,7 @@ namespace AreaBulldozer.Tools
             UpdateHeightView();
             ObserveCarFilterPauseOverride();
             CleanupPendingDeletions();
+            bool undoClicked = ProcessVegetationUndo();
             RefreshSpatialIndexIfNeeded();
             UpdateLargeSelectionConfirmationState();
             UpdateMarkerVisibility();
@@ -936,7 +947,10 @@ namespace AreaBulldozer.Tools
             UpdateSquareRotationInput();
             UpdateSelectionPreviewIfNeeded();
 
-            UpdateContinuousDeleteInput();
+            if (!undoClicked)
+            {
+                UpdateContinuousDeleteInput();
+            }
 
             return DrawToolShape(inputDeps);
         }

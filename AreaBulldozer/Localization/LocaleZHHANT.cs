@@ -169,6 +169,8 @@ namespace AreaBulldozer.Localization
                 { "AreaBulldozer.UI.ToolOptionsProtectOwnedTooltip", "保護所有物件,其所有者並不被認為是建築物或網路." },
                 { "AreaBulldozer.UI.ToolOptionsConfirmTooltip", "選取的物件達到設定數量時，須在5秒內再次點擊。等待確認期間，選取範圍會顯示為黃色。" },
                 { "AreaBulldozer.UI.ToolOptionsThresholdTooltip", "設定需要第二次確認的選項物件數量." },
+                { "AreaBulldozer.UI.UndoVegetation", "還原植被" },
+                { "AreaBulldozer.UI.UndoVegetationTooltip", "還原上一次刪除的植被，包括仍然存在的建築物和公園所屬的植物（{count} 株）。" },
                 { "AreaBulldozer.UI.ToolOptionsClose", "關閉選項" },
                 { "AreaBulldozer.UI.CloseColorEditor", "密切的顏色編輯器" },
                 { "AreaBulldozer.UI.ColorEditorTooltip", "調整選擇、 確認、 刪除回應、 選取的表面、 以及使用實用預覽的無效多邊形顏色 。" },

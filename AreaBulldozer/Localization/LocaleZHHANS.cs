@@ -169,6 +169,8 @@ namespace AreaBulldozer.Localization
                 { "AreaBulldozer.UI.ToolOptionsProtectOwnedTooltip", "保护所有者不被确认为建筑物或网络的自有物体。 此安全选项应该继续启用 。" },
                 { "AreaBulldozer.UI.ToolOptionsConfirmTooltip", "选中的对象达到设定数量时，须在5秒内再次点击。等待确认期间，选区会显示为黄色。" },
                 { "AreaBulldozer.UI.ToolOptionsThresholdTooltip", "设定需要第二次确认的选定的对象数量." },
+                { "AreaBulldozer.UI.UndoVegetation", "恢复植被" },
+                { "AreaBulldozer.UI.UndoVegetationTooltip", "恢复上一次删除的植被，包括仍然存在的建筑和公园所属的植物（{count} 株）。" },
                 { "AreaBulldozer.UI.ToolOptionsClose", "关闭选项" },
                 { "AreaBulldozer.UI.CloseColorEditor", "密切的颜色编辑器" },
                 { "AreaBulldozer.UI.ColorEditorTooltip", "调整选择、确认、删除反馈、选定表面和无效的多边形颜色,并预览。" },

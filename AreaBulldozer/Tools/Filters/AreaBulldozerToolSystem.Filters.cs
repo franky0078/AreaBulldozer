@@ -102,7 +102,7 @@ namespace AreaBulldozer.Tools
             if (candidate.IsVegetation &&
                 filters.ProtectAssetVegetation &&
                 (scope != OwnerScope.None ||
-                 m_SpatialAssetVegetation.Contains(candidate.Entity)))
+                 m_SpatialAssetVegetation.ContainsKey(candidate.Entity)))
             {
                 return true;
             }

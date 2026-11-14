@@ -41,7 +41,8 @@
 		- Optional launcher button in the universal mod menu
 		- Color editor options for customizing selection shapes and preview
 		- Configurable keyboard shortcut
-		- All ingame languages are supported. The interface follows the game's language setting.
+		- All ingame languages are supported. The interface follows the game's language setting
+		- Undo Button restores freestanding trees and bushes as well as vegetation belonging to buildings and parks that are still present
 
 		**Object filters**
 
@@ -157,7 +158,7 @@
 	<ForumLink Value="https://forum.paradoxplaza.com/forum/threads/mod-area-bulldozer-area-deletion-tool-with-object-filters.1937211/" />
 
 	<!-- Mod version -->
-	<ModVersion Value="1.9.5" />
+	<ModVersion Value="2.0.0" />
 
 	<!--
 	Recommended game version.
@@ -188,7 +189,8 @@
 	<ChangeLog>
 		Latest changes
 
-		- added language support for all ingame languages
+		- added an Undo button that restores vegetation removed in the last bulldoze action, including an entire click-and-drag brush stroke.
+		  Undo restores freestanding trees and bushes as well as vegetation belonging to buildings and parks that are still present.
 	</ChangeLog>
 
 	<!--Optional external links for your own mod.-->

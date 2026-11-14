@@ -135,6 +135,8 @@ namespace AreaBulldozer.Localization
                 { "AreaBulldozer.UI.ToolOptionsProtectOwnedTooltip", "Protege objetos cuyo propietario no se reconoce como edificio o red. Se recomienda mantener activada esta opción de seguridad." },
                 { "AreaBulldozer.UI.ToolOptionsConfirmTooltip", "Requiere un segundo clic en un plazo de cinco segundos cuando se selecciona la cantidad configurada de objetos. La forma se vuelve amarilla mientras espera confirmación." },
                 { "AreaBulldozer.UI.ToolOptionsThresholdTooltip", "Establece el número de objetos seleccionados a partir del cual se requiere una segunda confirmación." },
+                { "AreaBulldozer.UI.UndoVegetation", "Restaurar vegetación" },
+                { "AreaBulldozer.UI.UndoVegetationTooltip", "Restaura la vegetación eliminada en la última operación, incluidas las plantas de edificios y parques que aún existen ({count})." },
                 { "AreaBulldozer.UI.ToolOptionsClose", "Cerrar opciones" },
                 { "AreaBulldozer.UI.CloseColorEditor", "Cerrar editor de colores" },
                 { "AreaBulldozer.UI.ColorEditorTooltip", "Ajusta los colores de selección, confirmación, eliminación, superficies seleccionadas y polígonos no válidos con una vista previa inmediata." },

@@ -148,7 +148,7 @@ namespace AreaBulldozer.Tools
                 return;
             }
 
-            DeleteSelectedObjects();
+            DeleteSelectedObjects(continueUndoStroke: true);
 
             m_LastContinuousDeletePosition =
                 CurrentPosition;

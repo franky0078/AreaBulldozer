@@ -33,6 +33,8 @@ namespace AreaBulldozer.UISystems
 
         public const string DeleteMissingAssets = "deleteMissingAssets";
         public const string DeleteTrees = "deleteTrees";
+        public const string VegetationUndoCount = "vegetationUndoCount";
+        public const string UndoVegetation = "undoVegetation";
         public const string TreeAgeFilter = "treeAgeFilter";
         public const string IncludeOverriddenVegetation = "includeOverriddenVegetation";
         public const string ProtectAssetVegetation = "protectAssetVegetation";

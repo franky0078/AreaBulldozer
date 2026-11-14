@@ -93,6 +93,10 @@ namespace AreaBulldozer.UISystems
                     () => m_Tool != null && m_Tool.IsToolActive));
 
             AddUpdateBinding(new GetterValueBinding<int>(group,
+                AreaBulldozerUIBindingConstants.VegetationUndoCount,
+                () => m_Tool?.VegetationUndoCount ?? 0));
+
+            AddUpdateBinding(new GetterValueBinding<int>(group,
                 AreaBulldozerUIBindingConstants.HeightFilter,
                 () => (int)(Mod.Settings?.HeightFilter ?? AreaBulldozerHeightFilter.All)));
             AddUpdateBinding(new GetterValueBinding<bool>(group,
@@ -346,6 +350,10 @@ namespace AreaBulldozer.UISystems
         {
             string group =
                 AreaBulldozerUIBindingConstants.ModId;
+
+            AddBinding(new TriggerBinding(group,
+                AreaBulldozerUIBindingConstants.UndoVegetation,
+                () => m_Tool?.RequestVegetationUndo()));
 
             AddBinding(new TriggerBinding<int>(group,
                 AreaBulldozerUIBindingConstants.SetHeightFilter, value =>

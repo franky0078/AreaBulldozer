@@ -40,6 +40,7 @@ import {
     squareRotationDegrees$,
     uiScale$,
     useCompactToolPanel$,
+    vegetationUndoCount$,
 } from "../bindings";
 import {
     toggleToolWindow,
@@ -54,6 +55,7 @@ const SHAPE_TRIANGLE = 2;
 const SHAPE_POLYLINE = 4;
 
 const VANILLA_BULLDOZER_LAUNCHER_MODE = 1;
+const MAIN_FILTER_COLUMNS = 8;
 
 const freeAreaPolygon$ = bindValue<boolean>(
     mod.id,
@@ -99,6 +101,10 @@ interface IconToolButtonProps {
     onSelect: () => void;
 }
 
+function iconButtonSize(compact: boolean, scale: number): number {
+    return Number(((compact ? 28 : 32) * scale).toFixed(1));
+}
+
 function IconToolButton({
     icon,
     selected = false,
@@ -113,7 +119,7 @@ function IconToolButton({
     const tooltipTheme = resolver.descriptionTooltipTheme;
     const Tooltip = resolver.Tooltip;
     const { scale, compact } = React.useContext(ToolPanelContext);
-    const buttonSize = (compact ? 28 : 32) * scale;
+    const buttonSize = iconButtonSize(compact, scale);
 
     const buttonStyle: React.CSSProperties = {
         width: `${buttonSize.toFixed(1)}rem`,
@@ -223,7 +229,7 @@ function Stepper({
         VanillaComponentResolver.instance.mouseToolOptionsTheme?.numberField;
 
     const { scale, compact } = React.useContext(ToolPanelContext);
-    const buttonSize = (compact ? 28 : 32) * scale;
+    const buttonSize = iconButtonSize(compact, scale);
 
     const fieldWidth = wide ? 84 : narrow ? BASE_FIELD * 0.85 : BASE_FIELD;
     const fontSize = compact ? 11 : 12;
@@ -284,6 +290,7 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
         const toolWindow = useToolWindow();
         const colorEditorOpen = toolWindow === "colors";
         const compact = useSafeValue("useCompactToolPanel$", useCompactToolPanel$, false);
+        const vegetationUndoCount = useSafeValue("vegetationUndoCount$", vegetationUndoCount$, 0);
 
         const brushRadius = useSafeValue(
             "brushRadius$",
@@ -668,66 +675,83 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
                 )}
 
                 <CompactToolSection title={text("Selection", "Auswahl")}>
-                    <IconToolButton
-                        icon="circle"
-                        selected={isCircle}
-                        tooltipTitle={text("Circle", "Kreis")}
-                        tooltipText={text(
-                            "CircleTooltip",
-                            "Runde Auswahlfläche um den Mauszeiger."
-                        )}
-                        onSelect={() => setShape(SHAPE_CIRCLE)}
-                    />
+                    <div
+                        className={styles.selectionButtons}
+                        style={{ width: `${MAIN_FILTER_COLUMNS * (iconButtonSize(compact, scale) + 4)}rem` }}
+                    >
+                        <IconToolButton
+                            icon="undo"
+                            disabled={vegetationUndoCount === 0}
+                            tooltipTitle={text("UndoVegetation", "Vegetation wiederherstellen")}
+                            tooltipText={text(
+                                "UndoVegetationTooltip",
+                                "Stellt Vegetation aus der letzten Löschaktion wieder her, einschließlich Pflanzen an noch vorhandenen Gebäuden und Parks ({count})."
+                            ).replace("{count}", String(vegetationUndoCount))}
+                            onSelect={() => trigger(mod.id, BindingKeys.undoVegetation)}
+                        />
+                        <div className={styles.selectionShapes}>
+                            <IconToolButton
+                                icon="circle"
+                                selected={isCircle}
+                                tooltipTitle={text("Circle", "Kreis")}
+                                tooltipText={text(
+                                    "CircleTooltip",
+                                    "Runde Auswahlfläche um den Mauszeiger."
+                                )}
+                                onSelect={() => setShape(SHAPE_CIRCLE)}
+                            />
 
-                    <IconToolButton
-                        icon="square"
-                        selected={isSquare}
-                        tooltipTitle={text("Square", "Quadrat")}
-                        tooltipText={text(
-                            "SquareTooltip",
-                            "Quadratische Auswahlfläche, drehbar mit gehaltener rechter Maustaste."
-                        )}
-                        onSelect={() => setShape(SHAPE_SQUARE)}
-                    />
+                            <IconToolButton
+                                icon="square"
+                                selected={isSquare}
+                                tooltipTitle={text("Square", "Quadrat")}
+                                tooltipText={text(
+                                    "SquareTooltip",
+                                    "Quadratische Auswahlfläche, drehbar mit gehaltener rechter Maustaste."
+                                )}
+                                onSelect={() => setShape(SHAPE_SQUARE)}
+                            />
 
-                    <IconToolButton
-                        icon="triangle"
-                        selected={isTriangle}
-                        tooltipTitle={text("Triangle", "Dreieck")}
-                        tooltipText={text(
-                            "TriangleTooltip",
-                            "Gleichseitige Auswahlfläche. Größe wie beim normalen Pinsel; mit gehaltener rechter Maustaste drehbar."
-                        )}
-                        onSelect={() => setShape(SHAPE_TRIANGLE)}
-                    />
+                            <IconToolButton
+                                icon="triangle"
+                                selected={isTriangle}
+                                tooltipTitle={text("Triangle", "Dreieck")}
+                                tooltipText={text(
+                                    "TriangleTooltip",
+                                    "Gleichseitige Auswahlfläche. Größe wie beim normalen Pinsel; mit gehaltener rechter Maustaste drehbar."
+                                )}
+                                onSelect={() => setShape(SHAPE_TRIANGLE)}
+                            />
 
-                    <IconToolButton
-                        icon="polyline"
-                        selected={isPolyline}
-                        tooltipTitle={text(
-                            "MultiPointLine",
-                            "Mehrpunktlinie"
-                        )}
-                        tooltipText={text(
-                            "MultiPointLineTooltip",
-                            "2 bis 15 Punkte mit geraden oder abgerundeten Übergängen. Linksklick setzt Punkte, Doppelklick schließt ab und löscht. Rechtsklick entfernt den letzten Punkt, Esc bricht ab."
-                        )}
-                        onSelect={() => setShape(SHAPE_POLYLINE)}
-                    />
+                            <IconToolButton
+                                icon="polyline"
+                                selected={isPolyline}
+                                tooltipTitle={text(
+                                    "MultiPointLine",
+                                    "Mehrpunktlinie"
+                                )}
+                                tooltipText={text(
+                                    "MultiPointLineTooltip",
+                                    "2 bis 15 Punkte mit geraden oder abgerundeten Übergängen. Linksklick setzt Punkte, Doppelklick schließt ab und löscht. Rechtsklick entfernt den letzten Punkt, Esc bricht ab."
+                                )}
+                                onSelect={() => setShape(SHAPE_POLYLINE)}
+                            />
 
-                    <IconToolButton
-                        icon="polygon"
-                        selected={isFreeAreaPolygon}
-                        tooltipTitle={text(
-                            "FreeAreaPolygon",
-                            "Freie Fläche"
-                        )}
-                        tooltipText={text(
-                            "FreeAreaPolygonTooltip",
-                            "Beliebig viele Eckpunkte definieren eine freie Löschfläche. Linksklick setzt Punkte. Klick auf den ersten Punkt oder Doppelklick schließt das Polygon und löscht den Inhalt. Rechtsklick entfernt den letzten Punkt, Esc verwirft die Auswahl."
-                        )}
-                        onSelect={setFreeAreaPolygon}
-                    />
+                            <IconToolButton
+                                icon="polygon"
+                                selected={isFreeAreaPolygon}
+                                tooltipTitle={text(
+                                    "FreeAreaPolygon",
+                                    "Freie Fläche"
+                                )}
+                                tooltipText={text(
+                                    "FreeAreaPolygonTooltip",
+                                    "Beliebig viele Eckpunkte definieren eine freie Löschfläche. Linksklick setzt Punkte. Klick auf den ersten Punkt oder Doppelklick schließt das Polygon und löscht den Inhalt. Rechtsklick entfernt den letzten Punkt, Esc verwirft die Auswahl."
+                                )}
+                                onSelect={setFreeAreaPolygon}
+                            />
+                        </div>
+                    </div>
                 </CompactToolSection>
 
                 {!isFreeAreaPolygon && (

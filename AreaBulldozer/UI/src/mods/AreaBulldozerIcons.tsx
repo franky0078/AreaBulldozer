@@ -15,6 +15,7 @@ export type AreaBulldozerIconType =
     | "straight"
     | "curve"
     | "missingAsset"
+    | "undo"
     | "vegetation"
     | "protectVegetation"
     | "anarchy"
@@ -63,6 +64,13 @@ export function AreaBulldozerIcon({ type }: { type: AreaBulldozerIconType }) {
                         <><path d="M5 24q11-12 22 0-11 12-22 0Z" /><circle cx="16" cy="24" r="3" /></>}
                 </svg>
             );
+        case "undo":
+            return (
+                <svg {...common}>
+                    <path d="M11 5l-7 7 7 7 M4 12h15a7.5 7.5 0 0 1 0 15h-5" />
+                </svg>
+            );
+
         case "protectVegetation":
             return (
                 <svg {...common}>
