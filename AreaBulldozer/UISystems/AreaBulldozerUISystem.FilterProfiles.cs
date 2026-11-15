@@ -76,9 +76,8 @@ namespace AreaBulldozer.UISystems
             FilterProfilesEnabled && Mod.Settings is Setting setting && m_ActiveFilterProfileId.Length > 0 &&
             FindFilterProfile(m_ActiveFilterProfileId) is FilterProfile profile &&
             (FilterProfile.Capture(setting) != profile.Filters ||
-             (profile.Brush.HasValue
-                ? !profile.Brush.Value.Matches(ProfilePolygonSystem.CaptureProfileBrush(setting))
-                : Array.IndexOf(FilterProfile.Presets, profile) < 0));
+             !profile.Brush.HasValue ||
+             !profile.Brush.Value.Matches(ProfilePolygonSystem.CaptureProfileBrush(setting)));
 
         private void LoadFilterProfile(string id)
         {

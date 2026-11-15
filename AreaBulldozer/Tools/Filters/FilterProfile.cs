@@ -44,14 +44,20 @@ namespace AreaBulldozer.Tools
         private const int LooseProps = (1 << 9) | (1 << 10) | (1 << 21);
         private const int DefaultProtection = (1 << 19) | (1 << 20);
 
+        private static readonly BrushSettings DefaultPresetBrush =
+            new(AreaBulldozerSelectionShape.Circle, 30, 10, 50, 0, curved: false, polygon: false);
+
         internal static readonly FilterProfile[] Presets =
         {
-            new("deadTrees", "", DefaultProtection | Trees | ((int)AreaBulldozerTreeAgeFilter.Dead << TreeAgeShift)),
-            new("vegetation", "", DefaultProtection | Trees),
-            new("missingAssets", "", DefaultProtection | MissingAssets),
-            new("looseProps", "", DefaultProtection | LooseProps),
-            new("undergroundRail", "", DefaultProtection | Railways | ((int)AreaBulldozerHeightFilter.BelowGround << HeightShift))
+            CreatePreset("deadTrees", DefaultProtection | Trees | ((int)AreaBulldozerTreeAgeFilter.Dead << TreeAgeShift)),
+            CreatePreset("vegetation", DefaultProtection | Trees),
+            CreatePreset("missingAssets", DefaultProtection | MissingAssets),
+            CreatePreset("looseProps", DefaultProtection | LooseProps),
+            CreatePreset("undergroundRail", DefaultProtection | Railways | ((int)AreaBulldozerHeightFilter.BelowGround << HeightShift))
         };
+
+        private static FilterProfile CreatePreset(string id, int filters) =>
+            new(id, "", filters) { Brush = DefaultPresetBrush };
 
         internal string Id { get; }
         internal string Name { get; set; }
