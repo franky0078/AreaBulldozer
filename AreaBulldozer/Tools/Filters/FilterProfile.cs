@@ -1,0 +1,142 @@
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+
+namespace AreaBulldozer.Tools
+{
+    internal sealed class FilterProfile
+    {
+        internal const int MaxNameLength = 40;
+
+        private const int HeightShift = 22;
+        private const int TreeAgeShift = 24;
+
+        // Keep the order stable: each entry is one bit in the saved profile format.
+        private static readonly (Func<Setting, bool> Read, Action<Setting, bool> Write)[] Flags =
+        {
+            (s => s.DeleteTrees, (s, value) => s.DeleteTrees = value),
+            (s => s.DeleteMissingAssets, (s, value) => s.DeleteMissingAssets = value),
+            (s => s.IncludeOverriddenVegetation, (s, value) => s.IncludeOverriddenVegetation = value),
+            (s => s.DeleteBuildings, (s, value) => s.DeleteBuildings = value),
+            (s => s.DeleteCars, (s, value) => s.DeleteCars = value),
+            (s => s.DeleteRoads, (s, value) => s.DeleteRoads = value),
+            (s => s.DeletePaths, (s, value) => s.DeletePaths = value),
+            (s => s.DeleteRailways, (s, value) => s.DeleteRailways = value),
+            (s => s.DeleteSurfaces, (s, value) => s.DeleteSurfaces = value),
+            (s => s.DeleteStaticObjects, (s, value) => s.DeleteStaticObjects = value),
+            (s => s.DeleteGeneralProps, (s, value) => s.DeleteGeneralProps = value),
+            (s => s.DeleteStreetLights, (s, value) => s.DeleteStreetLights = value),
+            (s => s.DeleteQuantityObjects, (s, value) => s.DeleteQuantityObjects = value),
+            (s => s.DeleteBrandingObjects, (s, value) => s.DeleteBrandingObjects = value),
+            (s => s.DeleteActivityLocations, (s, value) => s.DeleteActivityLocations = value),
+            (s => s.DeleteSpawnLocations, (s, value) => s.DeleteSpawnLocations = value),
+            (s => s.DeleteMarkerNetworks, (s, value) => s.DeleteMarkerNetworks = value),
+            (s => s.DeleteBuildingSubObjects, (s, value) => s.DeleteBuildingSubObjects = value),
+            (s => s.DeleteNetworkSubObjects, (s, value) => s.DeleteNetworkSubObjects = value),
+            (s => s.ProtectOwnedObjects, (s, value) => s.ProtectOwnedObjects = value),
+            (s => s.ProtectAssetVegetation, (s, value) => s.ProtectAssetVegetation = value),
+            (s => s.LooseGeneralPropsOnly, (s, value) => s.LooseGeneralPropsOnly = value)
+        };
+
+        private const int Trees = 1 << 0;
+        private const int MissingAssets = 1 << 1;
+        private const int Railways = 1 << 7;
+        private const int LooseProps = (1 << 9) | (1 << 10) | (1 << 21);
+        private const int DefaultProtection = (1 << 19) | (1 << 20);
+
+        internal static readonly FilterProfile[] Presets =
+        {
+            new("deadTrees", "", DefaultProtection | Trees | ((int)AreaBulldozerTreeAgeFilter.Dead << TreeAgeShift)),
+            new("vegetation", "", DefaultProtection | Trees),
+            new("missingAssets", "", DefaultProtection | MissingAssets),
+            new("looseProps", "", DefaultProtection | LooseProps),
+            new("undergroundRail", "", DefaultProtection | Railways | ((int)AreaBulldozerHeightFilter.BelowGround << HeightShift))
+        };
+
+        internal string Id { get; }
+        internal string Name { get; set; }
+        internal int Filters { get; set; }
+
+        internal FilterProfile(string id, string name, int filters)
+        {
+            Id = id;
+            Name = name;
+            Filters = filters;
+        }
+
+        internal static int Capture(Setting setting)
+        {
+            int filters = ((int)setting.HeightFilter << HeightShift) |
+                ((int)setting.TreeAgeFilter << TreeAgeShift);
+
+            for (int index = 0; index < Flags.Length; index++)
+            {
+                if (Flags[index].Read(setting))
+                {
+                    filters |= 1 << index;
+                }
+            }
+
+            return filters;
+        }
+
+        internal void Apply(Setting setting)
+        {
+            setting.HeightFilter = (AreaBulldozerHeightFilter)((Filters >> HeightShift) & 3);
+            setting.TreeAgeFilter = (AreaBulldozerTreeAgeFilter)((Filters >> TreeAgeShift) & 7);
+
+            for (int index = 0; index < Flags.Length; index++)
+            {
+                Flags[index].Write(setting, (Filters & (1 << index)) != 0);
+            }
+        }
+
+        internal static bool IsValidName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name) || name.Length > MaxNameLength)
+            {
+                return false;
+            }
+
+            foreach (char character in name)
+            {
+                if (char.IsControl(character))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        internal static List<FilterProfile> ReadCustomProfiles(string stored)
+        {
+            var profiles = new List<FilterProfile>();
+            var ids = new HashSet<string>(StringComparer.Ordinal);
+            var names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (string row in (stored ?? "").Split('\n'))
+            {
+                string[] columns = row.Split('\t');
+                if (columns.Length != 3 ||
+                    !Guid.TryParseExact(columns[0], "N", out _) ||
+                    !IsValidName(columns[1]) ||
+                    !int.TryParse(columns[2], NumberStyles.None, CultureInfo.InvariantCulture, out int filters) ||
+                    filters >= 1 << (TreeAgeShift + 3) ||
+                    ((filters >> HeightShift) & 3) > (int)AreaBulldozerHeightFilter.BelowGround ||
+                    ((filters >> TreeAgeShift) & 7) > (int)AreaBulldozerTreeAgeFilter.Dead ||
+                    ids.Contains(columns[0]) || names.Contains(columns[1]))
+                {
+                    continue;
+                }
+
+                ids.Add(columns[0]);
+                names.Add(columns[1]);
+                profiles.Add(new FilterProfile(columns[0], columns[1], filters));
+            }
+
+            return profiles;
+        }
+
+        internal string Serialize() => Id + "\t" + Name + "\t" + Filters.ToString(CultureInfo.InvariantCulture);
+    }
+}

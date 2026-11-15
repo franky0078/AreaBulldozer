@@ -26,6 +26,7 @@ namespace AreaBulldozer.Tools
 
         // Unterkategorien statischer Objekte und Marker
         public readonly bool DeleteGeneralProps;
+        public readonly bool LooseGeneralPropsOnly;
         public readonly bool DeleteStreetLights;
         public readonly bool DeleteQuantityObjects;
         public readonly bool DeleteBrandingObjects;
@@ -74,6 +75,7 @@ namespace AreaBulldozer.Tools
 
             DeleteGeneralProps =
                 settings.DeleteGeneralProps;
+            LooseGeneralPropsOnly = settings.LooseGeneralPropsOnly;
 
             DeleteStreetLights =
                 settings.DeleteStreetLights;
@@ -141,6 +143,7 @@ namespace AreaBulldozer.Tools
                 DeleteSurfaces == other.DeleteSurfaces &&
                 DeleteStaticObjects == other.DeleteStaticObjects &&
                 DeleteGeneralProps == other.DeleteGeneralProps &&
+                LooseGeneralPropsOnly == other.LooseGeneralPropsOnly &&
                 DeleteStreetLights == other.DeleteStreetLights &&
                 DeleteQuantityObjects == other.DeleteQuantityObjects &&
                 DeleteBrandingObjects == other.DeleteBrandingObjects &&
@@ -175,6 +178,7 @@ namespace AreaBulldozer.Tools
             hash |= DeleteSurfaces ? 1 << 5 : 0;
             hash |= DeleteStaticObjects ? 1 << 6 : 0;
             hash |= DeleteGeneralProps ? 1 << 7 : 0;
+            hash |= LooseGeneralPropsOnly ? 1 << 25 : 0;
             hash |= DeleteStreetLights ? 1 << 8 : 0;
             hash |= DeleteQuantityObjects ? 1 << 9 : 0;
             hash |= DeleteBrandingObjects ? 1 << 10 : 0;

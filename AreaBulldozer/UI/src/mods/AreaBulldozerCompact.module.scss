@@ -193,3 +193,120 @@ $iconSize: 18rem;
 .valueFieldNarrow {
     min-width: 42rem;
 }
+
+.profileControl {
+    width: 218rem;
+    max-width: 100%;
+    box-sizing: border-box;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0 2rem;
+    margin-left: auto;
+    color: #e3eef8;
+    font-size: 12rem;
+    line-height: 1.2;
+}
+
+.profileControl button,
+.profileEditor input {
+    border: 1rem solid rgba(190, 213, 232, 0.35);
+    border-radius: 4rem;
+    background: rgba(6, 15, 22, 0.9);
+    color: #eff6fb !important;
+    padding: 3rem 6rem;
+    min-height: 22rem;
+    font-size: 12rem;
+    line-height: 1.2;
+}
+
+.profileControl button:enabled:hover {
+    background: #345269;
+}
+
+.profileControl button:disabled {
+    color: #afbeca !important;
+}
+
+.profileToggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    text-align: left;
+}
+
+.profileToggle span {
+    color: #eff6fb !important;
+}
+
+.profileToggle span,
+.profileChoice {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.profileToggle svg {
+    width: 12rem;
+    height: 12rem;
+    margin-left: 6rem;
+    flex: 0 0 auto;
+    fill: none;
+    stroke: #d9e9f5 !important;
+    stroke-width: 2;
+}
+
+.profileMenu,
+.profileEditor {
+    display: flex;
+    flex-direction: column;
+    padding: 3rem;
+    margin-top: 2rem;
+    flex: 0 0 auto;
+    background: rgba(12, 23, 31, 0.96);
+    border-radius: 4rem;
+}
+
+.profileChoices {
+    display: flex;
+    flex-direction: column;
+    max-height: 168rem;
+    flex: 0 0 auto;
+    overflow-y: auto;
+}
+
+.profileChoice {
+    flex: 0 0 auto;
+    text-align: left;
+    margin-bottom: 2rem;
+}
+
+.profileChoice[aria-pressed="true"] {
+    border-color: rgba(84, 210, 126, 0.9);
+    background: rgba(30, 112, 62, 0.85);
+}
+
+.profileGroup {
+    color: #b6ccdc;
+    padding: 3rem 2rem 2rem;
+}
+
+.profileActions {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.profileActions button {
+    margin: 2rem 2rem 0 0;
+}
+
+.profileEditor input {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+}
+
+.profileEditor input::placeholder {
+    color: #afbeca;
+}

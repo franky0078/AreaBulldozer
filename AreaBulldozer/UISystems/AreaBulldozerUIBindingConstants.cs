@@ -33,8 +33,8 @@ namespace AreaBulldozer.UISystems
 
         public const string DeleteMissingAssets = "deleteMissingAssets";
         public const string DeleteTrees = "deleteTrees";
-        public const string VegetationUndoCount = "vegetationUndoCount";
-        public const string UndoVegetation = "undoVegetation";
+        public const string DeletionUndoCount = "deletionUndoCount";
+        public const string UndoDeletion = "undoDeletion";
         public const string TreeAgeFilter = "treeAgeFilter";
         public const string IncludeOverriddenVegetation = "includeOverriddenVegetation";
         public const string ProtectAssetVegetation = "protectAssetVegetation";
@@ -47,6 +47,8 @@ namespace AreaBulldozer.UISystems
         public const string DeleteStaticObjects = "deleteStaticObjects";
 
         public const string DeleteGeneralProps = "deleteGeneralProps";
+        public const string LooseGeneralPropsOnly = "looseGeneralPropsOnly";
+        public const string SetLooseGeneralPropsOnly = "setLooseGeneralPropsOnly";
         public const string DeleteStreetLights = "deleteStreetLights";
         public const string DeleteQuantityObjects = "deleteQuantityObjects";
         public const string DeleteBrandingObjects = "deleteBrandingObjects";

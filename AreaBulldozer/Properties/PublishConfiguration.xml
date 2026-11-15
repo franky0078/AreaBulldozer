@@ -42,7 +42,9 @@
 		- Color editor options for customizing selection shapes and preview
 		- Configurable keyboard shortcut
 		- All ingame languages are supported. The interface follows the game's language setting
-		- Undo Button restores freestanding trees and bushes as well as vegetation belonging to buildings and parks that are still present
+		- Undo Functionality: Restore vegetation, Vehicles and supported buildings removed in the last bulldoze action
+		- Optional Filter profiles for saving and loading object filter combinations
+		- Support for all ingame Language settings		
 
 		**Object filters**
 
@@ -71,14 +73,16 @@
 		- Tree Age Filter — Remove saplings, young, mature, or old trees from the selected area
 
 
+		**Filter profiles and Undo**
+
+		The Filter profile menu above the object filters contains built-in presets and custom profiles. Save the current combination as a new profile, or update, rename, or delete a custom profile. Profiles store object filters, the tree age and height filters, and object protection options. Loading a profile refreshes the selection without bulldozing it.
+
+		The Undo arrow restores supported objects from the last deletion, including a continuous brush stroke. Freestanding vegetation and supported vegetation attached to surviving assets are restored. Standalone buildings are rebuilt from their original prefabs at their former position and rotation. The game regenerates their default lot elements. Previous residents, companies, and manually added upgrades are outside the scope of building Undo. Construction completes while the simulation is running.
+
+
 		**Compatibility**
 
 		The Anarchy button uses the original Anarchy icon from Unified Icon Library when the library is available. Unified Icon Library is optional and is not required to use Area Bulldozer. If the library is not installed or the icon cannot be loaded, Area Bulldozer automatically displays its built-in fallback icon. The Anarchy function remains fully available in either case.
-
-
-		**Language support**
-
-		Support for additional languages is planned for future updates.
 
 
 		**Marker visibility**
@@ -123,6 +127,7 @@
 
 		Area Bulldozer is an independent implementation and is not officially affiliated with these mods or their developers.
 
+
 		**Transparency note**
 
 		- Some parts of the code are built with AI assistance.
@@ -158,7 +163,7 @@
 	<ForumLink Value="https://forum.paradoxplaza.com/forum/threads/mod-area-bulldozer-area-deletion-tool-with-object-filters.1937211/" />
 
 	<!-- Mod version -->
-	<ModVersion Value="2.0.0" />
+	<ModVersion Value="2.1.0" />
 
 	<!--
 	Recommended game version.
@@ -189,8 +194,9 @@
 	<ChangeLog>
 		Latest changes
 
-		- added an Undo button that restores vegetation removed in the last bulldoze action, including an entire click-and-drag brush stroke.
-		  Undo restores freestanding trees and bushes as well as vegetation belonging to buildings and parks that are still present.
+		- added support for filter profiles
+		- added Undo functionality for assets and vehicles
+		- fix deletion of certain network sub-objects not working correctly
 	</ChangeLog>
 
 	<!--Optional external links for your own mod.-->

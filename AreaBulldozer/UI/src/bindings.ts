@@ -25,7 +25,7 @@ export const BindingKeys = {
 
     setDeleteMissingAssets: "setDeleteMissingAssets",
     setDeleteTrees: "setDeleteTrees",
-    undoVegetation: "undoVegetation",
+    undoDeletion: "undoDeletion",
     setTreeAgeFilter: "setTreeAgeFilter",
     setIncludeOverriddenVegetation: "setIncludeOverriddenVegetation",
     setProtectAssetVegetation: "setProtectAssetVegetation",
@@ -38,6 +38,7 @@ export const BindingKeys = {
     setDeleteStaticObjects: "setDeleteStaticObjects",
 
     setDeleteGeneralProps: "setDeleteGeneralProps",
+    setLooseGeneralPropsOnly: "setLooseGeneralPropsOnly",
     setDeleteStreetLights: "setDeleteStreetLights",
     setDeleteQuantityObjects: "setDeleteQuantityObjects",
     setDeleteBrandingObjects: "setDeleteBrandingObjects",
@@ -71,9 +72,9 @@ export const isToolActive$ = bindValue<boolean>(
     false
 );
 
-export const vegetationUndoCount$ = bindValue<number>(
+export const deletionUndoCount$ = bindValue<number>(
     mod.id,
-    "vegetationUndoCount",
+    "deletionUndoCount",
     0
 );
 
@@ -219,6 +220,8 @@ export const deleteStaticObjects$ = bindValue<boolean>(
     "deleteStaticObjects",
     false
 );
+
+export const looseGeneralPropsOnly$ = bindValue<boolean>(mod.id, "looseGeneralPropsOnly", false);
 
 export const deleteGeneralProps$ = bindValue<boolean>(
     mod.id,

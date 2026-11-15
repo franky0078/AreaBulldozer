@@ -1,3 +1,4 @@
+using Colossal.Mathematics;
 using Game.Common;
 using Game.Net;
 using Game.Objects;
@@ -24,6 +25,8 @@ namespace AreaBulldozer.Tools
         private SpatialCandidateIndex m_SpatialIndex;
         private readonly Dictionary<Entity, Entity> m_SpatialAssetVegetation = new();
         private bool m_SpatialAssetVegetationIndexed;
+        private readonly HashSet<Entity> m_SpatialLinkedProps = new();
+        private bool m_SpatialLinkedPropsIndexed;
 
         private bool m_SpatialIndexReady;
         private int m_SpatialIndexedObjectCount;
@@ -34,6 +37,7 @@ namespace AreaBulldozer.Tools
         private int m_SpatialBuildingCount;
         private int m_SpatialCarCount;
         private bool m_SpatialCarsEnabled;
+        private bool m_SpatialAssetLanesEnabled;
         private int m_SpatialRoadCount;
         private int m_SpatialRoadQueryCount;
         private int m_SpatialRejectedRoadOwnerCount;
@@ -59,11 +63,9 @@ namespace AreaBulldozer.Tools
         private int m_SpatialSpawnLocationCount;
         private int m_SpatialAssetLaneCount;
         private int m_SpatialAssetLaneOwnerCount;
-        private int m_SpatialAssetLaneFallbackPositionCount;
         private int m_SpatialSubLaneOwnerScanCount;
         private int m_SpatialSubLaneEntryCount;
         private int m_SpatialRejectedNetworkLaneOwnerCount;
-        private int m_SpatialMissingLanePrefabCount;
 
         private void InitializeSpatialIndex()
         {
@@ -106,14 +108,16 @@ namespace AreaBulldozer.Tools
             ClearSpatialIndex();
             m_SpatialMissingAssetsEnabled = Mod.Settings?.DeleteMissingAssets ?? false;
             m_SpatialCarsEnabled = Mod.Settings?.DeleteCars ?? false;
+            m_SpatialAssetLanesEnabled = NeedsAssetLaneIndex;
             m_SpatialAssetVegetationIndexed = NeedsAssetVegetationIndex;
+            m_SpatialLinkedPropsIndexed = NeedsLinkedPropIndex;
 
             System.Diagnostics.Stopwatch stopwatch =
                 System.Diagnostics.Stopwatch.StartNew();
 
-            if (m_SpatialAssetVegetationIndexed)
+            if (m_SpatialAssetVegetationIndexed || m_SpatialLinkedPropsIndexed)
             {
-                IndexAssetVegetation();
+                IndexAssetSubObjects();
             }
 
             AddQueryToSpatialIndex(
@@ -141,7 +145,11 @@ namespace AreaBulldozer.Tools
                 m_SpawnLocationQuery,
                 SpatialCandidateKind.SpawnLocation);
 
-            AddAssetLanesToSpatialIndex();
+            if (m_SpatialAssetLanesEnabled)
+            {
+                AddAssetLanesToSpatialIndex();
+            }
+
             if (m_SpatialMissingAssetsEnabled)
             {
                 AddQueryToSpatialIndex(
@@ -166,8 +174,6 @@ namespace AreaBulldozer.Tools
                 UnityEngine.Time.unscaledTime +
                 kSpatialRefreshCheckInterval;
 
-            // Avoid constructing the large diagnostic strings entirely when
-            // info logging is disabled. The index itself is already rebuilt.
             if (!Mod.DiagnosticLoggingEnabled)
             {
                 return;
@@ -229,16 +235,12 @@ namespace AreaBulldozer.Tools
                 $"asset lanes: " +
                 $"{m_SpatialAssetLaneCount}, " +
                 $"owners with asset lanes: " +
-                $"{m_SpatialAssetLaneOwnerCount}, " +
-                $"owner-position fallbacks: " +
-                $"{m_SpatialAssetLaneFallbackPositionCount}. " +
+                $"{m_SpatialAssetLaneOwnerCount}. " +
                 $"SubLane diagnostics - owners scanned: " +
                 $"{m_SpatialSubLaneOwnerScanCount}, " +
                 $"entries scanned: {m_SpatialSubLaneEntryCount}, " +
                 $"network owners excluded: " +
-                $"{m_SpatialRejectedNetworkLaneOwnerCount}, " +
-                $"missing/other lane prefabs: " +
-                $"{m_SpatialMissingLanePrefabCount}.");
+                $"{m_SpatialRejectedNetworkLaneOwnerCount}.");
 
             if (m_SpatialPathCount == 0 &&
                 m_SpatialRejectedPathPrefabSamples != null &&
@@ -265,16 +267,24 @@ namespace AreaBulldozer.Tools
 
         private bool m_SpatialMissingAssetsEnabled;
 
-        // Undo must identify asset vegetation even with the protection toggle off.
         private bool NeedsAssetVegetationIndex =>
             Mod.Settings?.DeleteTrees ?? false;
+
+        private bool NeedsLinkedPropIndex =>
+            Mod.Settings is Setting setting && setting.DeleteStaticObjects &&
+            setting.DeleteGeneralProps && setting.LooseGeneralPropsOnly;
+
+        private bool NeedsAssetLaneIndex =>
+            Mod.Settings is Setting setting && setting.DeleteStaticObjects && setting.DeleteMarkerNetworks;
 
         private void EnsureSpatialIndexReady()
         {
             if (!m_SpatialIndexReady ||
                 m_SpatialMissingAssetsEnabled != (Mod.Settings?.DeleteMissingAssets ?? false) ||
                 m_SpatialCarsEnabled != (Mod.Settings?.DeleteCars ?? false) ||
-                m_SpatialAssetVegetationIndexed != NeedsAssetVegetationIndex)
+                m_SpatialAssetLanesEnabled != NeedsAssetLaneIndex ||
+                m_SpatialAssetVegetationIndexed != NeedsAssetVegetationIndex ||
+                m_SpatialLinkedPropsIndexed != NeedsLinkedPropIndex)
             {
                 RebuildSpatialIndex();
             }
@@ -285,7 +295,7 @@ namespace AreaBulldozer.Tools
             return
                 (m_SpatialMissingAssetsEnabled ? m_MissingAssetObjectQuery.CalculateEntityCount() : 0) +
                 m_PlantQuery.CalculateEntityCount() +
-                (m_SpatialAssetVegetationIndexed ? m_SubObjectOwnerQuery.CalculateEntityCount() : 0) +
+                ((m_SpatialAssetVegetationIndexed || m_SpatialLinkedPropsIndexed) ? m_SubObjectOwnerQuery.CalculateEntityCount() : 0) +
                 m_BuildingQuery.CalculateEntityCount() +
                 (m_SpatialCarsEnabled ? m_CarQuery.CalculateEntityCount() : 0) +
                 m_RoadEdgeQuery.CalculateEntityCount() +
@@ -293,7 +303,7 @@ namespace AreaBulldozer.Tools
                 m_SurfaceAreaQuery.CalculateEntityCount() +
                 m_StaticObjectQuery.CalculateEntityCount() +
                 m_SpawnLocationQuery.CalculateEntityCount() +
-                m_SubLaneOwnerQuery.CalculateEntityCount();
+                (m_SpatialAssetLanesEnabled ? m_SubLaneOwnerQuery.CalculateEntityCount() : 0);
         }
 
         private void RefreshSpatialIndexIfNeeded()
@@ -386,6 +396,7 @@ namespace AreaBulldozer.Tools
         {
             m_SpatialIndex?.Clear();
             m_SpatialAssetVegetation.Clear();
+            m_SpatialLinkedProps.Clear();
             m_SpatialMissingAssetCount = 0;
 
             ResetSpatialIndexCounters();
@@ -423,16 +434,13 @@ namespace AreaBulldozer.Tools
             m_SpatialSpawnLocationCount = 0;
             m_SpatialAssetLaneCount = 0;
             m_SpatialAssetLaneOwnerCount = 0;
-            m_SpatialAssetLaneFallbackPositionCount = 0;
             m_SpatialSubLaneOwnerScanCount = 0;
             m_SpatialSubLaneEntryCount = 0;
             m_SpatialRejectedNetworkLaneOwnerCount = 0;
-            m_SpatialMissingLanePrefabCount = 0;
         }
 
-        private void IndexAssetVegetation()
+        private void IndexAssetSubObjects()
         {
-            // Use the parent buffers as a fallback for plants without an Owner.
             using NativeArray<Entity> parents = m_SubObjectOwnerQuery.ToEntityArray(Allocator.Temp);
 
             foreach (Entity parent in parents)
@@ -442,19 +450,25 @@ namespace AreaBulldozer.Tools
 
                 for (int index = 0; index < children.Length; index++)
                 {
-                    Entity plant = children[index].m_SubObject;
-
-                    if (plant != Entity.Null &&
-                        EntityManager.Exists(plant) &&
-                        !EntityManager.HasComponent<Owner>(plant) &&
-                        EntityManager.HasComponent<Plant>(plant))
+                    Entity child = children[index].m_SubObject;
+                    if (child == Entity.Null || !EntityManager.Exists(child) ||
+                        EntityManager.HasComponent<Owner>(child))
                     {
-                        // A plant shared by multiple buffers cannot be restored to an unambiguous parent.
-                        m_SpatialAssetVegetation[plant] =
-                            m_SpatialAssetVegetation.TryGetValue(plant, out Entity indexedParent) &&
+                        continue;
+                    }
+
+                    if (m_SpatialAssetVegetationIndexed && EntityManager.HasComponent<Plant>(child))
+                    {
+                        m_SpatialAssetVegetation[child] =
+                            m_SpatialAssetVegetation.TryGetValue(child, out Entity indexedParent) &&
                             indexedParent != parent
                                 ? Entity.Null
                                 : parent;
+                    }
+
+                    if (m_SpatialLinkedPropsIndexed)
+                    {
+                        m_SpatialLinkedProps.Add(child);
                     }
                 }
             }
@@ -500,7 +514,13 @@ namespace AreaBulldozer.Tools
                     }
 
                     if (kind == SpatialCandidateKind.StaticObject &&
-                        !IsStaticObjectEntity(entity))
+                        !IsActivityLocationTarget(entity) &&
+                        (TryGetPointMarkerPrefab(entity, out _) || !IsStaticObjectEntity(entity)))
+                    {
+                        continue;
+                    }
+
+                    if (kind == SpatialCandidateKind.SpawnLocation && !IsSpawnPointMarker(entity))
                     {
                         continue;
                     }
@@ -610,9 +630,24 @@ namespace AreaBulldozer.Tools
             {
                 foreach (Entity entity in netEdges)
                 {
-                    if (!IsEntityUsable(entity) ||
+                    if (!IsEntityUsable(entity, allowOverridden: m_SpatialAssetLanesEnabled) ||
                         (m_PendingDeletion != null &&
                          m_PendingDeletion.Contains(entity)))
+                    {
+                        continue;
+                    }
+
+                    if (IsAssetMarkerNetwork(entity))
+                    {
+                        if (m_SpatialAssetLanesEnabled)
+                        {
+                            AddAssetLaneCurveToSpatialIndex(entity);
+                        }
+
+                        continue;
+                    }
+
+                    if (EntityManager.HasComponent<Overridden>(entity))
                     {
                         continue;
                     }
@@ -873,7 +908,7 @@ namespace AreaBulldozer.Tools
             {
                 foreach (Entity ownerEntity in owners)
                 {
-                    if (!IsEntityUsable(ownerEntity) ||
+                    if (!IsEntityUsable(ownerEntity, allowOverridden: true) ||
                         !EntityManager.HasBuffer<Game.Net.SubLane>(
                             ownerEntity))
                     {
@@ -888,61 +923,34 @@ namespace AreaBulldozer.Tools
                         continue;
                     }
 
+                    if (IsStandaloneAssetLane(ownerEntity))
+                    {
+                        if (indexedLanes.Add(ownerEntity) && AddAssetLaneCurveToSpatialIndex(ownerEntity))
+                        {
+                            m_SpatialAssetLaneOwnerCount++;
+                        }
+                        continue;
+                    }
+
                     DynamicBuffer<Game.Net.SubLane> subLanes =
-                        EntityManager.GetBuffer<Game.Net.SubLane>(
-                            ownerEntity,
-                            true);
+                        EntityManager.GetBuffer<Game.Net.SubLane>(ownerEntity, true);
 
                     bool ownerContainsAssetLane = false;
-
-                    for (int index = 0;
-                         index < subLanes.Length;
-                         index++)
+                    for (int index = 0; index < subLanes.Length; index++)
                     {
-                        Entity laneEntity =
-                            subLanes[index].m_SubLane;
-
+                        Entity lane = subLanes[index].m_SubLane;
                         m_SpatialSubLaneEntryCount++;
-
-                        if (!IsEntityUsable(laneEntity) ||
-                            !indexedLanes.Add(laneEntity))
+                        if (!IsEntityUsable(lane, allowOverridden: true) ||
+                            (m_PendingDeletion != null && m_PendingDeletion.Contains(lane)) ||
+                            !indexedLanes.Add(lane))
                         {
                             continue;
                         }
 
-                        if (m_PendingDeletion != null &&
-                            m_PendingDeletion.Contains(laneEntity))
+                        if (IsAssetLaneMarker(lane) &&
+                            AddAssetLaneCurveToSpatialIndex(lane))
                         {
-                            continue;
-                        }
-
-                        if (!IsAssetLaneEntity(laneEntity))
-                        {
-                            m_SpatialMissingLanePrefabCount++;
-                            continue;
-                        }
-
-                        if (!TryGetAssetLanePosition(
-                                laneEntity,
-                                ownerEntity,
-                                out float2 position,
-                                out bool usedOwnerPosition))
-                        {
-                            continue;
-                        }
-
-                        AddSpatialCandidate(
-                            new(
-                                laneEntity,
-                                position,
-                                SpatialCandidateKind.AssetLane,
-                                StaticObjectCategory.None));
-
-                        ownerContainsAssetLane = true;
-
-                        if (usedOwnerPosition)
-                        {
-                            m_SpatialAssetLaneFallbackPositionCount++;
+                            ownerContainsAssetLane = true;
                         }
                     }
 
@@ -967,80 +975,157 @@ namespace AreaBulldozer.Tools
                 return false;
             }
 
-            if (IsBuildingEntity(ownerEntity) ||
-                EntityManager.HasComponent<Game.Tools.EditorContainer>(
-                    ownerEntity))
-            {
-                return true;
-            }
-
-            return ResolveOwnerScope(ownerEntity) ==
-                   OwnerScope.Building;
+            return IsBuildingEntity(ownerEntity) || IsStandaloneAssetLane(ownerEntity) ||
+                   TryGetOwningRootBuilding(ownerEntity, out _);
         }
 
-        private bool IsAssetLaneEntity(
-            Entity entity)
+        private bool IsAssetMarkerNetwork(Entity entity)
         {
-            if (entity == Entity.Null ||
-                !EntityManager.Exists(entity) ||
-                !EntityManager.HasComponent<PrefabRef>(entity))
+            if (!EntityManager.HasComponent<Edge>(entity) ||
+                !EntityManager.HasComponent<PrefabRef>(entity) ||
+                !EntityManager.HasComponent<Curve>(entity))
             {
                 return false;
             }
 
-            return TryGetPrefabBase(
-                       entity,
-                       out PrefabBase prefabBase) &&
-                   (prefabBase is NetLanePrefab ||
-                    prefabBase is NetLaneGeometryPrefab);
+            Entity prefab = EntityManager.GetComponentData<PrefabRef>(entity).m_Prefab;
+            if (!EntityManager.Exists(prefab) || !EntityManager.HasComponent<NetData>(prefab))
+            {
+                return false;
+            }
+
+            NetData net = EntityManager.GetComponentData<NetData>(prefab);
+            Game.Net.Layer layers = net.m_RequiredLayers;
+            if (EntityManager.HasComponent<Game.Net.Marker>(entity) ||
+                EntityManager.HasComponent<MarkerNetData>(prefab))
+            {
+                layers |= net.m_ConnectLayers | net.m_LocalConnectLayers;
+            }
+
+            return (layers & (Game.Net.Layer.MarkerPathway | Game.Net.Layer.MarkerTaxiway)) != 0 &&
+                   (net.m_RequiredLayers & (Game.Net.Layer.Fence | Game.Net.Layer.NetFence)) == 0 &&
+                   TryGetOwningRootBuilding(entity, out _);
         }
 
-        private bool TryGetAssetLanePosition(
-            Entity laneEntity,
-            Entity bufferOwner,
-            out float2 position,
-            out bool usedOwnerPosition)
+        private bool IsStandaloneAssetLane(Entity entity)
         {
-            position = float2.zero;
-            usedOwnerPosition = false;
+            if (!EntityManager.HasComponent<Game.Tools.EditorContainer>(entity) ||
+                !EntityManager.HasComponent<Edge>(entity) ||
+                EntityManager.HasComponent<Owner>(entity))
+            {
+                return false;
+            }
 
-            if (TryGetTransformPosition(
-                    laneEntity,
-                    out position))
+            Entity prefab = EntityManager.GetComponentData<Game.Tools.EditorContainer>(entity).m_Prefab;
+            if (!IsMarkerLanePrefab(prefab) || !EntityManager.HasBuffer<Game.Net.SubLane>(entity))
+            {
+                return false;
+            }
+
+            DynamicBuffer<Game.Net.SubLane> subLanes = EntityManager.GetBuffer<Game.Net.SubLane>(entity, true);
+            bool hasMarkerGeometry = false;
+            for (int i = 0; i < subLanes.Length; i++)
+            {
+                Entity child = subLanes[i].m_SubLane;
+                if (!EntityManager.Exists(child) || !EntityManager.HasComponent<Game.Net.LaneGeometry>(child))
+                {
+                    continue;
+                }
+
+                if (!IsAssetLaneMarker(child))
+                {
+                    return false;
+                }
+
+                hasMarkerGeometry = true;
+            }
+
+            return hasMarkerGeometry;
+        }
+
+        private bool IsAssetLaneMarker(Entity lane)
+        {
+            if (!EntityManager.HasComponent<Game.Net.Lane>(lane) ||
+                !EntityManager.HasComponent<PrefabRef>(lane) ||
+                !EntityManager.HasComponent<Curve>(lane))
+            {
+                return false;
+            }
+
+            Entity prefab = EntityManager.GetComponentData<PrefabRef>(lane).m_Prefab;
+            if (!EntityManager.Exists(prefab) || IsFenceLanePrefab(prefab))
+            {
+                return false;
+            }
+
+            return EntityManager.HasComponent<Game.Net.CarLane>(lane) ||
+                   EntityManager.HasComponent<Game.Net.PedestrianLane>(lane) ||
+                   EntityManager.HasComponent<Game.Net.ParkingLane>(lane) ||
+                   IsMarkerLanePrefab(prefab);
+        }
+
+        private bool IsMarkerLanePrefab(Entity prefab)
+        {
+            if (!EntityManager.Exists(prefab) || !EntityManager.HasComponent<NetLaneData>(prefab))
+            {
+                return false;
+            }
+
+            if (IsFenceLanePrefab(prefab))
+            {
+                return false;
+            }
+
+            var flags = EntityManager.GetComponentData<NetLaneData>(prefab).m_Flags;
+            if ((flags & (Game.Prefabs.LaneFlags.Road |
+                          Game.Prefabs.LaneFlags.Pedestrian |
+                          Game.Prefabs.LaneFlags.Parking)) != 0)
             {
                 return true;
             }
 
-            Entity currentOwner = bufferOwner;
-
-            for (int depth = 0;
-                 depth < 8;
-                 depth++)
+            if (!EntityManager.HasComponent<NetLaneGeometryData>(prefab))
             {
-                if (TryGetTransformPosition(
-                        currentOwner,
-                        out position))
-                {
-                    usedOwnerPosition = true;
-                    return true;
-                }
-
-                if (currentOwner == Entity.Null ||
-                    !EntityManager.Exists(currentOwner) ||
-                    !EntityManager.HasComponent<Owner>(
-                        currentOwner))
-                {
-                    break;
-                }
-
-                Owner owner =
-                    EntityManager.GetComponentData<Owner>(
-                        currentOwner);
-
-                currentOwner = owner.m_Owner;
+                return false;
             }
 
-            return false;
+            NetLaneGeometryData geometry = EntityManager.GetComponentData<NetLaneGeometryData>(prefab);
+            return (geometry.m_GameLayers & MeshLayer.Default) == 0 &&
+                   ((geometry.m_GameLayers | geometry.m_EditorLayers) & MeshLayer.Marker) != 0;
+        }
+
+        private bool IsFenceLanePrefab(Entity prefab) =>
+            EntityManager.HasComponent<UtilityLaneData>(prefab) &&
+            (EntityManager.GetComponentData<UtilityLaneData>(prefab).m_UtilityTypes & UtilityTypes.Fence) != 0;
+
+        private bool AddAssetLaneCurveToSpatialIndex(Entity entity)
+        {
+            if (!EntityManager.HasComponent<Curve>(entity))
+            {
+                return false;
+            }
+
+            Curve curve = EntityManager.GetComponentData<Curve>(entity);
+            if (!math.isfinite(curve.m_Length) ||
+                !math.all(math.isfinite(curve.m_Bezier.a)) || !math.all(math.isfinite(curve.m_Bezier.b)) ||
+                !math.all(math.isfinite(curve.m_Bezier.c)) || !math.all(math.isfinite(curve.m_Bezier.d)))
+            {
+                return false;
+            }
+
+            int segments = math.clamp((int)math.ceil(curve.m_Length / 4f), 4, 64);
+            float2 start = curve.m_Bezier.a.xz;
+            for (int i = 1; i <= segments; i++)
+            {
+                float2 end = MathUtils.Position(curve.m_Bezier, (float)i / segments).xz;
+                m_SpatialIndex.Add(new SpatialCandidate(entity, start, end,
+                    SpatialCandidateKind.AssetLane, StaticObjectCategory.None, true));
+                start = end;
+            }
+
+            m_SpatialIndexedObjectCount++;
+            m_SpatialAssetLaneCount++;
+            return true;
         }
 
         private bool TryGetVehicleSelectionPosition(Entity entity, out float3 position)
@@ -1051,7 +1136,6 @@ namespace AreaBulldozer.Tools
                 return false;
             }
 
-            // Match the rendered vehicle, whose simulation transform may be ahead.
             if (EntityManager.HasComponent<Game.Rendering.InterpolatedTransform>(entity))
             {
                 position = EntityManager.GetComponentData<Game.Rendering.InterpolatedTransform>(entity).m_Position;
@@ -1145,10 +1229,6 @@ namespace AreaBulldozer.Tools
             {
                 m_SpatialSpawnLocationCount++;
             }
-            else if (candidate.IsAssetLane)
-            {
-                m_SpatialAssetLaneCount++;
-            }
         }
 
         private List<SpatialCandidate>
@@ -1162,8 +1242,6 @@ namespace AreaBulldozer.Tools
             List<SpatialCandidate> candidates = m_SpatialIndex.Query(center, radius);
             if (Mod.Settings?.DeleteCars ?? false)
             {
-                // Vehicles can enter another cell without changing the entity count.
-                // Replace cached car positions before both preview and deletion.
                 candidates.RemoveAll(candidate => candidate.IsCar);
                 NativeArray<Entity> cars = m_CarQuery.ToEntityArray(Allocator.Temp);
                 try
@@ -1205,8 +1283,6 @@ namespace AreaBulldozer.Tools
 
             SpatialCandidate candidate = indexedCandidate;
 
-            // Missing vehicle placeholders may move after the index was built.
-            // Always validate the current position before previewing or deleting.
             if (candidate.IsCar)
             {
                 if (!TryGetVehicleSelectionPosition(candidate.Entity, out float3 visiblePosition))

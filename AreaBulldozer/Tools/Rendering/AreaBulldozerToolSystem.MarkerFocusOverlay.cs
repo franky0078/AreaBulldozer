@@ -86,8 +86,7 @@ namespace AreaBulldozer.Tools
 
             m_MarkerFocusPass.TargetCamera = Camera.main;
             float remainingBrightness = 1f - darknessPercent / 100f;
-            m_MarkerFocusPass.ColorMultiplier = tint.linear *
-                Unity.Mathematics.math.pow(remainingBrightness, 2.2f);
+            m_MarkerFocusPass.ColorMultiplier = tint.linear * remainingBrightness;
             m_MarkerFocusPass.enabled = true;
 
             if (!m_MarkerFocusOverlayVisible ||

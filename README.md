@@ -32,13 +32,17 @@ The freeform area allows you to create custom deletion zones of almost any shape
 - Optional launcher button in the universal mod menu
 - Color editor options for customizing selection shapes and preview
 - Configurable keyboard shortcut
-- Language support for German, English, French, Italian and Spanish
+- All ingame languages are supported. The interface follows the game's language setting
+- Undo Functionality: Restore vegetation, Vehicles and supported buildings removed in the last bulldoze action
+- Optional Filter profiles for saving and loading object filter combinations
+- Support for all ingame Language settings
+
 
 ## Object filters
 
 The following object categories can be enabled or disabled individually:
 
-- Vegetation
+- Vegetation (incl. protect asset vegetation toggle)
 - Buildings
 - Roads
 - Pedestrian paths
@@ -46,6 +50,7 @@ The following object categories can be enabled or disabled individually:
 - Surfaces and areas
 - Props and markers
 - Missing Assets
+- Vehicles (moving and parked road vehicles) (automatically paused while the tool is active)
 
 Additional filters are available for:
 
@@ -56,16 +61,20 @@ Additional filters are available for:
 - Activity locations
 - Spawn locations
 - Asset lanes and sublanes
+- Height filters: All Heights, Above / On Terrain, and Below Terrain.
+- Tree Age Filter — Remove saplings, young, mature, or old trees from the selected area
+
+
+##Filter profiles and Undo
+
+The Filter profile menu above the object filters contains built-in presets and custom profiles. Save the current combination as a new profile, or update, rename, or delete a custom profile. Profiles store object filters, the tree age and height filters, and object protection options. Loading a profile refreshes the selection without bulldozing it.
+
+The Undo arrow restores supported objects from the last deletion, including a continuous brush stroke. Freestanding vegetation and supported vegetation attached to surviving assets are restored. Standalone buildings are rebuilt from their original prefabs at their former position and rotation. The game regenerates their default lot elements. Previous residents, companies, and manually added upgrades are outside the scope of building Undo. Construction completes while the simulation is running.
 
 
 ## Compatibility
 
 The Anarchy button uses the original Anarchy icon from Unified Icon Library when the library is available. Unified Icon Library is optional and is not required to use Area Bulldozer. If the library is not installed or the icon cannot be loaded, Area Bulldozer automatically displays its built-in fallback icon. The Anarchy function remains fully available in either case.
-
-
-## Language support
-
-Area Bulldozer currently includes English and German. Support for additional languages is planned for future updates.
 
 
 ## Marker visibility

@@ -82,6 +82,9 @@ namespace AreaBulldozer
         }
 
         [SettingsUIHidden]
+        public string CustomFilterProfiles { get; set; } = "";
+
+        [SettingsUIHidden]
         public AreaBulldozerHeightFilter HeightFilter { get; set; }
 
         [SettingsUIHidden]
@@ -119,6 +122,9 @@ namespace AreaBulldozer
 
         [SettingsUIHidden]
         public bool DeleteGeneralProps { get; set; }
+
+        [SettingsUIHidden]
+        public bool LooseGeneralPropsOnly { get; set; }
 
         [SettingsUIHidden]
         public bool DeleteStreetLights { get; set; }
@@ -348,6 +354,7 @@ namespace AreaBulldozer
             DeleteStaticObjects = false;
 
             DeleteGeneralProps = true;
+            LooseGeneralPropsOnly = false;
             DeleteStreetLights = true;
             DeleteQuantityObjects = true;
             DeleteBrandingObjects = true;

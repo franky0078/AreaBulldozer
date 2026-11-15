@@ -30,6 +30,7 @@ namespace AreaBulldozer.UISystems
 
             RegisterValueBindings();
             RegisterTriggerBindings();
+            RegisterFilterProfileBindings();
 
             Mod.LogDiagnosticInfo(
                 "Area Bulldozer UI bindings initialized.");
@@ -93,8 +94,8 @@ namespace AreaBulldozer.UISystems
                     () => m_Tool != null && m_Tool.IsToolActive));
 
             AddUpdateBinding(new GetterValueBinding<int>(group,
-                AreaBulldozerUIBindingConstants.VegetationUndoCount,
-                () => m_Tool?.VegetationUndoCount ?? 0));
+                AreaBulldozerUIBindingConstants.DeletionUndoCount,
+                () => m_Tool?.DeletionUndoCount ?? 0));
 
             AddUpdateBinding(new GetterValueBinding<int>(group,
                 AreaBulldozerUIBindingConstants.HeightFilter,
@@ -240,6 +241,9 @@ namespace AreaBulldozer.UISystems
                 AreaBulldozerUIBindingConstants.DeleteGeneralProps,
                 () => Mod.Settings?.DeleteGeneralProps ?? true);
             AddBooleanValueBinding(
+                AreaBulldozerUIBindingConstants.LooseGeneralPropsOnly,
+                () => Mod.Settings?.LooseGeneralPropsOnly ?? false);
+            AddBooleanValueBinding(
                 AreaBulldozerUIBindingConstants.DeleteStreetLights,
                 () => Mod.Settings?.DeleteStreetLights ?? true);
             AddBooleanValueBinding(
@@ -352,8 +356,8 @@ namespace AreaBulldozer.UISystems
                 AreaBulldozerUIBindingConstants.ModId;
 
             AddBinding(new TriggerBinding(group,
-                AreaBulldozerUIBindingConstants.UndoVegetation,
-                () => m_Tool?.RequestVegetationUndo()));
+                AreaBulldozerUIBindingConstants.UndoDeletion,
+                () => m_Tool?.RequestDeletionUndo()));
 
             AddBinding(new TriggerBinding<int>(group,
                 AreaBulldozerUIBindingConstants.SetHeightFilter, value =>
@@ -526,6 +530,9 @@ namespace AreaBulldozer.UISystems
             AddBooleanSettingTrigger(
                 AreaBulldozerUIBindingConstants.SetDeleteGeneralProps,
                 (setting, value) => setting.DeleteGeneralProps = value);
+            AddBooleanSettingTrigger(
+                AreaBulldozerUIBindingConstants.SetLooseGeneralPropsOnly,
+                (setting, value) => setting.LooseGeneralPropsOnly = value);
             AddBooleanSettingTrigger(
                 AreaBulldozerUIBindingConstants.SetDeleteStreetLights,
                 (setting, value) => setting.DeleteStreetLights = value);

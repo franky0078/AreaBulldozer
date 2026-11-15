@@ -353,7 +353,8 @@ namespace AreaBulldozer.Tools
                     Any = new ComponentType[]
                     {
                         ComponentType.ReadOnly<Game.Vehicles.Car>(),
-                        ComponentType.ReadOnly<Game.Vehicles.ParkedCar>()
+                        ComponentType.ReadOnly<Game.Vehicles.ParkedCar>(),
+                        ComponentType.ReadOnly<Game.Vehicles.CarTrailer>()
                     },
                     None = new ComponentType[]
                     {
@@ -410,8 +411,7 @@ namespace AreaBulldozer.Tools
                     None = new ComponentType[]
                     {
                         ComponentType.ReadOnly<Deleted>(),
-                        ComponentType.ReadOnly<Temp>(),
-                        ComponentType.ReadOnly<Overridden>()
+                        ComponentType.ReadOnly<Temp>()
                     }
                 });
 
@@ -464,9 +464,13 @@ namespace AreaBulldozer.Tools
                 {
                     All = new ComponentType[]
                     {
-                        ComponentType.ReadOnly<Transform>(),
-                        ComponentType.ReadOnly<
-                            Game.Objects.SpawnLocation>()
+                        ComponentType.ReadOnly<Transform>()
+                    },
+
+                    Any = new ComponentType[]
+                    {
+                        ComponentType.ReadOnly<Game.Objects.SpawnLocation>(),
+                        ComponentType.ReadOnly<Game.Objects.Marker>()
                     },
 
                     None = new ComponentType[]
@@ -636,8 +640,8 @@ namespace AreaBulldozer.Tools
             GameMode mode)
         {
             base.OnGameLoadingComplete(purpose, mode);
-            m_VegetationUndo.Clear();
-            m_VegetationUndoRequested = false;
+            ClearDeletionUndo();
+            m_DeletionUndoRequested = false;
         }
 
         protected override void OnStartRunning()
@@ -712,7 +716,7 @@ namespace AreaBulldozer.Tools
 
         protected override void OnStopRunning()
         {
-            m_VegetationUndoRequested = false;
+            m_DeletionUndoRequested = false;
             requireUnderground = false;
             m_HeightClassifications.Clear();
             m_ApplyAction?.Disable();
@@ -923,7 +927,7 @@ namespace AreaBulldozer.Tools
             UpdateHeightView();
             ObserveCarFilterPauseOverride();
             CleanupPendingDeletions();
-            bool undoClicked = ProcessVegetationUndo();
+            bool undoClicked = ProcessDeletionUndo();
             RefreshSpatialIndexIfNeeded();
             UpdateLargeSelectionConfirmationState();
             UpdateMarkerVisibility();

@@ -1,108 +1,54 @@
-using Game.Rendering;
-
 namespace AreaBulldozer.Tools
 {
     public partial class AreaBulldozerToolSystem
     {
-        // Sichtbarkeit für unsichtbare Marker
-        private RenderingSystem m_RenderingSystem;
+        private const int kMissingAssetFocus = 1 << 0;
+        private const int kActivityFocus = 1 << 1;
+        private const int kSpawnFocus = 1 << 2;
+        private const int kLaneFocus = 1 << 3;
 
-        private bool m_ControlsMarkerVisibility;
-        private bool m_RecordedMarkersVisible;
+        private int m_ActiveMarkerFocusFilters;
 
         private void InitializeMarkerVisibility()
         {
-            m_RenderingSystem =
-                World.GetOrCreateSystemManaged<
-                    RenderingSystem>();
-
-            m_ControlsMarkerVisibility = false;
-            m_RecordedMarkersVisible = false;
-
+            m_ActiveMarkerFocusFilters = 0;
+            InitializeNativeMarkerPreview();
             InitializeMarkerFocusOverlay();
-
-            Mod.LogDiagnosticInfo(
-                "Marker visibility support initialized.");
         }
 
         private void DisposeMarkerVisibility()
         {
-            RestoreMarkerVisibility();
+            m_ActiveMarkerFocusFilters = 0;
+            DisposeNativeMarkerPreview();
             DisposeMarkerFocusOverlay();
-
-            m_RenderingSystem = null;
         }
 
         private void UpdateMarkerVisibility()
         {
-            bool markerFilterActive =
-                Mod.Settings != null &&
-                Mod.Settings.DeleteStaticObjects &&
-                (Mod.Settings.DeleteActivityLocations ||
-                 Mod.Settings.DeleteSpawnLocations ||
-                 Mod.Settings.DeleteMarkerNetworks);
-
-            UpdateMarkerFocusOverlay(
-                markerFilterActive ||
-                (Mod.Settings?.DeleteMissingAssets ?? false));
-
-            if (m_RenderingSystem == null)
+            Setting settings = Mod.Settings;
+            int filters = settings?.DeleteMissingAssets == true ? kMissingAssetFocus : 0;
+            if (settings?.DeleteStaticObjects == true)
             {
-                return;
+                filters |= settings.DeleteActivityLocations ? kActivityFocus : 0;
+                filters |= settings.DeleteSpawnLocations ? kSpawnFocus : 0;
+                filters |= settings.DeleteMarkerNetworks ? kLaneFocus : 0;
             }
 
-            if (!markerFilterActive)
+            if ((filters & ~m_ActiveMarkerFocusFilters) != 0)
             {
-                RestoreMarkerVisibility(removeFocusOverlay: false);
-                return;
+                settings.DimMarkerBackground = true;
             }
 
-            if (!m_ControlsMarkerVisibility)
-            {
-                m_RecordedMarkersVisible =
-                    m_RenderingSystem.markersVisible;
-
-                m_ControlsMarkerVisibility = true;
-
-                Mod.LogDiagnosticInfo(
-                    "Game marker view is now visible for " +
-                    "activity-location, spawn-location, and " +
-                    "asset-lane filters. " +
-                    "The view may also display parking markers " +
-                    "and other marker types. " +
-                    $"Previous marker visibility: " +
-                    $"{m_RecordedMarkersVisible}.");
-            }
-
-            if (!m_RenderingSystem.markersVisible)
-            {
-                m_RenderingSystem.markersVisible = true;
-            }
+            m_ActiveMarkerFocusFilters = filters;
+            UpdateNativeMarkerPreview((filters & (kActivityFocus | kSpawnFocus | kLaneFocus)) != 0);
+            UpdateMarkerFocusOverlay(filters != 0);
         }
 
-        private void RestoreMarkerVisibility(bool removeFocusOverlay = true)
+        private void RestoreMarkerVisibility()
         {
-            if (removeFocusOverlay)
-            {
-                RemoveMarkerFocusOverlay();
-            }
-
-            if (!m_ControlsMarkerVisibility)
-            {
-                return;
-            }
-
-            if (m_RenderingSystem != null)
-            {
-                m_RenderingSystem.markersVisible =
-                    m_RecordedMarkersVisible;
-            }
-
-            Mod.LogDiagnosticInfo(
-                "Marker visibility restored to " +
-                $"{m_RecordedMarkersVisible}.");
-
-            m_ControlsMarkerVisibility = false;
+            m_ActiveMarkerFocusFilters = 0;
+            RestoreNativeMarkerPreview();
+            RemoveMarkerFocusOverlay();
         }
     }
 }

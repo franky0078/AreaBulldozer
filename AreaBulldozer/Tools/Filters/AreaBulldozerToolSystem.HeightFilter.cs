@@ -53,7 +53,6 @@ namespace AreaBulldozer.Tools
                 return;
 
             m_HeightTerrainSystem ??= World.GetOrCreateSystemManaged<TerrainSystem>();
-            // GetHeightData supplies the CPU terrain data for synchronous sampling.
             m_HeightTerrainData = m_HeightTerrainSystem.GetHeightData();
             m_HeightTerrainReady = m_HeightTerrainData.heights.IsCreated &&
                 m_HeightTerrainData.heights.Length > 0;
@@ -71,7 +70,6 @@ namespace AreaBulldozer.Tools
                 classification = ClassifyEntityHeight(entity);
                 m_HeightClassifications.Add(entity, classification);
             }
-            // Mixed segments and unknown positions are excluded in both restricted modes.
             return classification == (m_ActiveHeightFilter == AreaBulldozerHeightFilter.AboveGround ? 1 : 2);
         }
 
@@ -130,7 +128,8 @@ namespace AreaBulldozer.Tools
             }
 
             if (EntityManager.HasComponent<Game.Vehicles.Car>(entity) ||
-                EntityManager.HasComponent<Game.Vehicles.ParkedCar>(entity))
+                EntityManager.HasComponent<Game.Vehicles.ParkedCar>(entity) ||
+                EntityManager.HasComponent<Game.Vehicles.CarTrailer>(entity))
             {
                 return TryGetVehicleSelectionPosition(entity, out float3 visiblePosition)
                     ? ClassifyHeight(visiblePosition)

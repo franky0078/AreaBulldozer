@@ -30,15 +30,22 @@ namespace AreaBulldozer.Tools
         }
 
         private readonly List<VegetationSnapshot> m_VegetationUndo = new();
-        private bool m_VegetationUndoRequested;
+        private bool m_DeletionUndoRequested;
 
-        internal int VegetationUndoCount => m_VegetationUndo.Count;
+        internal int DeletionUndoCount => m_VegetationUndo.Count + m_BuildingUndo.Count + m_CarUndo.Count;
 
-        internal void RequestVegetationUndo()
+        private void ClearDeletionUndo()
         {
-            if (IsToolActive && VegetationUndoCount > 0)
+            m_VegetationUndo.Clear();
+            m_BuildingUndo.Clear();
+            m_CarUndo.Clear();
+        }
+
+        internal void RequestDeletionUndo()
+        {
+            if (IsToolActive && DeletionUndoCount > 0)
             {
-                m_VegetationUndoRequested = true;
+                m_DeletionUndoRequested = true;
             }
         }
 
@@ -72,7 +79,7 @@ namespace AreaBulldozer.Tools
                 return;
             }
 
-            Attached? attachment = ReadOptionalVegetationComponent<Attached>(entity);
+            Attached? attachment = ReadUndoComponent<Attached>(entity);
             if (attachment is Attached attached && (parent == Entity.Null || attached.m_Parent != parent))
             {
                 return;
@@ -103,16 +110,16 @@ namespace AreaBulldozer.Tools
                 Prefab = prefab,
                 Transform = EntityManager.GetComponentData<Transform>(entity),
                 Plant = EntityManager.GetComponentData<Plant>(entity),
-                Tree = ReadOptionalVegetationComponent<Tree>(entity),
-                Elevation = ReadOptionalVegetationComponent<Elevation>(entity),
-                Seed = ReadOptionalVegetationComponent<PseudoRandomSeed>(entity),
+                Tree = ReadUndoComponent<Tree>(entity),
+                Elevation = ReadUndoComponent<Elevation>(entity),
+                Seed = ReadUndoComponent<PseudoRandomSeed>(entity),
                 Parent = parent,
                 HadOwner = hadOwner,
                 ParentEntry = parentEntry,
-                Relative = ReadOptionalVegetationComponent<Relative>(entity),
+                Relative = ReadUndoComponent<Relative>(entity),
                 Attachment = attachment,
-                ParentTransform = parent == Entity.Null ? null : ReadOptionalVegetationComponent<Transform>(parent),
-                ParentPrefab = parent == Entity.Null ? null : ReadOptionalVegetationComponent<PrefabRef>(parent)
+                ParentTransform = parent == Entity.Null ? null : ReadUndoComponent<Transform>(parent),
+                ParentPrefab = parent == Entity.Null ? null : ReadUndoComponent<PrefabRef>(parent)
             });
         }
 
@@ -141,7 +148,7 @@ namespace AreaBulldozer.Tools
             return false;
         }
 
-        private T? ReadOptionalVegetationComponent<T>(Entity entity)
+        private T? ReadUndoComponent<T>(Entity entity)
             where T : unmanaged, IComponentData
         {
             return EntityManager.HasComponent<T>(entity)
@@ -149,14 +156,22 @@ namespace AreaBulldozer.Tools
                 : (T?)null;
         }
 
-        private bool ProcessVegetationUndo()
+        private bool ProcessDeletionUndo()
         {
-            if (!m_VegetationUndoRequested)
+            if (!m_DeletionUndoRequested)
             {
                 return false;
             }
 
-            // The deletion barrier must have played back before new plants are created.
+            // Wait for the tool's deletion commands to be applied before adding replacements.
+            foreach (BuildingSnapshot snapshot in m_BuildingUndo)
+            {
+                if (m_PendingDeletion.Contains(snapshot.Original))
+                {
+                    return true;
+                }
+            }
+
             foreach (VegetationSnapshot snapshot in m_VegetationUndo)
             {
                 if (m_PendingDeletion.Contains(snapshot.Original))
@@ -165,7 +180,17 @@ namespace AreaBulldozer.Tools
                 }
             }
 
-            m_VegetationUndoRequested = false;
+            foreach (CarSnapshot snapshot in m_CarUndo)
+            {
+                if (m_PendingDeletion.Contains(snapshot.Original) ||
+                    (snapshot.Trailers != null &&
+                     snapshot.Trailers.Exists(trailer => m_PendingDeletion.Contains(trailer.Original))))
+                {
+                    return true;
+                }
+            }
+
+            m_DeletionUndoRequested = false;
             ResetContinuousDeleteState();
             CancelLargeSelectionConfirmation();
 
@@ -174,6 +199,27 @@ namespace AreaBulldozer.Tools
             HashSet<Entity> restoredChildren = new();
             try
             {
+                if (m_BuildingUndo.Count > 0)
+                {
+                    HashSet<float3> occupied = GetOccupiedBuildingPositions();
+                    while (m_BuildingUndo.Count > 0)
+                    {
+                        int last = m_BuildingUndo.Count - 1;
+                        BuildingSnapshot snapshot = m_BuildingUndo[last];
+                        if (!occupied.Contains(snapshot.Transform.m_Position) && RestoreBuilding(snapshot))
+                        {
+                            occupied.Add(snapshot.Transform.m_Position);
+                            restored++;
+                        }
+                        else
+                        {
+                            skipped++;
+                        }
+
+                        m_BuildingUndo.RemoveAt(last);
+                    }
+                }
+
                 while (m_VegetationUndo.Count > 0)
                 {
                     int last = m_VegetationUndo.Count - 1;
@@ -190,6 +236,21 @@ namespace AreaBulldozer.Tools
 
                     m_VegetationUndo.RemoveAt(last);
                 }
+
+                while (m_CarUndo.Count > 0)
+                {
+                    int last = m_CarUndo.Count - 1;
+                    if (RestoreCar(m_CarUndo[last]))
+                    {
+                        restored++;
+                    }
+                    else
+                    {
+                        skipped++;
+                    }
+
+                    m_CarUndo.RemoveAt(last);
+                }
             }
             finally
             {
@@ -200,11 +261,11 @@ namespace AreaBulldozer.Tools
                 }
             }
 
-            SafeLogInfo($"Vegetation undo: restored {restored}, skipped {skipped}.");
+            SafeLogInfo($"Deletion undo: restored {restored}, skipped {skipped}.");
             return true;
         }
 
-        private void SetVegetationComponent<T>(Entity entity, T component)
+        private void SetUndoComponent<T>(Entity entity, T component)
             where T : unmanaged, IComponentData
         {
             if (EntityManager.HasComponent<T>(entity))
@@ -309,7 +370,7 @@ namespace AreaBulldozer.Tools
 
                 if (snapshot.Elevation is Elevation elevation)
                 {
-                    SetVegetationComponent(plant, elevation);
+                    SetUndoComponent(plant, elevation);
                 }
 
                 if (snapshot.Seed is PseudoRandomSeed seed &&
@@ -320,17 +381,17 @@ namespace AreaBulldozer.Tools
 
                 if (snapshot.HadOwner)
                 {
-                    SetVegetationComponent(plant, new Owner { m_Owner = snapshot.Parent });
+                    SetUndoComponent(plant, new Owner { m_Owner = snapshot.Parent });
                 }
 
                 if (snapshot.Relative is Relative relative)
                 {
-                    SetVegetationComponent(plant, relative);
+                    SetUndoComponent(plant, relative);
                 }
 
                 if (snapshot.Attachment is Attached attached)
                 {
-                    SetVegetationComponent(plant, attached);
+                    SetUndoComponent(plant, attached);
                 }
 
                 EntityManager.AddComponent<Updated>(plant);

@@ -7,6 +7,7 @@ import styles from "./AreaBulldozerCompact.module.scss";
 import { VanillaComponentResolver } from "./VanillaComponentResolver";
 import { AreaBulldozerIcon, AreaBulldozerIconType } from "./AreaBulldozerIcons";
 import { useSafeValue } from "./useSafeValue";
+import { AreaBulldozerFilterProfiles } from "./AreaBulldozerFilterProfiles";
 import {
     BindingKeys,
     heightFilter$,
@@ -17,6 +18,7 @@ import {
     deleteBuildings$,
     deleteCars$,
     deleteGeneralProps$,
+    looseGeneralPropsOnly$,
     deleteMarkerNetworks$,
     deletePaths$,
     deleteQuantityObjects$,
@@ -40,7 +42,7 @@ import {
     squareRotationDegrees$,
     uiScale$,
     useCompactToolPanel$,
-    vegetationUndoCount$,
+    deletionUndoCount$,
 } from "../bindings";
 import {
     toggleToolWindow,
@@ -290,7 +292,7 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
         const toolWindow = useToolWindow();
         const colorEditorOpen = toolWindow === "colors";
         const compact = useSafeValue("useCompactToolPanel$", useCompactToolPanel$, false);
-        const vegetationUndoCount = useSafeValue("vegetationUndoCount$", vegetationUndoCount$, 0);
+        const deletionUndoCount = useSafeValue("deletionUndoCount$", deletionUndoCount$, 0);
 
         const brushRadius = useSafeValue(
             "brushRadius$",
@@ -410,6 +412,8 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
             deleteStaticObjects$,
             false
         );
+
+        const looseGeneralPropsOnly = useSafeValue("looseGeneralPropsOnly$", looseGeneralPropsOnly$, false);
 
         const deleteGeneralProps = useSafeValue(
             "deleteGeneralProps$",
@@ -681,13 +685,13 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
                     >
                         <IconToolButton
                             icon="undo"
-                            disabled={vegetationUndoCount === 0}
-                            tooltipTitle={text("UndoVegetation", "Vegetation wiederherstellen")}
+                            disabled={deletionUndoCount === 0}
+                            tooltipTitle={text("UndoDeletion", "Letzte Löschaktion rückgängig")}
                             tooltipText={text(
-                                "UndoVegetationTooltip",
-                                "Stellt Vegetation aus der letzten Löschaktion wieder her, einschließlich Pflanzen an noch vorhandenen Gebäuden und Parks ({count})."
-                            ).replace("{count}", String(vegetationUndoCount))}
-                            onSelect={() => trigger(mod.id, BindingKeys.undoVegetation)}
+                                "UndoDeletionTooltip",
+                                "Macht die letzte Löschaktion rückgängig ({count}). Gebäude werden neu aufgebaut. Pkw und ihre Anhänger werden nach Möglichkeit wiederhergestellt."
+                            ).replace("{count}", String(deletionUndoCount))}
+                            onSelect={() => trigger(mod.id, BindingKeys.undoDeletion)}
                         />
                         <div className={styles.selectionShapes}>
                             <IconToolButton
@@ -928,6 +932,10 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
                         onSelect={() => trigger(mod.id, BindingKeys.setUndergroundView, !undergroundView)} />
                 </CompactToolSection>
 
+                <CompactToolSection title={text("FilterProfile", "Filterprofil")}>
+                    <AreaBulldozerFilterProfiles text={text} />
+                </CompactToolSection>
+
                 <CompactToolSection title={text("MainFilters", "Filter")}>
                     <div className={styles.filterButtons}>
                     <IconToolButton
@@ -1086,6 +1094,17 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
                             increaseTooltip={text("TreeAgeNext", "Nächste Altersstufe")}
                             onDecrease={() => cycleTreeAge(-1)}
                             onIncrease={() => cycleTreeAge(1)}
+                        />
+                    </CompactToolSection>
+                )}
+
+                {deleteStaticObjects && deleteGeneralProps && (
+                    <CompactToolSection title={text("LoosePropsOnly", "Nur lose Deko")}>
+                        <IconToolButton
+                            icon="protectVegetation"
+                            selected={looseGeneralPropsOnly}
+                            tooltipTitle={text("LoosePropsOnly", "Nur lose Deko")}
+                            onSelect={() => toggle(BindingKeys.setLooseGeneralPropsOnly, looseGeneralPropsOnly)}
                         />
                     </CompactToolSection>
                 )}

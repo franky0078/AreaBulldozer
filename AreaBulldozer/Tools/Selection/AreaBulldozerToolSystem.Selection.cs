@@ -49,11 +49,10 @@ namespace AreaBulldozer.Tools
             HashSet<Entity> entitiesToDelete =
                 new();
 
-            HashSet<Entity> assetLaneEntitiesToDelete =
-                new();
-
             HashSet<Entity> networkEdgesToDelete =
                 new();
+
+            HashSet<Entity> selectedAssetLanes = new();
 
             int vegetationCount = 0;
             int missingAssetCount = 0;
@@ -99,6 +98,8 @@ namespace AreaBulldozer.Tools
                     CurrentSpatialQueryRadius);
 
             HashSet<Entity> selectedBuildings =
+                new();
+            HashSet<Entity> selectedCars =
                 new();
 
             if (filters.DeleteBuildings)
@@ -222,7 +223,7 @@ namespace AreaBulldozer.Tools
                 if (!IsEntityUsable(
                         entity,
                         allowOverridden:
-                            candidate.IsMissingAsset ||
+                            candidate.IsMissingAsset || candidate.IsAssetLane ||
                             (candidate.IsVegetation && filters.IncludeOverriddenVegetation)))
                 {
                     continue;
@@ -230,6 +231,11 @@ namespace AreaBulldozer.Tools
 
                 if (m_PendingDeletion.Contains(
                         entity))
+                {
+                    continue;
+                }
+
+                if (IsMarkerCandidate(in candidate) && !MatchesCurrentMarkerType(in candidate))
                 {
                     continue;
                 }
@@ -285,6 +291,15 @@ namespace AreaBulldozer.Tools
                     continue;
                 }
 
+                if (candidate.IsCar)
+                {
+                    entity = GetSelectedCarRoot(entity);
+                    if (m_PendingDeletion.Contains(entity))
+                    {
+                        continue;
+                    }
+                }
+
                 if (!entitiesToDelete.Add(entity))
                 {
                     continue;
@@ -300,6 +315,7 @@ namespace AreaBulldozer.Tools
                 }
                 else if (candidate.IsCar)
                 {
+                    selectedCars.Add(entity);
                     carCount++;
                 }
                 else if (candidate.IsRoad)
@@ -340,11 +356,50 @@ namespace AreaBulldozer.Tools
                 else if (candidate.IsAssetLane)
                 {
                     markerNetworkCount++;
-                    assetLaneEntitiesToDelete.Add(entity);
+                    // The native lane references system removes deleted SubLanes from the owner.
+                    // An Updated owner would ask the game to regenerate the asset's lanes.
+                    if (EntityManager.HasComponent<Edge>(entity))
+                    {
+                        networkEdgesToDelete.Add(entity);
+                    }
+                    else
+                    {
+                        selectedAssetLanes.Add(entity);
+                    }
                 }
                 else
                 {
                     vegetationCount++;
+                }
+            }
+
+            foreach (Entity lane in selectedAssetLanes)
+            {
+                if (EntityManager.HasComponent<Owner>(lane) &&
+                    networkEdgesToDelete.Contains(EntityManager.GetComponentData<Owner>(lane).m_Owner))
+                {
+                    // Deleting the edge already removes its owned lanes.
+                    entitiesToDelete.Remove(lane);
+                    markerNetworkCount--;
+                }
+            }
+
+            foreach (Entity car in selectedCars)
+            {
+                if (!EntityManager.HasBuffer<Game.Vehicles.LayoutElement>(car))
+                {
+                    continue;
+                }
+
+                DynamicBuffer<Game.Vehicles.LayoutElement> layout =
+                    EntityManager.GetBuffer<Game.Vehicles.LayoutElement>(car, true);
+                for (int i = 0; i < layout.Length; i++)
+                {
+                    Entity member = layout[i].m_Vehicle;
+                    if (IsEntityUsable(member) && !m_PendingDeletion.Contains(member))
+                    {
+                        entitiesToDelete.Add(member);
+                    }
                 }
             }
 
@@ -469,7 +524,7 @@ namespace AreaBulldozer.Tools
 
             if (!continueUndoStroke)
             {
-                m_VegetationUndo.Clear();
+                ClearDeletionUndo();
             }
 
             int queuedCount = 0;
@@ -515,19 +570,17 @@ namespace AreaBulldozer.Tools
                         commandBuffer);
                 }
 
-                if (assetLaneEntitiesToDelete.Contains(
-                        entity))
-                {
-                    QueueAssetLaneOwnerUpdate(
-                        entity,
-                        queuedDeletedEntities,
-                        queuedUpdatedEntities,
-                        commandBuffer);
-                }
-
                 if (QueueDeletedComponent(entity, queuedDeletedEntities, commandBuffer))
                 {
-                    if (filters.DeleteTrees)
+                    if (selectedBuildings.Contains(entity))
+                    {
+                        RecordBuildingForUndo(entity);
+                    }
+                    else if (selectedCars.Contains(entity))
+                    {
+                        RecordCarForUndo(entity);
+                    }
+                    else if (filters.DeleteTrees)
                     {
                         RecordVegetationForUndo(entity);
                     }
@@ -801,37 +854,6 @@ namespace AreaBulldozer.Tools
                 updatedRoadNodes.Add(
                     nodeEntity);
             }
-        }
-
-        private void QueueAssetLaneOwnerUpdate(
-            Entity laneEntity,
-            HashSet<Entity> queuedDeletedEntities,
-            HashSet<Entity> queuedUpdatedEntities,
-            EntityCommandBuffer commandBuffer)
-        {
-            if (laneEntity == Entity.Null ||
-                !EntityManager.Exists(laneEntity) ||
-                !EntityManager.HasComponent<Game.Common.Owner>(
-                    laneEntity))
-            {
-                return;
-            }
-
-            Game.Common.Owner owner =
-                EntityManager.GetComponentData<Game.Common.Owner>(
-                    laneEntity);
-
-            if (owner.m_Owner == Entity.Null ||
-                !EntityManager.Exists(owner.m_Owner))
-            {
-                return;
-            }
-
-            QueueUpdatedComponent(
-                owner.m_Owner,
-                queuedUpdatedEntities,
-                queuedDeletedEntities,
-                commandBuffer);
         }
 
         private bool QueueDeletedComponent(

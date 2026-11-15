@@ -130,17 +130,19 @@ namespace AreaBulldozer.Tools
                 return false;
             }
 
-            // Explicitly selected road vehicles may have a household or depot owner.
-            if (candidate.IsCar)
+            // These explicit filters target entities that normally have an owner.
+            if (candidate.IsCar || IsMarkerCandidate(in candidate))
             {
                 return false;
             }
 
-            if (candidate.IsStaticObject &&
-                candidate.StaticCategory !=
-                    StaticObjectCategory.ActivityLocation)
+            if (candidate.IsStaticObject)
             {
-                return false;
+                return filters.LooseGeneralPropsOnly &&
+                       candidate.StaticCategory == StaticObjectCategory.GeneralProp &&
+                       (EntityManager.HasComponent<Owner>(candidate.Entity) ||
+                        EntityManager.HasComponent<Attached>(candidate.Entity) ||
+                        m_SpatialLinkedProps.Contains(candidate.Entity));
             }
 
             return IsOwnedObjectProtected(

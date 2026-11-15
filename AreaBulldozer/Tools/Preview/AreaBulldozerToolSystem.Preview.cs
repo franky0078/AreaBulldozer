@@ -122,7 +122,6 @@ namespace AreaBulldozer.Tools
                 lineWidthChanged || polylineCurveModeChanged || polylineRoundingChanged ||
                 shapeChanged || filtersChanged;
 
-            // Cars can move and trees can change age even with a still cursor.
             if (!selectionChanged && !filters.DeleteCars &&
                 filters.TreeAgeFilter == AreaBulldozerTreeAgeFilter.All)
             {
@@ -327,7 +326,7 @@ namespace AreaBulldozer.Tools
                 if (!IsEntityUsable(
                         entity,
                         allowOverridden:
-                            candidate.IsMissingAsset ||
+                            candidate.IsMissingAsset || candidate.IsAssetLane ||
                             (candidate.IsVegetation && filters.IncludeOverriddenVegetation)))
                 {
                     continue;
@@ -335,6 +334,11 @@ namespace AreaBulldozer.Tools
 
                 if (m_PendingDeletion != null &&
                     m_PendingDeletion.Contains(entity))
+                {
+                    continue;
+                }
+
+                if (IsMarkerCandidate(in candidate) && !MatchesCurrentMarkerType(in candidate))
                 {
                     continue;
                 }
@@ -373,6 +377,44 @@ namespace AreaBulldozer.Tools
                 {
                     AddBuildingPreviewHierarchy(entity);
                     continue;
+                }
+
+                if (candidate.IsCar)
+                {
+                    entity = GetSelectedCarRoot(entity);
+                    if (m_PendingDeletion != null && m_PendingDeletion.Contains(entity))
+                    {
+                        continue;
+                    }
+
+                    if (EntityManager.HasBuffer<Game.Vehicles.LayoutElement>(entity))
+                    {
+                        var layout = EntityManager.GetBuffer<Game.Vehicles.LayoutElement>(entity, true);
+                        for (int i = 0; i < layout.Length; i++)
+                        {
+                            Entity member = layout[i].m_Vehicle;
+                            if (IsEntityUsable(member) &&
+                                (m_PendingDeletion == null || !m_PendingDeletion.Contains(member)))
+                            {
+                                AddEntityToNextPreview(member);
+                            }
+                        }
+                    }
+                }
+
+                if (candidate.IsAssetLane &&
+                    (IsStandaloneAssetLane(entity) || IsAssetMarkerNetwork(entity)) &&
+                    EntityManager.HasBuffer<Game.Net.SubLane>(entity))
+                {
+                    var subLanes = EntityManager.GetBuffer<Game.Net.SubLane>(entity, true);
+                    for (int i = 0; i < subLanes.Length; i++)
+                    {
+                        Entity lane = subLanes[i].m_SubLane;
+                        if (IsEntityUsable(lane, allowOverridden: true) && IsAssetLaneMarker(lane))
+                        {
+                            AddEntityToNextPreview(lane);
+                        }
+                    }
                 }
 
                 AddEntityToNextPreview(entity);
