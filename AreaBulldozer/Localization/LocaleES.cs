@@ -16,6 +16,9 @@ namespace AreaBulldozer.Localization
             IList<IDictionaryEntryError> errors,
             Dictionary<string, int> indexCounts)
         {
+            const string useFilterProfiles = "Usar perfiles de filtros";
+            const string useFilterProfilesDescription = "Muestra u oculta el menú de perfiles de filtros en la herramienta. Los perfiles guardados se conservan.";
+
             return new Dictionary<string, string>
             {
                 { m_Setting.GetSettingsLocaleID(), "Area Bulldozer" },
@@ -24,6 +27,9 @@ namespace AreaBulldozer.Localization
                 { m_Setting.GetOptionGroupLocaleID(Setting.kToolGroup), "Visualización e iniciador" },
                 { m_Setting.GetOptionGroupLocaleID(Setting.kKeybindingGroup), "Asignación de teclas" },
                 { m_Setting.GetOptionGroupLocaleID(Setting.kAboutGroup), "Información" },
+
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.UseFilterProfiles)), useFilterProfiles },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.UseFilterProfiles)), useFilterProfilesDescription },
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DeleteTrees)), "Eliminar árboles y vegetación" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.DeleteTrees)), "Selecciona árboles, arbustos y otra vegetación dentro del área de selección." },
@@ -117,6 +123,8 @@ namespace AreaBulldozer.Localization
                 { "AreaBulldozer.UI.Colors", "Colores" },
                 { "AreaBulldozer.UI.OpenColorEditor", "Abrir editor de colores" },
                 { "AreaBulldozer.UI.ToolOptionsTitle", "Opciones" },
+                { "AreaBulldozer.UI.UseFilterProfiles", useFilterProfiles },
+                { "AreaBulldozer.UI.UseFilterProfilesTooltip", useFilterProfilesDescription },
                 { "AreaBulldozer.UI.ToolOptionsSize", "Tamaño de la interfaz" },
                 { "AreaBulldozer.UI.ToolOptionsNormal", "Normal" },
                 { "AreaBulldozer.UI.ToolOptionsCompact", "Compacto" },

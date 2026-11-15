@@ -42,6 +42,7 @@ import {
     squareRotationDegrees$,
     uiScale$,
     useCompactToolPanel$,
+    useFilterProfiles$,
     deletionUndoCount$,
 } from "../bindings";
 import {
@@ -463,6 +464,7 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
             false
         );
 
+        const profilesEnabled = useSafeValue("useFilterProfiles$", useFilterProfiles$, true);
         const { translate } = useLocalization();
 
         const text = (key: string, fallback: string) =>
@@ -932,9 +934,11 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
                         onSelect={() => trigger(mod.id, BindingKeys.setUndergroundView, !undergroundView)} />
                 </CompactToolSection>
 
-                <CompactToolSection title={text("FilterProfile", "Filterprofil")}>
-                    <AreaBulldozerFilterProfiles text={text} />
-                </CompactToolSection>
+                {profilesEnabled && (
+                    <CompactToolSection title={text("FilterProfile", "Filterprofil")}>
+                        <AreaBulldozerFilterProfiles text={text} />
+                    </CompactToolSection>
+                )}
 
                 <CompactToolSection title={text("MainFilters", "Filter")}>
                     <div className={styles.filterButtons}>

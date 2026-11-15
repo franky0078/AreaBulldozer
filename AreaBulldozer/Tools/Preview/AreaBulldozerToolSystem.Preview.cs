@@ -6,7 +6,7 @@ namespace AreaBulldozer.Tools
 {
     public partial class AreaBulldozerToolSystem
     {
-        private void UpdateSelectionPreviewIfNeeded()
+        private void UpdateSelectionPreviewIfNeeded(bool rotating)
         {
             if (!HasValidPosition ||
                 Mod.Settings == null)
@@ -122,14 +122,17 @@ namespace AreaBulldozer.Tools
                 lineWidthChanged || polylineCurveModeChanged || polylineRoundingChanged ||
                 shapeChanged || filtersChanged;
 
+            // Cars can move and trees can change age even with a still cursor.
             if (!selectionChanged && !filters.DeleteCars &&
                 filters.TreeAgeFilter == AreaBulldozerTreeAgeFilter.All)
             {
                 return;
             }
 
+            // The brush can rotate every frame. Reuse the preview interval
+            // when a drag would otherwise rescan every vehicle on each frame.
             if (!radiusChanged &&
-                !rotationChanged &&
+                (!rotationChanged || (rotating && filters.DeleteCars)) &&
                 !lineWidthChanged &&
                 !polylineCurveModeChanged &&
                 !polylineRoundingChanged &&

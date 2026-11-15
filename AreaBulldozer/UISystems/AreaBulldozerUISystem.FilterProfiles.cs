@@ -11,8 +11,18 @@ namespace AreaBulldozer.UISystems
         private string m_ActiveFilterProfileId = "";
         private List<FilterProfile> m_CustomFilterProfiles = new();
 
+        private AreaBulldozerPolygonUISystem ProfilePolygonSystem =>
+            World.GetOrCreateSystemManaged<AreaBulldozerPolygonUISystem>();
+
+        private bool FilterProfilesEnabled => Mod.Settings?.UseFilterProfiles ?? true;
+        private bool CanManageFilterProfiles =>
+            FilterProfilesEnabled && Mod.Settings != null && m_Tool?.IsToolActive == true;
+
         private void RegisterFilterProfileBindings()
         {
+            AddBooleanValueBinding("useFilterProfiles", () => FilterProfilesEnabled);
+            AddBooleanSettingTrigger("setUseFilterProfiles", (setting, value) => setting.UseFilterProfiles = value);
+
             string group = AreaBulldozerUIBindingConstants.ModId;
             AddUpdateBinding(new GetterValueBinding<string>(group, "filterProfiles", GetFilterProfiles));
             AddUpdateBinding(new GetterValueBinding<string>(group, "activeFilterProfile", GetActiveFilterProfile));
@@ -42,6 +52,11 @@ namespace AreaBulldozer.UISystems
 
         private string GetFilterProfiles()
         {
+            if (!FilterProfilesEnabled)
+            {
+                return "";
+            }
+
             // Return the same string while settings are unchanged.
             _ = CustomFilterProfiles;
             return m_FilterProfileStorage;
@@ -52,18 +67,22 @@ namespace AreaBulldozer.UISystems
             CustomFilterProfiles.Find(profile => profile.Id == id);
 
         private string GetActiveFilterProfile() =>
-            m_ActiveFilterProfileId.Length > 0 && FindFilterProfile(m_ActiveFilterProfileId) != null
+            FilterProfilesEnabled && m_ActiveFilterProfileId.Length > 0 &&
+            FindFilterProfile(m_ActiveFilterProfileId) != null
                 ? m_ActiveFilterProfileId
                 : "";
 
         private bool IsFilterProfileModified() =>
-            Mod.Settings is Setting setting && m_ActiveFilterProfileId.Length > 0 &&
+            FilterProfilesEnabled && Mod.Settings is Setting setting && m_ActiveFilterProfileId.Length > 0 &&
             FindFilterProfile(m_ActiveFilterProfileId) is FilterProfile profile &&
-            FilterProfile.Capture(setting) != profile.Filters;
+            (FilterProfile.Capture(setting) != profile.Filters ||
+             (profile.Brush.HasValue
+                ? !profile.Brush.Value.Matches(ProfilePolygonSystem.CaptureProfileBrush(setting))
+                : Array.IndexOf(FilterProfile.Presets, profile) < 0));
 
         private void LoadFilterProfile(string id)
         {
-            if (m_Tool?.IsToolActive != true || Mod.Settings == null)
+            if (!CanManageFilterProfiles)
             {
                 return;
             }
@@ -83,7 +102,14 @@ namespace AreaBulldozer.UISystems
             Setting setting = Mod.Settings;
             bool previousCarFilter = setting.DeleteCars;
             AreaBulldozerHeightFilter previousHeightFilter = setting.HeightFilter;
-            ChangeSetting(profile.Apply);
+            ChangeSetting(current =>
+            {
+                profile.Apply(current);
+                if (profile.Brush is FilterProfile.BrushSettings brush)
+                {
+                    ProfilePolygonSystem.ApplyProfileBrush(current, brush);
+                }
+            });
             m_ActiveFilterProfileId = id;
 
             if (previousCarFilter != setting.DeleteCars)
@@ -104,13 +130,16 @@ namespace AreaBulldozer.UISystems
         private void CreateFilterProfile(string name)
         {
             name = name?.Trim();
-            if (m_Tool?.IsToolActive != true || Mod.Settings == null ||
+            if (!CanManageFilterProfiles ||
                 !IsAvailableProfileName(name))
             {
                 return;
             }
 
-            var profile = new FilterProfile(Guid.NewGuid().ToString("N"), name, FilterProfile.Capture(Mod.Settings));
+            var profile = new FilterProfile(Guid.NewGuid().ToString("N"), name, FilterProfile.Capture(Mod.Settings))
+            {
+                Brush = ProfilePolygonSystem.CaptureProfileBrush(Mod.Settings)
+            };
             CustomFilterProfiles.Add(profile);
             m_ActiveFilterProfileId = profile.Id;
             SaveFilterProfiles();
@@ -118,7 +147,7 @@ namespace AreaBulldozer.UISystems
 
         private void UpdateFilterProfile(string id)
         {
-            if (m_Tool?.IsToolActive != true || Mod.Settings == null || id != m_ActiveFilterProfileId)
+            if (!CanManageFilterProfiles || id != m_ActiveFilterProfileId)
             {
                 return;
             }
@@ -127,6 +156,7 @@ namespace AreaBulldozer.UISystems
             if (profile != null)
             {
                 profile.Filters = FilterProfile.Capture(Mod.Settings);
+                profile.Brush = ProfilePolygonSystem.CaptureProfileBrush(Mod.Settings);
                 SaveFilterProfiles();
             }
         }
@@ -134,7 +164,7 @@ namespace AreaBulldozer.UISystems
         private void RenameFilterProfile(string id, string name)
         {
             name = name?.Trim();
-            if (m_Tool?.IsToolActive != true || Mod.Settings == null || !IsAvailableProfileName(name, id))
+            if (!CanManageFilterProfiles || !IsAvailableProfileName(name, id))
             {
                 return;
             }
@@ -149,7 +179,7 @@ namespace AreaBulldozer.UISystems
 
         private void DeleteFilterProfile(string id)
         {
-            if (m_Tool?.IsToolActive != true || Mod.Settings == null ||
+            if (!CanManageFilterProfiles ||
                 CustomFilterProfiles.RemoveAll(item => item.Id == id) == 0)
             {
                 return;

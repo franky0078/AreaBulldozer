@@ -356,25 +356,37 @@ export function AreaBulldozerIcon({ type }: { type: AreaBulldozerIconType }) {
 
 export function BulldozerIcon({ className }: { className?: string }) {
     return (
-        <svg
-            className={className}
-            viewBox="0 0 64 48"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-        >
-            <path d="M4 31L10 24H28L36 27L33 40H9L4 31Z" />
-            <path d="M6 33H34" />
-            <path d="M23 22L30 16L38 20" />
-            <path d="M30 16V24" />
-            <path d="M38 8L52 7L58 10V24H40L38 8Z" />
-            <path d="M41 11L50 10.5L50 21H41V11Z" />
-            <path d="M36 24H56L60 27V33" />
-            <circle cx="51" cy="34" r="8" />
-            <circle cx="61" cy="36" r="5" />
+        <svg className={className} viewBox="0 0 96 88" fill="#fff" aria-hidden="true">
+            {/* Cab, bonnet and grille */}
+            <path fillRule="evenodd" d="
+                M11 39 15 31 20 28 23 16 21 15Q19 14 20 11L39 5Q41 4 43 5L55 11
+                Q57 12 56 16L55 17 58 32 64 34 72 39Q75 41 75 45V55L49 64
+                Q48 59 42 55L22 42Q17 39 11 39Z
+                M23 29 32 34 35 19 26 16Z M36 34 54 27 52 16 39 20Z
+                M45 39 52 43 52 41 45 37Q43 36 43 38Z
+                M44 45 52 50 52 48 44 43Q42 42 42 44Z
+                M58 47 72 42V40L58 45Z M58 52 72 47V45L58 50Z
+                M58 57 72 52V50L58 55Z
+            " />
+            {/* Exhaust and the far track */}
+            <path d="M61 22 65 18Q67 17 67 19L65 22V32Q63 34 61 32ZM77 47 82 45 84 48 77 51Z" />
+            {/* Near track with recessed tread and wheel cutouts */}
+            <path fillRule="evenodd" d="
+                M7 43Q13 39 21 44L43 59Q50 64 46 71Q43 77 36 74L12 61Q2 55 5 47Z
+                M9 47Q6 53 14 58L36 70Q41 73 44 69Q46 65 40 61L18 47Q12 43 9 47Z
+                M14 45 21 42 24 44 17 47Z M21 49 28 46 31 48 24 51Z
+                M28 54 35 51 38 53 31 56Z M35 59 42 56 45 58 38 61Z
+            " />
+            <ellipse cx="14" cy="52" rx="2.8" ry="3.9" transform="rotate(-16 14 52)" />
+            <ellipse cx="22" cy="57" rx="2.8" ry="3.9" transform="rotate(-16 22 57)" />
+            <ellipse cx="30" cy="62" rx="2.8" ry="3.9" transform="rotate(-16 30 62)" />
+            <ellipse cx="38" cy="67" rx="2.8" ry="3.9" transform="rotate(-16 38 67)" />
+            {/* White blade, with a transparent crease between its faces */}
+            <path fillRule="evenodd" d="
+                M46 64 87 50Q89 49 90 51L91 63 95 70Q96 72 94 73L52 86
+                Q50 87 48 85L43 82Q42 81 43 78Z
+                M48 68 45 80 49 83 47 80Z
+            " />
         </svg>
     );
 }

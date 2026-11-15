@@ -16,6 +16,9 @@ namespace AreaBulldozer.Localization
             IList<IDictionaryEntryError> errors,
             Dictionary<string, int> indexCounts)
         {
+            const string useFilterProfiles = "Использовать профили фильтров";
+            const string useFilterProfilesDescription = "Показывает или скрывает меню профилей фильтров в инструменте. Сохранённые профили сохраняются.";
+
             return new Dictionary<string, string>
             {
                 { m_Setting.GetSettingsLocaleID(), "Area Bulldozer" },
@@ -25,6 +28,9 @@ namespace AreaBulldozer.Localization
                 { m_Setting.GetOptionGroupLocaleID(Setting.kToolGroup), "Интерфейс и запуск" },
                 { m_Setting.GetOptionGroupLocaleID(Setting.kKeybindingGroup), "Клавиши" },
                 { m_Setting.GetOptionGroupLocaleID(Setting.kAboutGroup), "Информация" },
+
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.UseFilterProfiles)), useFilterProfiles },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.UseFilterProfiles)), useFilterProfilesDescription },
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DeleteTrees)), "Удалить деревья и растительность" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.DeleteTrees)), "Нацелена на деревья, кустарники и другую растительность в зоне отбора." },
@@ -151,6 +157,8 @@ namespace AreaBulldozer.Localization
                 { "AreaBulldozer.UI.Colors", "Цвета" },
                 { "AreaBulldozer.UI.OpenColorEditor", "Открыть редактор цветов" },
                 { "AreaBulldozer.UI.ToolOptionsTitle", "Настройки" },
+                { "AreaBulldozer.UI.UseFilterProfiles", useFilterProfiles },
+                { "AreaBulldozer.UI.UseFilterProfilesTooltip", useFilterProfilesDescription },
                 { "AreaBulldozer.UI.ToolOptionsSize", "Размер интерфейса" },
                 { "AreaBulldozer.UI.ToolOptionsNormal", "Обычный" },
                 { "AreaBulldozer.UI.ToolOptionsCompact", "Компактный" },

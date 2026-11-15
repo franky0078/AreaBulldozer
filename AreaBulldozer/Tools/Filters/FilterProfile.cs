@@ -57,6 +57,8 @@ namespace AreaBulldozer.Tools
         internal string Name { get; set; }
         internal int Filters { get; set; }
 
+        internal BrushSettings? Brush { get; set; }
+
         internal FilterProfile(string id, string name, int filters)
         {
             Id = id;
@@ -117,7 +119,7 @@ namespace AreaBulldozer.Tools
             foreach (string row in (stored ?? "").Split('\n'))
             {
                 string[] columns = row.Split('\t');
-                if (columns.Length != 3 ||
+                if ((columns.Length != 3 && columns.Length != 4) ||
                     !Guid.TryParseExact(columns[0], "N", out _) ||
                     !IsValidName(columns[1]) ||
                     !int.TryParse(columns[2], NumberStyles.None, CultureInfo.InvariantCulture, out int filters) ||
@@ -131,12 +133,85 @@ namespace AreaBulldozer.Tools
 
                 ids.Add(columns[0]);
                 names.Add(columns[1]);
-                profiles.Add(new FilterProfile(columns[0], columns[1], filters));
+                var profile = new FilterProfile(columns[0], columns[1], filters);
+                if (columns.Length == 4 && BrushSettings.TryParse(columns[3], out BrushSettings brush))
+                {
+                    profile.Brush = brush;
+                }
+
+                profiles.Add(profile);
             }
 
             return profiles;
         }
 
-        internal string Serialize() => Id + "\t" + Name + "\t" + Filters.ToString(CultureInfo.InvariantCulture);
+        internal string Serialize()
+        {
+            string row = Id + "\t" + Name + "\t" + Filters.ToString(CultureInfo.InvariantCulture);
+            return Brush.HasValue ? row + "\t" + Brush.Value.Serialize() : row;
+        }
+
+        internal readonly struct BrushSettings
+        {
+            internal AreaBulldozerSelectionShape Shape { get; }
+            internal int Radius { get; }
+            internal int LineWidth { get; }
+            internal int Rounding { get; }
+            internal int RotationTenths { get; }
+            internal bool Curved { get; }
+            internal bool Polygon { get; }
+
+            internal BrushSettings(AreaBulldozerSelectionShape shape, int radius, int lineWidth,
+                int rounding, int rotationTenths, bool curved, bool polygon)
+            {
+                Shape = shape;
+                Radius = radius;
+                LineWidth = lineWidth;
+                Rounding = rounding;
+                RotationTenths = rotationTenths;
+                Curved = curved;
+                Polygon = polygon;
+            }
+
+            internal bool Matches(BrushSettings other) =>
+                Shape == other.Shape && Radius == other.Radius && LineWidth == other.LineWidth &&
+                Rounding == other.Rounding && RotationTenths == other.RotationTenths &&
+                Curved == other.Curved && Polygon == other.Polygon;
+
+            internal string Serialize() => FormattableString.Invariant(
+                $"{(int)Shape},{Radius},{LineWidth},{Rounding},{RotationTenths},{(Curved ? 1 : 0) | (Polygon ? 2 : 0)}");
+
+            internal static bool TryParse(string value, out BrushSettings brush)
+            {
+                brush = default;
+                string[] columns = value.Split(',');
+                if (columns.Length != 6)
+                {
+                    return false;
+                }
+
+                var numbers = new int[6];
+                for (int i = 0; i < columns.Length; i++)
+                {
+                    if (!int.TryParse(columns[i], NumberStyles.None, CultureInfo.InvariantCulture, out numbers[i]))
+                    {
+                        return false;
+                    }
+                }
+
+                var shape = (AreaBulldozerSelectionShape)numbers[0];
+                if ((shape != AreaBulldozerSelectionShape.Circle && shape != AreaBulldozerSelectionShape.Square &&
+                     shape != AreaBulldozerSelectionShape.Triangle && shape != AreaBulldozerSelectionShape.Polyline) ||
+                    numbers[1] < 5 || numbers[1] > 200 || numbers[2] < 2 || numbers[2] > 100 ||
+                    numbers[3] < 10 || numbers[3] > 100 || numbers[4] > 3599 || numbers[5] > 3)
+                {
+                    return false;
+                }
+
+                brush = new BrushSettings(shape, numbers[1], numbers[2], numbers[3], numbers[4],
+                    (numbers[5] & 1) != 0, (numbers[5] & 2) != 0);
+                return true;
+            }
+        }
     }
 }

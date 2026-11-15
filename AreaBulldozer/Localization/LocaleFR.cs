@@ -16,6 +16,9 @@ namespace AreaBulldozer.Localization
             IList<IDictionaryEntryError> errors,
             Dictionary<string, int> indexCounts)
         {
+            const string useFilterProfiles = "Utiliser les profils de filtres";
+            const string useFilterProfilesDescription = "Affiche ou masque le menu des profils de filtres dans l’outil. Les profils enregistrés sont conservés.";
+
             return new Dictionary<string, string>
             {
                 { m_Setting.GetSettingsLocaleID(), "Area Bulldozer" },
@@ -24,6 +27,9 @@ namespace AreaBulldozer.Localization
                 { m_Setting.GetOptionGroupLocaleID(Setting.kToolGroup), "Affichage et lanceur" },
                 { m_Setting.GetOptionGroupLocaleID(Setting.kKeybindingGroup), "Raccourcis clavier" },
                 { m_Setting.GetOptionGroupLocaleID(Setting.kAboutGroup), "Informations" },
+
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.UseFilterProfiles)), useFilterProfiles },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.UseFilterProfiles)), useFilterProfilesDescription },
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DeleteTrees)), "Supprimer les arbres et la végétation" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.DeleteTrees)), "Cible les arbres, buissons et autres végétaux dans la zone de sélection." },
@@ -117,6 +123,8 @@ namespace AreaBulldozer.Localization
                 { "AreaBulldozer.UI.Colors", "Couleurs" },
                 { "AreaBulldozer.UI.OpenColorEditor", "Ouvrir l'éditeur de couleurs" },
                 { "AreaBulldozer.UI.ToolOptionsTitle", "Options" },
+                { "AreaBulldozer.UI.UseFilterProfiles", useFilterProfiles },
+                { "AreaBulldozer.UI.UseFilterProfilesTooltip", useFilterProfilesDescription },
                 { "AreaBulldozer.UI.ToolOptionsSize", "Taille de l’interface" },
                 { "AreaBulldozer.UI.ToolOptionsNormal", "Normale" },
                 { "AreaBulldozer.UI.ToolOptionsCompact", "Compacte" },

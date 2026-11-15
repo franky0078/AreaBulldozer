@@ -848,24 +848,32 @@ namespace AreaBulldozer.Tools
             return false;
         }
 
-        private void UpdateSquareRotationInput()
+        private bool UpdateSquareRotationInput()
         {
             if (m_IsPointerOverUI ||
                 !IsRotatableSelection ||
                 m_RotateSquareHoldAction == null ||
-                m_RotateSquareDeltaAction == null ||
-                m_RotateSquareHoldAction.ReadValue<float>() < 0.5f)
+                m_RotateSquareDeltaAction == null)
             {
-                return;
+                return false;
             }
 
-            UnityEngine.Vector2 pointerDelta =
-                m_RotateSquareDeltaAction.ReadValue<
-                    UnityEngine.Vector2>();
-
-            if (math.abs(pointerDelta.x) < 0.01f)
+            Mouse mouse = Mouse.current;
+            if (m_RotateSquareHoldAction.ReadValue<float>() < 0.5f &&
+                mouse?.rightButton.isPressed != true)
             {
-                return;
+                return false;
+            }
+
+            float deltaX = m_RotateSquareDeltaAction.ReadValue<UnityEngine.Vector2>().x;
+            if (math.abs(deltaX) < 0.01f && mouse != null)
+            {
+                deltaX = mouse.delta.ReadValue().x;
+            }
+
+            if (!math.isfinite(deltaX) || math.abs(deltaX) < 0.01f)
+            {
+                return true;
             }
 
             const float degreesPerPixel = 0.35f;
@@ -873,14 +881,17 @@ namespace AreaBulldozer.Tools
             float nextDegrees =
                 math.fmod(
                     SquareRotationDegrees +
-                    pointerDelta.x * degreesPerPixel +
+                    deltaX * degreesPerPixel +
                     360f,
                     360f);
 
             SquareRotationRadians =
                 math.radians(nextDegrees);
 
-            m_NextPreviewUpdateTime = 0f;
+            if (!(Mod.Settings?.DeleteCars ?? false))
+            {
+                m_NextPreviewUpdateTime = 0f;
+            }
 
             if (m_LargeSelectionConfirmationPending)
             {
@@ -888,6 +899,8 @@ namespace AreaBulldozer.Tools
                     logReason:
                     "Large selection confirmation cancelled because the selection rotated.");
             }
+
+            return true;
         }
 
         public void SetSquareRotationDegrees(float degrees)
@@ -924,6 +937,7 @@ namespace AreaBulldozer.Tools
         private JobHandle OnToolUpdate(
             JobHandle inputDeps)
         {
+            bool rotating = UpdateSquareRotationInput();
             UpdateHeightView();
             ObserveCarFilterPauseOverride();
             CleanupPendingDeletions();
@@ -932,26 +946,30 @@ namespace AreaBulldozer.Tools
             UpdateLargeSelectionConfirmationState();
             UpdateMarkerVisibility();
 
-            if (!GetRaycastResult(
-                    out Entity _,
-                    out RaycastHit hit))
+            bool hasRaycast = GetRaycastResult(out Entity _, out RaycastHit hit);
+            if (hasRaycast)
             {
-                HasValidPosition = false;
-                CurrentPosition = float3.zero;
-
+                CurrentPosition = hit.m_HitPosition;
+                HasValidPosition = true;
+            }
+            else
+            {
                 CancelLargeSelectionConfirmation();
-                ClearSelectionPreview();
 
-                return inputDeps;
+                // A right-button drag can briefly block the terrain raycast.
+                // Keep drawing around the last valid point during that drag.
+                if (!rotating || !HasValidPosition)
+                {
+                    HasValidPosition = false;
+                    CurrentPosition = float3.zero;
+                    ClearSelectionPreview();
+                    return inputDeps;
+                }
             }
 
-            CurrentPosition = hit.m_HitPosition;
-            HasValidPosition = true;
+            UpdateSelectionPreviewIfNeeded(rotating);
 
-            UpdateSquareRotationInput();
-            UpdateSelectionPreviewIfNeeded();
-
-            if (!undoClicked)
+            if (hasRaycast && !undoClicked)
             {
                 UpdateContinuousDeleteInput();
             }

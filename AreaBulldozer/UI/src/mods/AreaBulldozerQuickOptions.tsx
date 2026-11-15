@@ -11,6 +11,7 @@ import {
     protectAssetVegetation$,
     protectOwnedObjects$,
     useCompactToolPanel$,
+    useFilterProfiles$,
 } from "../bindings";
 import { closeToolWindow } from "./AreaBulldozerColorEditorState";
 import styles from "./AreaBulldozerColorEditor.module.scss";
@@ -29,6 +30,7 @@ interface QuickOptionsProps {
 
 export function AreaBulldozerQuickOptions({ text, dragging, onDragStart }: QuickOptionsProps) {
     const compact = useSafeValue("useCompactToolPanel$", useCompactToolPanel$, false);
+    const profilesEnabled = useSafeValue("useFilterProfiles$", useFilterProfiles$, true);
     const confirm = useSafeValue("confirmLargeSelection$", confirmLargeSelection$, true);
     const includeBuilding = useSafeValue("deleteBuildingSubObjects$", deleteBuildingSubObjects$, false);
     const protectVegetation = useSafeValue("protectAssetVegetation$", protectAssetVegetation$, true);
@@ -95,6 +97,27 @@ export function AreaBulldozerQuickOptions({ text, dragging, onDragStart }: Quick
             </Tooltip>
         ) : React.cloneElement(control, { title: description ?? label });
 
+    const renderToggle = (key: string, label: string, description: string, enabled: boolean) =>
+        withTooltip(
+            <div className={styles.optionsRow}>
+                <span className={label.length > 25 ? styles.longLabel : undefined}>{label}</span>
+                <div className={styles.optionsButtons}>
+                    <button
+                        type="button"
+                        className={buttonClass(enabled)}
+                        role="switch"
+                        aria-label={label}
+                        aria-checked={enabled}
+                        onClick={() => trigger(mod.id, key, !enabled)}
+                    >
+                        {enabled ? text("ToolOptionsOn", "Ein") : text("ToolOptionsOff", "Aus")}
+                    </button>
+                </div>
+            </div>,
+            label,
+            description
+        );
+
     const adjustThreshold = (delta: number) =>
         trigger(
             mod.id,
@@ -159,29 +182,18 @@ export function AreaBulldozerQuickOptions({ text, dragging, onDragStart }: Quick
                 </div>
             </div>
 
+            {renderToggle(
+                BindingKeys.setUseFilterProfiles,
+                text("UseFilterProfiles", "Filterprofile verwenden"),
+                text("UseFilterProfilesTooltip", "Blendet die Profil-Auswahl im Werkzeug ein oder aus. Gespeicherte Profile bleiben erhalten."),
+                profilesEnabled
+            )}
+
             <div role="group" aria-label={safetyLabel}>
                 <div className={styles.optionsGroupTitle}>{safetyLabel}</div>
                 {safetyOptions.map(({ key, label, description, enabled }) => (
                     <React.Fragment key={key}>
-                        {withTooltip(
-                            <div className={styles.optionsRow}>
-                                <span className={label.length > 25 ? styles.longLabel : undefined}>{label}</span>
-                                <div className={styles.optionsButtons}>
-                                    <button
-                                        type="button"
-                                        className={buttonClass(enabled)}
-                                        role="switch"
-                                        aria-label={label}
-                                        aria-checked={enabled}
-                                        onClick={() => trigger(mod.id, key, !enabled)}
-                                    >
-                                        {enabled ? text("ToolOptionsOn", "Ein") : text("ToolOptionsOff", "Aus")}
-                                    </button>
-                                </div>
-                            </div>,
-                            label,
-                            description
-                        )}
+                        {renderToggle(key, label, description, enabled)}
                     </React.Fragment>
                 ))}
 

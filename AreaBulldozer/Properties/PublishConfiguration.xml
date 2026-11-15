@@ -163,7 +163,7 @@
 	<ForumLink Value="https://forum.paradoxplaza.com/forum/threads/mod-area-bulldozer-area-deletion-tool-with-object-filters.1937211/" />
 
 	<!-- Mod version -->
-	<ModVersion Value="2.1.0" />
+	<ModVersion Value="2.1.2" />
 
 	<!--
 	Recommended game version.
@@ -194,9 +194,10 @@
 	<ChangeLog>
 		Latest changes
 
-		- added support for filter profiles
-		- added Undo functionality for assets and vehicles
-		- fix deletion of certain network sub-objects not working correctly
+		- added option to hide filter profile menu
+		- enhanced filter profile
+		- added new app icon
+		- fix square rotation issue (vehicle filter)
 	</ChangeLog>
 
 	<!--Optional external links for your own mod.-->

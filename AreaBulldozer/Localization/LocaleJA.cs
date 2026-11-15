@@ -16,6 +16,9 @@ namespace AreaBulldozer.Localization
             IList<IDictionaryEntryError> errors,
             Dictionary<string, int> indexCounts)
         {
+            const string useFilterProfiles = "フィルタープロファイルを使用";
+            const string useFilterProfilesDescription = "ツールのフィルタープロファイルメニューの表示を切り替えます。保存済みのプロファイルは保持されます。";
+
             return new Dictionary<string, string>
             {
                 { m_Setting.GetSettingsLocaleID(), "Area Bulldozer" },
@@ -25,6 +28,9 @@ namespace AreaBulldozer.Localization
                 { m_Setting.GetOptionGroupLocaleID(Setting.kToolGroup), "ディスプレイと発射機" },
                 { m_Setting.GetOptionGroupLocaleID(Setting.kKeybindingGroup), "キー設定" },
                 { m_Setting.GetOptionGroupLocaleID(Setting.kAboutGroup), "情報" },
+
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.UseFilterProfiles)), useFilterProfiles },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.UseFilterProfiles)), useFilterProfilesDescription },
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DeleteTrees)), "樹木と植物を除去する" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.DeleteTrees)), "選択エリア内の木や灌木,その他の植物を対象とする." },
@@ -151,6 +157,8 @@ namespace AreaBulldozer.Localization
                 { "AreaBulldozer.UI.Colors", "色" },
                 { "AreaBulldozer.UI.OpenColorEditor", "オープンカラーエディタ" },
                 { "AreaBulldozer.UI.ToolOptionsTitle", "オプション" },
+                { "AreaBulldozer.UI.UseFilterProfiles", useFilterProfiles },
+                { "AreaBulldozer.UI.UseFilterProfilesTooltip", useFilterProfilesDescription },
                 { "AreaBulldozer.UI.ToolOptionsSize", "UIサイズ" },
                 { "AreaBulldozer.UI.ToolOptionsNormal", "標準" },
                 { "AreaBulldozer.UI.ToolOptionsCompact", "コンパクト" },

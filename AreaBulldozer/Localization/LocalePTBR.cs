@@ -16,6 +16,9 @@ namespace AreaBulldozer.Localization
             IList<IDictionaryEntryError> errors,
             Dictionary<string, int> indexCounts)
         {
+            const string useFilterProfiles = "Usar perfis de filtros";
+            const string useFilterProfilesDescription = "Mostra ou oculta o menu de perfis de filtros na ferramenta. Os perfis salvos são mantidos.";
+
             return new Dictionary<string, string>
             {
                 { m_Setting.GetSettingsLocaleID(), "Area Bulldozer" },
@@ -25,6 +28,9 @@ namespace AreaBulldozer.Localization
                 { m_Setting.GetOptionGroupLocaleID(Setting.kToolGroup), "Display e lançador" },
                 { m_Setting.GetOptionGroupLocaleID(Setting.kKeybindingGroup), "Atalhos de teclado" },
                 { m_Setting.GetOptionGroupLocaleID(Setting.kAboutGroup), "Informações" },
+
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.UseFilterProfiles)), useFilterProfiles },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.UseFilterProfiles)), useFilterProfilesDescription },
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DeleteTrees)), "Remover árvores e vegetação" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.DeleteTrees)), "Alvo de árvores, arbustos e outra vegetação dentro da área de seleção." },
@@ -151,6 +157,8 @@ namespace AreaBulldozer.Localization
                 { "AreaBulldozer.UI.Colors", "Cores" },
                 { "AreaBulldozer.UI.OpenColorEditor", "Editor de cor aberto" },
                 { "AreaBulldozer.UI.ToolOptionsTitle", "Opções" },
+                { "AreaBulldozer.UI.UseFilterProfiles", useFilterProfiles },
+                { "AreaBulldozer.UI.UseFilterProfilesTooltip", useFilterProfilesDescription },
                 { "AreaBulldozer.UI.ToolOptionsSize", "Tamanho da interfaz de utilização" },
                 { "AreaBulldozer.UI.ToolOptionsNormal", "Normal" },
                 { "AreaBulldozer.UI.ToolOptionsCompact", "Compacto" },

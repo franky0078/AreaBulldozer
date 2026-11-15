@@ -16,6 +16,9 @@ namespace AreaBulldozer.Localization
             IList<IDictionaryEntryError> errors,
             Dictionary<string, int> indexCounts)
         {
+            const string useFilterProfiles = "Use filter profiles";
+            const string useFilterProfilesDescription = "Shows or hides the filter profile menu in the tool. Saved profiles are kept.";
+
             return new Dictionary<string, string>
             {
                 { m_Setting.GetSettingsLocaleID(), "Area Bulldozer" },
@@ -25,6 +28,9 @@ namespace AreaBulldozer.Localization
                 { m_Setting.GetOptionGroupLocaleID(Setting.kToolGroup), "Display and launcher" },
                 { m_Setting.GetOptionGroupLocaleID(Setting.kKeybindingGroup), "Key bindings" },
                 { m_Setting.GetOptionGroupLocaleID(Setting.kAboutGroup), "Information" },
+
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.UseFilterProfiles)), useFilterProfiles },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.UseFilterProfiles)), useFilterProfilesDescription },
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DeleteTrees)), "Remove trees and vegetation" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.DeleteTrees)), "Targets trees, bushes, and other vegetation inside the selection area." },
@@ -151,6 +157,8 @@ namespace AreaBulldozer.Localization
                 { "AreaBulldozer.UI.Colors", "Colors" },
                 { "AreaBulldozer.UI.OpenColorEditor", "Open color editor" },
                 { "AreaBulldozer.UI.ToolOptionsTitle", "Options" },
+                { "AreaBulldozer.UI.UseFilterProfiles", useFilterProfiles },
+                { "AreaBulldozer.UI.UseFilterProfilesTooltip", useFilterProfilesDescription },
                 { "AreaBulldozer.UI.ToolOptionsSize", "UI size" },
                 { "AreaBulldozer.UI.ToolOptionsNormal", "Normal" },
                 { "AreaBulldozer.UI.ToolOptionsCompact", "Compact" },

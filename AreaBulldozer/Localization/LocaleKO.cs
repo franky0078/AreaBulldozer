@@ -16,6 +16,9 @@ namespace AreaBulldozer.Localization
             IList<IDictionaryEntryError> errors,
             Dictionary<string, int> indexCounts)
         {
+            const string useFilterProfiles = "필터 프로필 사용";
+            const string useFilterProfilesDescription = "도구에서 필터 프로필 메뉴를 표시하거나 숨깁니다. 저장된 프로필은 유지됩니다.";
+
             return new Dictionary<string, string>
             {
                 { m_Setting.GetSettingsLocaleID(), "Area Bulldozer" },
@@ -25,6 +28,9 @@ namespace AreaBulldozer.Localization
                 { m_Setting.GetOptionGroupLocaleID(Setting.kToolGroup), "디스플레이 및 발사기" },
                 { m_Setting.GetOptionGroupLocaleID(Setting.kKeybindingGroup), "단축키" },
                 { m_Setting.GetOptionGroupLocaleID(Setting.kAboutGroup), "정보" },
+
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.UseFilterProfiles)), useFilterProfiles },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.UseFilterProfiles)), useFilterProfilesDescription },
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DeleteTrees)), "나무와 식물을 제거" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.DeleteTrees)), "선택 구역 내의 나무, 덤불, 그리고 다른 식물들을 대상으로 한다." },
@@ -151,6 +157,8 @@ namespace AreaBulldozer.Localization
                 { "AreaBulldozer.UI.Colors", "색상" },
                 { "AreaBulldozer.UI.OpenColorEditor", "오픈 컬러 에디터" },
                 { "AreaBulldozer.UI.ToolOptionsTitle", "옵션" },
+                { "AreaBulldozer.UI.UseFilterProfiles", useFilterProfiles },
+                { "AreaBulldozer.UI.UseFilterProfilesTooltip", useFilterProfilesDescription },
                 { "AreaBulldozer.UI.ToolOptionsSize", "UI 크기는" },
                 { "AreaBulldozer.UI.ToolOptionsNormal", "기본" },
                 { "AreaBulldozer.UI.ToolOptionsCompact", "간결" },

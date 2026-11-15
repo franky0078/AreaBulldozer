@@ -16,6 +16,9 @@ namespace AreaBulldozer.Localization
             IList<IDictionaryEntryError> errors,
             Dictionary<string, int> indexCounts)
         {
+            const string useFilterProfiles = "使用筛选预设";
+            const string useFilterProfilesDescription = "显示或隐藏工具中的筛选预设菜单。已保存的预设会保留。";
+
             return new Dictionary<string, string>
             {
                 { m_Setting.GetSettingsLocaleID(), "Area Bulldozer" },
@@ -25,6 +28,9 @@ namespace AreaBulldozer.Localization
                 { m_Setting.GetOptionGroupLocaleID(Setting.kToolGroup), "显示器和发射器" },
                 { m_Setting.GetOptionGroupLocaleID(Setting.kKeybindingGroup), "按键绑定" },
                 { m_Setting.GetOptionGroupLocaleID(Setting.kAboutGroup), "信息" },
+
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.UseFilterProfiles)), useFilterProfiles },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.UseFilterProfiles)), useFilterProfilesDescription },
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DeleteTrees)), "移除树木和植物" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.DeleteTrees)), "目标是选区内的树木,灌木和其他植物." },
@@ -151,6 +157,8 @@ namespace AreaBulldozer.Localization
                 { "AreaBulldozer.UI.Colors", "颜色" },
                 { "AreaBulldozer.UI.OpenColorEditor", "开放的颜色编辑器" },
                 { "AreaBulldozer.UI.ToolOptionsTitle", "选项" },
+                { "AreaBulldozer.UI.UseFilterProfiles", useFilterProfiles },
+                { "AreaBulldozer.UI.UseFilterProfilesTooltip", useFilterProfilesDescription },
                 { "AreaBulldozer.UI.ToolOptionsSize", "用户界面大小" },
                 { "AreaBulldozer.UI.ToolOptionsNormal", "普通" },
                 { "AreaBulldozer.UI.ToolOptionsCompact", "紧凑" },

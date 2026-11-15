@@ -2,6 +2,7 @@ using AreaBulldozer.Tools;
 using Colossal.UI.Binding;
 using Game;
 using Game.UI;
+using Unity.Mathematics;
 
 namespace AreaBulldozer.UISystems
 {
@@ -79,6 +80,52 @@ namespace AreaBulldozer.UISystems
                 AreaBulldozerSelectionShape.Polyline)
             {
                 DeactivateBecauseShapeChanged();
+            }
+        }
+
+        internal FilterProfile.BrushSettings CaptureProfileBrush(Setting setting)
+        {
+            bool polygon = m_Tool.UseFreeAreaPolygon;
+            bool hasPreviousBrush = polygon && m_HasSavedState;
+            AreaBulldozerSelectionShape shape = hasPreviousBrush ? m_PreviousShape : m_Tool.CurrentSelectionShape;
+            shape = shape switch
+            {
+                AreaBulldozerSelectionShape.Circle when hasPreviousBrush && m_PreviousUseSquareBrush
+                    => AreaBulldozerSelectionShape.Square,
+                AreaBulldozerSelectionShape.Square => shape,
+                AreaBulldozerSelectionShape.Triangle => shape,
+                AreaBulldozerSelectionShape.Polyline or AreaBulldozerSelectionShape.LegacyLine
+                    => AreaBulldozerSelectionShape.Polyline,
+                _ => AreaBulldozerSelectionShape.Circle
+            };
+
+            float degrees = m_Tool.SquareRotationDegrees;
+            int rotation = math.isfinite(degrees) ? ((int)math.round(degrees * 10f) % 3600 + 3600) % 3600 : 0;
+            return new FilterProfile.BrushSettings(shape, math.clamp(setting.BrushRadius, 5, 200),
+                math.clamp(hasPreviousBrush ? m_PreviousLineWidth : setting.LineWidth, 2, 100),
+                m_Tool.CurrentPolylineRounding, rotation,
+                hasPreviousBrush ? m_PreviousCurvedPolyline : setting.UseCurvedPolyline, polygon);
+        }
+
+        internal void ApplyProfileBrush(Setting setting, FilterProfile.BrushSettings brush)
+        {
+            // Restore temporary polygon values before applying the new profile.
+            DisableFreeAreaPolygon(restorePreviousShape: true);
+            setting.SelectionShape = brush.Shape;
+            setting.UseSquareBrush = brush.Shape == AreaBulldozerSelectionShape.Square;
+            setting.BrushRadius = brush.Radius;
+            setting.LineWidth = brush.LineWidth;
+            setting.UseCurvedPolyline = brush.Curved;
+            setting.PolylineRounding = brush.Rounding;
+            m_Tool.SetSquareRotationDegrees(brush.RotationTenths / 10f);
+
+            if (brush.Polygon)
+            {
+                EnableFreeAreaPolygon();
+            }
+            else
+            {
+                m_Tool.NotifySelectionShapeChanged();
             }
         }
 

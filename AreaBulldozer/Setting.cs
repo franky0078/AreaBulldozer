@@ -84,6 +84,9 @@ namespace AreaBulldozer
         [SettingsUIHidden]
         public string CustomFilterProfiles { get; set; } = "";
 
+        [SettingsUISection(kSection, kToolGroup)]
+        public bool UseFilterProfiles { get; set; }
+
         [SettingsUIHidden]
         public AreaBulldozerHeightFilter HeightFilter { get; set; }
 
@@ -382,6 +385,7 @@ namespace AreaBulldozer
 
             UIScale = 100;
             UseCompactToolPanel = false;
+            UseFilterProfiles = true;
 
             LauncherMode = AreaBulldozerLauncherMode.Standalone;
             UseUniversalModMenu = false;

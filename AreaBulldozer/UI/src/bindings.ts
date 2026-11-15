@@ -53,6 +53,7 @@ export const BindingKeys = {
     setProtectOwnedObjects: "setProtectOwnedObjects",
 
     setUseCompactToolPanel: "setUseCompactToolPanel",
+    setUseFilterProfiles: "setUseFilterProfiles",
     setConfirmLargeSelection: "setConfirmLargeSelection",
     setLargeSelectionThreshold: "setLargeSelectionThreshold",
 
@@ -65,6 +66,8 @@ export const BindingKeys = {
     setColorEditorPositionY: "setColorEditorPositionY",
     resetColors: "resetColors",
 } as const;
+
+export const useFilterProfiles$ = bindValue<boolean>(mod.id, "useFilterProfiles", true);
 
 export const isToolActive$ = bindValue<boolean>(
     mod.id,

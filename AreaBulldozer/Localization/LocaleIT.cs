@@ -16,6 +16,9 @@ namespace AreaBulldozer.Localization
             IList<IDictionaryEntryError> errors,
             Dictionary<string, int> indexCounts)
         {
+            const string useFilterProfiles = "Usa profili dei filtri";
+            const string useFilterProfilesDescription = "Mostra o nasconde il menu dei profili dei filtri nello strumento. I profili salvati vengono conservati.";
+
             return new Dictionary<string, string>
             {
                 { m_Setting.GetSettingsLocaleID(), "Area Bulldozer" },
@@ -24,6 +27,9 @@ namespace AreaBulldozer.Localization
                 { m_Setting.GetOptionGroupLocaleID(Setting.kToolGroup), "Visualizzazione e avvio" },
                 { m_Setting.GetOptionGroupLocaleID(Setting.kKeybindingGroup), "Associazione tasti" },
                 { m_Setting.GetOptionGroupLocaleID(Setting.kAboutGroup), "Informazioni" },
+
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.UseFilterProfiles)), useFilterProfiles },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.UseFilterProfiles)), useFilterProfilesDescription },
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DeleteTrees)), "Rimuovi alberi e vegetazione" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.DeleteTrees)), "Seleziona alberi, cespugli e altra vegetazione all'interno dell'area di selezione." },
@@ -117,6 +123,8 @@ namespace AreaBulldozer.Localization
                 { "AreaBulldozer.UI.Colors", "Colori" },
                 { "AreaBulldozer.UI.OpenColorEditor", "Apri editor colori" },
                 { "AreaBulldozer.UI.ToolOptionsTitle", "Opzioni" },
+                { "AreaBulldozer.UI.UseFilterProfiles", useFilterProfiles },
+                { "AreaBulldozer.UI.UseFilterProfilesTooltip", useFilterProfilesDescription },
                 { "AreaBulldozer.UI.ToolOptionsSize", "Dimensione interfaccia" },
                 { "AreaBulldozer.UI.ToolOptionsNormal", "Normale" },
                 { "AreaBulldozer.UI.ToolOptionsCompact", "Compatta" },
