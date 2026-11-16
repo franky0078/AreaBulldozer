@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { bindValue, trigger } from "cs2/api";
 import mod from "mod.json";
 
@@ -20,6 +20,7 @@ export function AreaBulldozerFilterProfiles({ text }: Props) {
     const data = useSafeValue("filterProfiles$", profiles$, "");
     const activeId = useSafeValue("activeFilterProfile$", activeProfile$, "");
     const modified = useSafeValue("filterProfileModified$", profileModified$, false);
+    const controlRef = useRef<HTMLDivElement>(null);
     const pointerInside = useRef(false);
     const [expanded, setExpanded] = useState(false);
     const [editor, setEditor] = useState<Editor | null>(null);
@@ -48,21 +49,40 @@ export function AreaBulldozerFilterProfiles({ text }: Props) {
     );
     const invalidName = profileName.length === 0 || duplicate || /[\u0000-\u001f\u007f-\u009f]/.test(profileName);
 
-    const setPointerInside = (inside: boolean) => {
+    const setPointerInside = useCallback((inside: boolean) => {
+        if (pointerInside.current === inside) {
+            return;
+        }
+
         pointerInside.current = inside;
         trigger(mod.id, BindingKeys.setPointerOverUI, inside);
-    };
-
-    useEffect(() => () => {
-        if (pointerInside.current) {
-            trigger(mod.id, BindingKeys.setPointerOverUI, false);
-        }
     }, []);
 
-    const choose = (id: string) => {
-        trigger(mod.id, "loadFilterProfile", id);
+    useEffect(() => {
+        // The game UI can remove the clicked row without delivering mouseleave.
+        const releaseOutside = (event: MouseEvent) => {
+            if (pointerInside.current && !controlRef.current?.contains(event.target as Node | null)) {
+                setPointerInside(false);
+            }
+        };
+        document.addEventListener("mousemove", releaseOutside, true);
+        document.addEventListener("mousedown", releaseOutside, true);
+        return () => {
+            document.removeEventListener("mousemove", releaseOutside, true);
+            document.removeEventListener("mousedown", releaseOutside, true);
+            setPointerInside(false);
+        };
+    }, [setPointerInside]);
+
+    const closeMenu = () => {
+        setPointerInside(false);
         setEditor(null);
         setExpanded(false);
+    };
+
+    const choose = (id: string) => {
+        closeMenu();
+        trigger(mod.id, "loadFilterProfile", id);
     };
 
     const startEditor = (mode: Editor) => {
@@ -79,7 +99,7 @@ export function AreaBulldozerFilterProfiles({ text }: Props) {
         } else if (editor === "rename" && activeCustom) {
             trigger(mod.id, "renameFilterProfile", activeId, profileName);
         }
-        setEditor(null);
+        closeMenu();
     };
 
     const choices = (profiles: typeof builtIn) => profiles.map(profile => (
@@ -90,7 +110,7 @@ export function AreaBulldozerFilterProfiles({ text }: Props) {
     ));
 
     return (
-        <div className={styles.profileControl}
+        <div ref={controlRef} className={styles.profileControl}
             onMouseEnter={() => setPointerInside(true)}
             onMouseLeave={() => setPointerInside(false)}
             onMouseDown={event => event.stopPropagation()}
@@ -98,8 +118,12 @@ export function AreaBulldozerFilterProfiles({ text }: Props) {
             onClick={event => event.stopPropagation()}>
             <button type="button" className={styles.profileToggle} title={selectedLabel}
                 aria-expanded={expanded} onClick={() => {
-                    setExpanded(!expanded);
-                    setEditor(null);
+                    if (expanded) {
+                        closeMenu();
+                    } else {
+                        setPointerInside(true);
+                        setExpanded(true);
+                    }
                 }}>
                 <span>{selectedLabel}</span>
                 <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m3 6 5 5 5-5" /></svg>
@@ -139,7 +163,7 @@ export function AreaBulldozerFilterProfiles({ text }: Props) {
                             <div className={styles.profileActions}>
                                 <button type="button" onClick={() => {
                                     trigger(mod.id, "deleteFilterProfile", activeId);
-                                    setEditor(null);
+                                    closeMenu();
                                 }}>{text("ProfileDelete", "Löschen")}</button>
                                 <button type="button" onClick={() => setEditor(null)}>{text("ProfileCancel", "Abbrechen")}</button>
                             </div>
