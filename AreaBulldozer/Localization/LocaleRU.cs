@@ -107,7 +107,7 @@ namespace AreaBulldozer.Localization
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.BrushRadius)), "Устанавливает размеры в метрах: радиус круга или квадратная длина половины стороны." },
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.UIScale)), "Масштаб окна" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.UIScale)), "Масштабирует окно Area Bulldozer от 75 до 125 процентов. Более низкие значения обеспечивают больше места; более высокие значения улучшают читаемость на дисплеях с высоким разрешением." },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.UIScale)), "Масштабирует окно Area Bulldozer от 75 до 150 процентов. Более низкие значения обеспечивают больше места; более высокие значения улучшают читаемость на дисплеях с высоким разрешением." },
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.LauncherMode)), "Area Bulldozer местоположение пускового устройства" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.LauncherMode)), "Выбирает, запускается ли Area Bulldozer с отдельного пускового устройства, с обычных вариантов инструмента для бульдозера или с универсального меню модулей." },
@@ -160,6 +160,7 @@ namespace AreaBulldozer.Localization
                 { "AreaBulldozer.UI.UseFilterProfiles", useFilterProfiles },
                 { "AreaBulldozer.UI.UseFilterProfilesTooltip", useFilterProfilesDescription },
                 { "AreaBulldozer.UI.ToolOptionsSize", "Размер интерфейса" },
+                { "AreaBulldozer.UI.ToolOptionsScale", "Масштаб интерфейса" },
                 { "AreaBulldozer.UI.ToolOptionsNormal", "Обычный" },
                 { "AreaBulldozer.UI.ToolOptionsCompact", "Компактный" },
                 { "AreaBulldozer.UI.ToolOptionsSafety", "Безопасность" },

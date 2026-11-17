@@ -107,7 +107,7 @@ namespace AreaBulldozer.Localization
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.BrushRadius)), "미터의 크기를 설정합니다 : 원형 반경 또는 광장 반쪽 길이." },
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.UIScale)), "도구 창 규모" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.UIScale)), "Area Bulldozer 창 을 75 에서 125 퍼센트 까지 확장 한다. 낮은 값 은 더 많은 공간을 제공 하며, 높은 값 은 고 해상도 디스플레이 에서 읽을 수 있게 한다." },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.UIScale)), "Area Bulldozer 창 을 75 에서 150 퍼센트 까지 확장 한다. 낮은 값 은 더 많은 공간을 제공 하며, 높은 값 은 고 해상도 디스플레이 에서 읽을 수 있게 한다." },
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.LauncherMode)), "Area Bulldozer 발사기 위치" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.LauncherMode)), "Area Bulldozer를 별도의 발사기에서 시작하거나 일반적인 툴 옵션에서 시작하거나 보편적인 모드 메뉴에서 시작하는지 선택합니다." },
@@ -160,6 +160,7 @@ namespace AreaBulldozer.Localization
                 { "AreaBulldozer.UI.UseFilterProfiles", useFilterProfiles },
                 { "AreaBulldozer.UI.UseFilterProfilesTooltip", useFilterProfilesDescription },
                 { "AreaBulldozer.UI.ToolOptionsSize", "UI 크기는" },
+                { "AreaBulldozer.UI.ToolOptionsScale", "UI 배율" },
                 { "AreaBulldozer.UI.ToolOptionsNormal", "기본" },
                 { "AreaBulldozer.UI.ToolOptionsCompact", "간결" },
                 { "AreaBulldozer.UI.ToolOptionsSafety", "안전 설정" },

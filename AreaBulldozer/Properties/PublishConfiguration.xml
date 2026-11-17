@@ -42,9 +42,10 @@
 		- Color editor options for customizing selection shapes and preview
 		- Configurable keyboard shortcut
 		- All ingame languages are supported. The interface follows the game's language setting
-		- Undo Functionality: Restore vegetation, Vehicles and supported buildings removed in the last bulldoze action
+		- Undo: Restore supported objects removed in the last bulldoze action.
 		- Optional Filter profiles for saving and loading object filter combinations
-		- Support for all ingame Language settings		
+		- Ingame UI options panel
+
 
 		**Object filters**
 
@@ -194,10 +195,10 @@
 	<ChangeLog>
 		Latest changes
 
-		- added option to hide filter profile menu
-		- enhanced filter profile
-		- added new app icon
-		- fix square rotation issue (vehicle filter)
+		- added undo functionality for support decorative props, decals, streetlights, branding objects, surfaces, and trash bins
+		- added a ui scale control in the in-game options
+		- updated background dimming
+		- interface improvements and bug fixes
 	</ChangeLog>
 
 	<!--Optional external links for your own mod.-->

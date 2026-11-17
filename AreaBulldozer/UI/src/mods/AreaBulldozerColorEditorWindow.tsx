@@ -8,6 +8,7 @@ import {
     BindingKeys,
     colorEditorPositionX$,
     colorEditorPositionY$,
+    getToolPanelScale,
     isToolActive$,
     uiScale$,
 } from "../bindings";
@@ -305,6 +306,7 @@ export function AreaBulldozerColorEditorWindow() {
             className={[
                 panelTheme ?? "",
                 styles.window,
+                toolWindow === "options" ? styles.optionsWindow : "",
                 dragging ? styles.dragging : "",
             ]
                 .filter(Boolean)
@@ -328,7 +330,7 @@ export function AreaBulldozerColorEditorWindow() {
                 />
             ) : (
                 <AreaBulldozerColorEditor
-                    scale={clamp(uiScalePercent, 50, 125) / 100}
+                    scale={getToolPanelScale(uiScalePercent)}
                     text={text}
                     dragging={dragging}
                     onDragStart={startDragging}

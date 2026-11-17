@@ -8,14 +8,16 @@ import mod from "mod.json";
 
 import {
     BindingKeys,
+    getToolPanelScale,
     includeOverriddenVegetation$,
     isToolActive$,
     launcherMode$,
+    uiScale$,
     useCompactToolPanel$,
 } from "../bindings";
 
 import styles from "./BackToBulldozer.module.scss";
-import { CompactToolSection } from "./AreaBulldozerSections";
+import { CompactToolSection, iconButtonSize, toolIconSize } from "./AreaBulldozerSections";
 import { AreaBulldozerIcon } from "./AreaBulldozerIcons";
 import {
     toggleToolWindow,
@@ -98,6 +100,13 @@ export const BackToBulldozer:
             const colorEditorOpen = toolWindow === "colors";
             const optionsOpen = toolWindow === "options";
             const compact = useSafeValue("useCompactToolPanel$", useCompactToolPanel$, false);
+            const scale = getToolPanelScale(useSafeValue("uiScale$", uiScale$, 100));
+            const navigationStyle = {
+                "--ab-navigation-button-size": `${iconButtonSize(compact, scale)}rem`,
+                "--ab-navigation-icon-size": `${toolIconSize(compact, scale).toFixed(1)}rem`,
+                "--ab-navigation-anarchy-size": `${toolIconSize(compact, scale, 2).toFixed(1)}rem`,
+                "--ab-navigation-min-width": `${(154 * scale).toFixed(1)}rem`,
+            } as React.CSSProperties;
 
             const [loadedAnarchyIconSource, setLoadedAnarchyIconSource] =
                 React.useState<string | null>(null);
@@ -423,10 +432,7 @@ export const BackToBulldozer:
                             "Navigation"
                         }
                     >
-                        <div className={[
-                            styles.navigationButtons,
-                            compact ? "" : styles.normalSize,
-                        ].filter(Boolean).join(" ")}>
+                        <div className={styles.navigationButtons} style={navigationStyle}>
                             <div className={styles.navigationColorButton}>
                                 {wrappedColorButton}
                                 {Tooltip ? (

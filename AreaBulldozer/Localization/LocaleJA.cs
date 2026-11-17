@@ -107,7 +107,7 @@ namespace AreaBulldozer.Localization
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.BrushRadius)), "サイズをメートルで設定する:円半径または四角半辺長さ." },
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.UIScale)), "ツールウィンドウスケール" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.UIScale)), "Area Bulldozer の 窓 を 75 から 125 パーセント に 拡大 する.より 低い 値 は,より 広い 空間 を 提供 する.より 高い 値 は,高 解像度 の ディスプレイ で 読みやすく なる." },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.UIScale)), "Area Bulldozer の 窓 を 75 から 150 パーセント に 拡大 する.より 低い 値 は,より 広い 空間 を 提供 する.より 高い 値 は,高 解像度 の ディスプレイ で 読みやすく なる." },
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.LauncherMode)), "Area Bulldozer ロンサーの位置" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.LauncherMode)), "Area Bulldozerを別々のランチャーから,通常のブルドーザーツールオプションから,またはユニバーサルモッドメニューから起動するかどうかを選択します." },
@@ -160,6 +160,7 @@ namespace AreaBulldozer.Localization
                 { "AreaBulldozer.UI.UseFilterProfiles", useFilterProfiles },
                 { "AreaBulldozer.UI.UseFilterProfilesTooltip", useFilterProfilesDescription },
                 { "AreaBulldozer.UI.ToolOptionsSize", "UIサイズ" },
+                { "AreaBulldozer.UI.ToolOptionsScale", "UIの拡大率" },
                 { "AreaBulldozer.UI.ToolOptionsNormal", "標準" },
                 { "AreaBulldozer.UI.ToolOptionsCompact", "コンパクト" },
                 { "AreaBulldozer.UI.ToolOptionsSafety", "安全設定" },

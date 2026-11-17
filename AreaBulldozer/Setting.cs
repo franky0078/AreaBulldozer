@@ -194,10 +194,14 @@ namespace AreaBulldozer
         [SettingsUISection(kSection, kToolGroup)]
         public int SelectionLineThickness { get; set; }
 
+        internal const int UIScaleMin = 75;
+        internal const int UIScaleMax = 150;
+        internal const int UIScaleStep = 5;
+
         [SettingsUISlider(
-            min = 75,
-            max = 125,
-            step = 5)]
+            min = UIScaleMin,
+            max = UIScaleMax,
+            step = UIScaleStep)]
         [SettingsUISection(kSection, kToolGroup)]
         public int UIScale { get; set; }
 

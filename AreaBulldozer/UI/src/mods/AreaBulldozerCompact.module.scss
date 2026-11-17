@@ -195,7 +195,7 @@ $iconSize: 18rem;
 }
 
 .profileControl {
-    width: 218rem;
+    width: 226rem;
     max-width: 100%;
     box-sizing: border-box;
     min-width: 0;
@@ -234,6 +234,10 @@ $iconSize: 18rem;
     align-items: center;
     justify-content: space-between;
     text-align: left;
+}
+
+.profileControl .profileToggle {
+    min-height: 25rem;
 }
 
 .profileToggle span {

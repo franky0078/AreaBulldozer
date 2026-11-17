@@ -22,6 +22,7 @@ namespace AreaBulldozer.UISystems
         public const string PolylineRounding = "polylineRounding";
         public const string SquareRotationDegrees = "squareRotationDegrees";
         public const string UIScale = "uiScale";
+        public const string SetUIScale = "setUIScale";
         public const string UseCompactToolPanel = "useCompactToolPanel";
         public const string SetUseCompactToolPanel = "setUseCompactToolPanel";
 

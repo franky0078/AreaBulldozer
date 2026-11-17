@@ -11,6 +11,12 @@
     z-index: 80;
 }
 
+.window.optionsWindow {
+    width: 390rem !important;
+    min-width: 390rem !important;
+    max-width: 390rem !important;
+}
+
 .dragging {
     user-select: none;
 }

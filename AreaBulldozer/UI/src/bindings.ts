@@ -52,6 +52,7 @@ export const BindingKeys = {
     setDeleteNetworkSubObjects: "setDeleteNetworkSubObjects",
     setProtectOwnedObjects: "setProtectOwnedObjects",
 
+    setUIScale: "setUIScale",
     setUseCompactToolPanel: "setUseCompactToolPanel",
     setUseFilterProfiles: "setUseFilterProfiles",
     setConfirmLargeSelection: "setConfirmLargeSelection",
@@ -120,6 +121,14 @@ export const squareRotationDegrees$ = bindValue<number>(
     "squareRotationDegrees",
     0
 );
+
+export const UI_SCALE_MIN = 75;
+export const UI_SCALE_MAX = 150;
+export const UI_SCALE_STEP = 5;
+
+export function getToolPanelScale(percent: number): number {
+    return Math.min(UI_SCALE_MAX, Math.max(UI_SCALE_MIN, percent)) / 100;
+}
 
 export const uiScale$ = bindValue<number>(
     mod.id,
@@ -271,7 +280,7 @@ export const deleteMarkerNetworks$ = bindValue<boolean>(
 export const dimMarkerBackground$ = bindValue<boolean>(
     mod.id,
     "dimMarkerBackground",
-    true
+    false
 );
 
 export const markerBackgroundDarkness$ = bindValue<number>(

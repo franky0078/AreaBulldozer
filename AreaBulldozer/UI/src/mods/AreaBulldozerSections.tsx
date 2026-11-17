@@ -40,6 +40,7 @@ import {
     selectionShape$,
     useCurvedPolyline$,
     squareRotationDegrees$,
+    getToolPanelScale,
     uiScale$,
     useCompactToolPanel$,
     useFilterProfiles$,
@@ -104,8 +105,12 @@ interface IconToolButtonProps {
     onSelect: () => void;
 }
 
-function iconButtonSize(compact: boolean, scale: number): number {
-    return Number(((compact ? 28 : 32) * scale).toFixed(1));
+export function iconButtonSize(compact: boolean, scale: number): number {
+    return Number(((compact ? 24 : 28) * scale).toFixed(1));
+}
+
+export function toolIconSize(compact: boolean, scale: number, extraSize = 0): number {
+    return ((compact ? 16 : 18) + extraSize) * scale;
 }
 
 function IconToolButton({
@@ -129,7 +134,7 @@ function IconToolButton({
         height: `${buttonSize.toFixed(1)}rem`,
     };
 
-    const iconSize = (compact ? 18 : 21) * scale;
+    const iconSize = toolIconSize(compact, scale);
     const iconStyle: React.CSSProperties = {
         width: `${iconSize.toFixed(1)}rem`,
         height: `${iconSize.toFixed(1)}rem`,
@@ -517,8 +522,7 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
             return result;
         }
 
-        const scale =
-            clamp(uiScalePercent, 50, 125) / 100;
+        const scale = getToolPanelScale(uiScalePercent);
 
         const treeAgeLabels = [
             text("TreeAgeAll", "Alle Pflanzen"),

@@ -107,7 +107,7 @@ namespace AreaBulldozer.Localization
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.BrushRadius)), "設定尺寸以米:圓半徑或方形半邊長度." },
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.UIScale)), "工具視窗尺度" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.UIScale)), "在 Area Bulldozer 視窗中,可從 75% 到 125% 的尺寸.較低的值提供更多空間;較高的值提高高解析度顯示器的可讀性." },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.UIScale)), "在 Area Bulldozer 視窗中,可從 75% 到 150% 的尺寸.較低的值提供更多空間;較高的值提高高解析度顯示器的可讀性." },
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.LauncherMode)), "Area Bulldozer 發射器位置" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.LauncherMode)), "選擇是否 Area Bulldozer 從獨立發射器開啟,從正常的Bulldozer工具選項,或從通用模組選單." },
@@ -160,6 +160,7 @@ namespace AreaBulldozer.Localization
                 { "AreaBulldozer.UI.UseFilterProfiles", useFilterProfiles },
                 { "AreaBulldozer.UI.UseFilterProfilesTooltip", useFilterProfilesDescription },
                 { "AreaBulldozer.UI.ToolOptionsSize", "介面尺寸" },
+                { "AreaBulldozer.UI.ToolOptionsScale", "介面縮放" },
                 { "AreaBulldozer.UI.ToolOptionsNormal", "一般" },
                 { "AreaBulldozer.UI.ToolOptionsCompact", "精簡" },
                 { "AreaBulldozer.UI.ToolOptionsSafety", "安全" },

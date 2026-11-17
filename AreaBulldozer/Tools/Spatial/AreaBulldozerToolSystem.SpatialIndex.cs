@@ -25,7 +25,7 @@ namespace AreaBulldozer.Tools
         private SpatialCandidateIndex m_SpatialIndex;
         private readonly Dictionary<Entity, Entity> m_SpatialAssetVegetation = new();
         private bool m_SpatialAssetVegetationIndexed;
-        private readonly HashSet<Entity> m_SpatialLinkedProps = new();
+        private readonly Dictionary<Entity, Entity> m_SpatialLinkedProps = new();
         private bool m_SpatialLinkedPropsIndexed;
 
         private bool m_SpatialIndexReady;
@@ -174,6 +174,8 @@ namespace AreaBulldozer.Tools
                 UnityEngine.Time.unscaledTime +
                 kSpatialRefreshCheckInterval;
 
+            // Avoid constructing the large diagnostic strings entirely when
+            // info logging is disabled. The index itself is already rebuilt.
             if (!Mod.DiagnosticLoggingEnabled)
             {
                 return;
@@ -267,12 +269,12 @@ namespace AreaBulldozer.Tools
 
         private bool m_SpatialMissingAssetsEnabled;
 
+        // Undo must identify asset vegetation even with the protection toggle off.
         private bool NeedsAssetVegetationIndex =>
             Mod.Settings?.DeleteTrees ?? false;
 
         private bool NeedsLinkedPropIndex =>
-            Mod.Settings is Setting setting && setting.DeleteStaticObjects &&
-            setting.DeleteGeneralProps && setting.LooseGeneralPropsOnly;
+            Mod.Settings?.DeleteStaticObjects ?? false;
 
         private bool NeedsAssetLaneIndex =>
             Mod.Settings is Setting setting && setting.DeleteStaticObjects && setting.DeleteMarkerNetworks;
@@ -441,6 +443,7 @@ namespace AreaBulldozer.Tools
 
         private void IndexAssetSubObjects()
         {
+            // Some plants and props are registered only in the parent's buffer.
             using NativeArray<Entity> parents = m_SubObjectOwnerQuery.ToEntityArray(Allocator.Temp);
 
             foreach (Entity parent in parents)
@@ -459,6 +462,7 @@ namespace AreaBulldozer.Tools
 
                     if (m_SpatialAssetVegetationIndexed && EntityManager.HasComponent<Plant>(child))
                     {
+                        // A plant shared by multiple buffers has no unambiguous parent for Undo.
                         m_SpatialAssetVegetation[child] =
                             m_SpatialAssetVegetation.TryGetValue(child, out Entity indexedParent) &&
                             indexedParent != parent
@@ -468,7 +472,11 @@ namespace AreaBulldozer.Tools
 
                     if (m_SpatialLinkedPropsIndexed)
                     {
-                        m_SpatialLinkedProps.Add(child);
+                        m_SpatialLinkedProps[child] =
+                            m_SpatialLinkedProps.TryGetValue(child, out Entity linkedParent) &&
+                            linkedParent != parent
+                                ? Entity.Null
+                                : parent;
                     }
                 }
             }
@@ -1058,6 +1066,7 @@ namespace AreaBulldozer.Tools
                 return false;
             }
 
+            // Runtime lane types cover generated lanes whose prefab flags are incomplete.
             return EntityManager.HasComponent<Game.Net.CarLane>(lane) ||
                    EntityManager.HasComponent<Game.Net.PedestrianLane>(lane) ||
                    EntityManager.HasComponent<Game.Net.ParkingLane>(lane) ||
@@ -1076,6 +1085,8 @@ namespace AreaBulldozer.Tools
                 return false;
             }
 
+            // A building's travel lanes can exist without their own rendering
+            // layers. Their lane use is independent of their visual geometry.
             var flags = EntityManager.GetComponentData<NetLaneData>(prefab).m_Flags;
             if ((flags & (Game.Prefabs.LaneFlags.Road |
                           Game.Prefabs.LaneFlags.Pedestrian |
@@ -1136,6 +1147,7 @@ namespace AreaBulldozer.Tools
                 return false;
             }
 
+            // Match the rendered vehicle, whose simulation transform may be ahead.
             if (EntityManager.HasComponent<Game.Rendering.InterpolatedTransform>(entity))
             {
                 position = EntityManager.GetComponentData<Game.Rendering.InterpolatedTransform>(entity).m_Position;
@@ -1242,6 +1254,8 @@ namespace AreaBulldozer.Tools
             List<SpatialCandidate> candidates = m_SpatialIndex.Query(center, radius);
             if (Mod.Settings?.DeleteCars ?? false)
             {
+                // Vehicles can enter another cell without changing the entity count.
+                // Replace cached car positions before both preview and deletion.
                 candidates.RemoveAll(candidate => candidate.IsCar);
                 NativeArray<Entity> cars = m_CarQuery.ToEntityArray(Allocator.Temp);
                 try
@@ -1283,6 +1297,8 @@ namespace AreaBulldozer.Tools
 
             SpatialCandidate candidate = indexedCandidate;
 
+            // Missing vehicle placeholders may move after the index was built.
+            // Always validate the current position before previewing or deleting.
             if (candidate.IsCar)
             {
                 if (!TryGetVehicleSelectionPosition(candidate.Entity, out float3 visiblePosition))

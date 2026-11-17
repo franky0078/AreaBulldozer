@@ -157,7 +157,7 @@ namespace AreaBulldozer.UISystems
                 new GetterValueBinding<int>(
                     group,
                     AreaBulldozerUIBindingConstants.UIScale,
-                    () => math.clamp(Mod.Settings?.UIScale ?? 100, 75, 125)));
+                    () => math.clamp(Mod.Settings?.UIScale ?? 100, Setting.UIScaleMin, Setting.UIScaleMax)));
             AddBooleanValueBinding(
                 AreaBulldozerUIBindingConstants.UseCompactToolPanel,
                 () => Mod.Settings?.UseCompactToolPanel ?? false);
@@ -263,7 +263,7 @@ namespace AreaBulldozer.UISystems
                 () => Mod.Settings?.DeleteMarkerNetworks ?? false);
             AddBooleanValueBinding(
                 AreaBulldozerUIBindingConstants.DimMarkerBackground,
-                () => Mod.Settings?.DimMarkerBackground ?? true);
+                () => m_Tool?.IsMarkerBackgroundDimmed ?? false);
 
             AddUpdateBinding(
                 new GetterValueBinding<int>(
@@ -551,9 +551,14 @@ namespace AreaBulldozer.UISystems
             AddBooleanSettingTrigger(
                 AreaBulldozerUIBindingConstants.SetDeleteMarkerNetworks,
                 (setting, value) => setting.DeleteMarkerNetworks = value);
-            AddBooleanSettingTrigger(
+            AddBinding(new TriggerBinding<bool>(
+                group,
                 AreaBulldozerUIBindingConstants.SetDimMarkerBackground,
-                (setting, value) => setting.DimMarkerBackground = value);
+                value =>
+                {
+                    ChangeSetting(setting => setting.DimMarkerBackground = value);
+                    m_Tool?.SetManualPropsDimming(value);
+                }));
 
             AddBinding(
                 new TriggerBinding<int>(
@@ -572,6 +577,12 @@ namespace AreaBulldozer.UISystems
             AddBooleanSettingTrigger(
                 AreaBulldozerUIBindingConstants.SetProtectOwnedObjects,
                 (setting, value) => setting.ProtectOwnedObjects = value);
+
+            AddBinding(new TriggerBinding<int>(
+                group,
+                AreaBulldozerUIBindingConstants.SetUIScale,
+                value => ChangeSetting(setting =>
+                    setting.UIScale = math.clamp(value, Setting.UIScaleMin, Setting.UIScaleMax))));
 
             AddBooleanSettingTrigger(
                 AreaBulldozerUIBindingConstants.SetUseCompactToolPanel,

@@ -53,6 +53,8 @@ namespace AreaBulldozer.Tools
                 new();
 
             HashSet<Entity> selectedAssetLanes = new();
+            HashSet<Entity> selectedDecorations = new();
+            HashSet<Entity> selectedSurfaces = new();
 
             int vegetationCount = 0;
             int missingAssetCount = 0;
@@ -336,10 +338,20 @@ namespace AreaBulldozer.Tools
                 else if (candidate.IsSurfaceArea)
                 {
                     surfaceCount++;
+                    selectedSurfaces.Add(entity);
                 }
                 else if (candidate.IsStaticObject)
                 {
                     staticObjectCount++;
+                    if (candidate.StaticCategory == StaticObjectCategory.GeneralProp ||
+                        candidate.StaticCategory == StaticObjectCategory.StreetLight ||
+                        candidate.StaticCategory == StaticObjectCategory.QuantityObject ||
+                        candidate.StaticCategory == StaticObjectCategory.BrandingObject ||
+                        (candidate.StaticCategory == StaticObjectCategory.ActivityLocation &&
+                         IsStaticObjectEntity(entity) && !TryGetPointMarkerPrefab(entity, out _)))
+                    {
+                        selectedDecorations.Add(entity);
+                    }
 
                     IncrementStaticCategoryCount(
                         candidate.StaticCategory,
@@ -579,6 +591,14 @@ namespace AreaBulldozer.Tools
                     else if (selectedCars.Contains(entity))
                     {
                         RecordCarForUndo(entity);
+                    }
+                    else if (selectedDecorations.Contains(entity))
+                    {
+                        RecordDecorationForUndo(entity);
+                    }
+                    else if (selectedSurfaces.Contains(entity))
+                    {
+                        RecordSurfaceForUndo(entity);
                     }
                     else if (filters.DeleteTrees)
                     {

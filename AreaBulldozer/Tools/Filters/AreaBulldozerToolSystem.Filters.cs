@@ -142,7 +142,7 @@ namespace AreaBulldozer.Tools
                        candidate.StaticCategory == StaticObjectCategory.GeneralProp &&
                        (EntityManager.HasComponent<Owner>(candidate.Entity) ||
                         EntityManager.HasComponent<Attached>(candidate.Entity) ||
-                        m_SpatialLinkedProps.Contains(candidate.Entity));
+                        m_SpatialLinkedProps.ContainsKey(candidate.Entity));
             }
 
             return IsOwnedObjectProtected(

@@ -107,7 +107,7 @@ namespace AreaBulldozer.Localization
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.BrushRadius)), "Legt die Größe in Metern fest: Kreisradius beziehungsweise halbe Kantenlänge des Quadrats." },
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.UIScale)), "Skalierung des Werkzeugfensters" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.UIScale)), "Skaliert das Area-Bulldozer-Fenster von 75 bis 125 Prozent. Kleinere Werte schaffen mehr Platz; größere Werte verbessern die Lesbarkeit auf hochauflösenden Monitoren." },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.UIScale)), "Skaliert das Area-Bulldozer-Fenster von 75 bis 150 Prozent. Kleinere Werte schaffen mehr Platz; größere Werte verbessern die Lesbarkeit auf hochauflösenden Monitoren." },
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.LauncherMode)), "Startort des Area Bulldozers" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.LauncherMode)), "Legt fest, ob Area Bulldozer über einen separaten Startbutton, im Werkzeugfenster des normalen Bulldozers oder über das universelle Mod-Menü gestartet wird." },
@@ -160,6 +160,7 @@ namespace AreaBulldozer.Localization
                 { "AreaBulldozer.UI.UseFilterProfiles", useFilterProfiles },
                 { "AreaBulldozer.UI.UseFilterProfilesTooltip", useFilterProfilesDescription },
                 { "AreaBulldozer.UI.ToolOptionsSize", "UI-Größe" },
+                { "AreaBulldozer.UI.ToolOptionsScale", "Skalierung" },
                 { "AreaBulldozer.UI.ToolOptionsNormal", "Normal" },
                 { "AreaBulldozer.UI.ToolOptionsCompact", "Kompakt" },
                 { "AreaBulldozer.UI.ToolOptionsSafety", "Sicherheit" },

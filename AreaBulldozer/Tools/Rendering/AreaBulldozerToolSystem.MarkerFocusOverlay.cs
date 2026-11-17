@@ -1,3 +1,4 @@
+using Game.Rendering;
 using Game.SceneFlow;
 using System;
 using System.Reflection;
@@ -14,6 +15,7 @@ namespace AreaBulldozer.Tools
             "Game.Rendering.OutlinesWorldUIPass";
 
         private AreaBulldozerMarkerFocusPass m_MarkerFocusPass;
+        private CameraUpdateSystem m_MarkerFocusCameraSystem;
         private CustomPassVolume m_MarkerFocusVolume;
         private bool m_MarkerFocusOverlayVisible;
         private bool m_MarkerFocusOverlayFailureLogged;
@@ -22,6 +24,7 @@ namespace AreaBulldozer.Tools
 
         private void InitializeMarkerFocusOverlay()
         {
+            m_MarkerFocusCameraSystem = World.GetOrCreateSystemManaged<CameraUpdateSystem>();
             m_MarkerFocusOverlayVisible = false;
             m_MarkerFocusOverlayFailureLogged = false;
             m_AppliedMarkerBackgroundDarkness = -1;
@@ -35,20 +38,21 @@ namespace AreaBulldozer.Tools
         private void DisposeMarkerFocusOverlay()
         {
             RemoveMarkerFocusOverlay();
+            m_MarkerFocusCameraSystem = null;
         }
 
-        private void UpdateMarkerFocusOverlay(bool focusFilterActive)
+        private void UpdateMarkerFocusOverlay(bool dimBackground, bool missingAssetFocus)
         {
-            bool shouldDimBackground = focusFilterActive &&
-                Mod.Settings != null && Mod.Settings.DimMarkerBackground;
-
+            Setting settings = Mod.Settings;
+            bool shouldDimBackground = dimBackground && settings != null;
             Color tint = Color.white;
-            if (IsToolActive && UndergroundView && Mod.Settings != null)
+            if (IsToolActive && UndergroundView && settings != null &&
+                !(missingAssetFocus && shouldDimBackground))
             {
                 tint = new Color(
-                    Mathf.Clamp(Mod.Settings.UndergroundColorRed, 0, 255) / 255f,
-                    Mathf.Clamp(Mod.Settings.UndergroundColorGreen, 0, 255) / 255f,
-                    Mathf.Clamp(Mod.Settings.UndergroundColorBlue, 0, 255) / 255f);
+                    Mathf.Clamp(settings.UndergroundColorRed, 0, 255) / 255f,
+                    Mathf.Clamp(settings.UndergroundColorGreen, 0, 255) / 255f,
+                    Mathf.Clamp(settings.UndergroundColorBlue, 0, 255) / 255f);
             }
             if (!shouldDimBackground && tint == Color.white)
             {
@@ -57,12 +61,12 @@ namespace AreaBulldozer.Tools
             }
 
             int darkness = shouldDimBackground
-                ? Unity.Mathematics.math.clamp(Mod.Settings.MarkerBackgroundDarkness, 10, 70)
+                ? Unity.Mathematics.math.clamp(settings.MarkerBackgroundDarkness, 10, 70)
                 : 0;
-            ShowMarkerFocusOverlay(darkness, tint);
+            ShowMarkerFocusOverlay(darkness, tint, missingAssetFocus && shouldDimBackground);
         }
 
-        private void ShowMarkerFocusOverlay(int darknessPercent, Color tint)
+        private void ShowMarkerFocusOverlay(int darknessPercent, Color tint, bool useDisplayDarkness)
         {
             // Reattach if a scene change replaced the game's render volume.
             bool isAttached = m_MarkerFocusPass != null &&
@@ -84,8 +88,15 @@ namespace AreaBulldozer.Tools
                 }
             }
 
-            m_MarkerFocusPass.TargetCamera = Camera.main;
+            Camera activeCamera = m_MarkerFocusCameraSystem?.activeCamera;
+            m_MarkerFocusPass.TargetCamera = activeCamera != null ? activeCamera : Camera.main;
             float remainingBrightness = 1f - darknessPercent / 100f;
+            // Convert the display brightness for Missing Assets into the
+            // linear color space used by the HDRP buffer.
+            if (useDisplayDarkness)
+            {
+                remainingBrightness = Mathf.GammaToLinearSpace(remainingBrightness);
+            }
             m_MarkerFocusPass.ColorMultiplier = tint.linear * remainingBrightness;
             m_MarkerFocusPass.enabled = true;
 

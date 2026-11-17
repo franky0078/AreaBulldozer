@@ -10,6 +10,10 @@ import {
     largeSelectionThreshold$,
     protectAssetVegetation$,
     protectOwnedObjects$,
+    UI_SCALE_MIN,
+    UI_SCALE_MAX,
+    UI_SCALE_STEP,
+    uiScale$,
     useCompactToolPanel$,
     useFilterProfiles$,
 } from "../bindings";
@@ -30,6 +34,7 @@ interface QuickOptionsProps {
 
 export function AreaBulldozerQuickOptions({ text, dragging, onDragStart }: QuickOptionsProps) {
     const compact = useSafeValue("useCompactToolPanel$", useCompactToolPanel$, false);
+    const uiScale = useSafeValue("uiScale$", uiScale$, 100);
     const profilesEnabled = useSafeValue("useFilterProfiles$", useFilterProfiles$, true);
     const confirm = useSafeValue("confirmLargeSelection$", confirmLargeSelection$, true);
     const includeBuilding = useSafeValue("deleteBuildingSubObjects$", deleteBuildingSubObjects$, false);
@@ -40,6 +45,7 @@ export function AreaBulldozerQuickOptions({ text, dragging, onDragStart }: Quick
 
     const title = text("ToolOptionsTitle", "Optionen");
     const sizeLabel = text("ToolOptionsSize", "UI-Größe");
+    const scaleLabel = text("ToolOptionsScale", "Skalierung");
     const safetyLabel = text("ToolOptionsSafety", "Sicherheit");
     const thresholdLabel = text("ToolOptionsThreshold", "Bestätigungsgrenze");
     const normalLabel = text("ToolOptionsNormal", "Normal");
@@ -118,11 +124,43 @@ export function AreaBulldozerQuickOptions({ text, dragging, onDragStart }: Quick
             description
         );
 
-    const adjustThreshold = (delta: number) =>
-        trigger(
-            mod.id,
-            BindingKeys.setLargeSelectionThreshold,
-            Math.min(THRESHOLD_MAX, Math.max(THRESHOLD_MIN, threshold + delta))
+    const renderStepper = (
+        key: typeof BindingKeys.setUIScale | typeof BindingKeys.setLargeSelectionThreshold,
+        label: string,
+        value: number,
+        min: number,
+        max: number,
+        step: number,
+        unit = "",
+        description?: string
+    ) =>
+        withTooltip(
+            <div className={styles.optionsRow} role="group" aria-label={label}>
+                <span className={label.length > 25 ? styles.longLabel : undefined}>{label}</span>
+                <div className={styles.optionsButtons}>
+                    <button
+                        type="button"
+                        className={styles.thresholdButton}
+                        aria-label={`${label} −${step}${unit}`}
+                        disabled={value <= min}
+                        onClick={() => trigger(mod.id, key, Math.max(min, value - step))}
+                    >
+                        −
+                    </button>
+                    <span className={styles.thresholdValue}>{value}{unit}</span>
+                    <button
+                        type="button"
+                        className={styles.thresholdButton}
+                        aria-label={`${label} +${step}${unit}`}
+                        disabled={value >= max}
+                        onClick={() => trigger(mod.id, key, Math.min(max, value + step))}
+                    >
+                        +
+                    </button>
+                </div>
+            </div>,
+            label,
+            description
         );
 
     return (
@@ -182,6 +220,10 @@ export function AreaBulldozerQuickOptions({ text, dragging, onDragStart }: Quick
                 </div>
             </div>
 
+            {renderStepper(
+                BindingKeys.setUIScale, scaleLabel, uiScale, UI_SCALE_MIN, UI_SCALE_MAX, UI_SCALE_STEP, "%"
+            )}
+
             {renderToggle(
                 BindingKeys.setUseFilterProfiles,
                 text("UseFilterProfiles", "Filterprofile verwenden"),
@@ -197,32 +239,14 @@ export function AreaBulldozerQuickOptions({ text, dragging, onDragStart }: Quick
                     </React.Fragment>
                 ))}
 
-                {withTooltip(
-                    <div className={styles.optionsRow} role="group" aria-label={thresholdLabel}>
-                        <span className={thresholdLabel.length > 25 ? styles.longLabel : undefined}>{thresholdLabel}</span>
-                        <div className={styles.optionsButtons}>
-                            <button
-                                type="button"
-                                className={styles.thresholdButton}
-                                aria-label={`${thresholdLabel} −${THRESHOLD_STEP}`}
-                                disabled={threshold <= THRESHOLD_MIN}
-                                onClick={() => adjustThreshold(-THRESHOLD_STEP)}
-                            >
-                                −
-                            </button>
-                            <span className={styles.thresholdValue}>{threshold}</span>
-                            <button
-                                type="button"
-                                className={styles.thresholdButton}
-                                aria-label={`${thresholdLabel} +${THRESHOLD_STEP}`}
-                                disabled={threshold >= THRESHOLD_MAX}
-                                onClick={() => adjustThreshold(THRESHOLD_STEP)}
-                            >
-                                +
-                            </button>
-                        </div>
-                    </div>,
+                {renderStepper(
+                    BindingKeys.setLargeSelectionThreshold,
                     thresholdLabel,
+                    threshold,
+                    THRESHOLD_MIN,
+                    THRESHOLD_MAX,
+                    THRESHOLD_STEP,
+                    "",
                     text("ToolOptionsThresholdTooltip", "Legt fest, ab wie vielen ausgewählten Objekten eine zweite Bestätigung erforderlich ist.")
                 )}
             </div>

@@ -32,13 +32,16 @@ namespace AreaBulldozer.Tools
         private readonly List<VegetationSnapshot> m_VegetationUndo = new();
         private bool m_DeletionUndoRequested;
 
-        internal int DeletionUndoCount => m_VegetationUndo.Count + m_BuildingUndo.Count + m_CarUndo.Count;
+        internal int DeletionUndoCount => m_VegetationUndo.Count + m_BuildingUndo.Count + m_CarUndo.Count +
+            m_DecorationUndo.Count + m_SurfaceUndo.Count;
 
         private void ClearDeletionUndo()
         {
             m_VegetationUndo.Clear();
             m_BuildingUndo.Clear();
             m_CarUndo.Clear();
+            m_DecorationUndo.Clear();
+            m_SurfaceUndo.Clear();
         }
 
         internal void RequestDeletionUndo()
@@ -190,6 +193,12 @@ namespace AreaBulldozer.Tools
                 }
             }
 
+            if (m_DecorationUndo.Exists(snapshot => m_PendingDeletion.Contains(snapshot.Original)) ||
+                m_SurfaceUndo.Exists(snapshot => m_PendingDeletion.Contains(snapshot.Original)))
+            {
+                return true;
+            }
+
             m_DeletionUndoRequested = false;
             ResetContinuousDeleteState();
             CancelLargeSelectionConfirmation();
@@ -218,6 +227,34 @@ namespace AreaBulldozer.Tools
 
                         m_BuildingUndo.RemoveAt(last);
                     }
+                }
+
+                while (m_SurfaceUndo.Count > 0)
+                {
+                    int last = m_SurfaceUndo.Count - 1;
+                    if (RestoreSurface(m_SurfaceUndo[last]))
+                    {
+                        restored++;
+                    }
+                    else
+                    {
+                        skipped++;
+                    }
+                    m_SurfaceUndo.RemoveAt(last);
+                }
+
+                while (m_DecorationUndo.Count > 0)
+                {
+                    int last = m_DecorationUndo.Count - 1;
+                    if (RestoreDecoration(m_DecorationUndo[last], restoredChildren))
+                    {
+                        restored++;
+                    }
+                    else
+                    {
+                        skipped++;
+                    }
+                    m_DecorationUndo.RemoveAt(last);
                 }
 
                 while (m_VegetationUndo.Count > 0)
