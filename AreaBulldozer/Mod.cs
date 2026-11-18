@@ -157,6 +157,9 @@ namespace AreaBulldozer
             updateSystem.UpdateAt<AreaBulldozerBuildingConnectionSystem>(
                 SystemUpdatePhase.PostSimulation);
 
+            updateSystem.UpdateAt<AreaBulldozerNetworkConnectionSystem>(
+                SystemUpdatePhase.PostSimulation);
+
             updateSystem.UpdateAt<AreaBulldozerPolygonOverlaySystem>(
                 SystemUpdatePhase.ToolUpdate);
 

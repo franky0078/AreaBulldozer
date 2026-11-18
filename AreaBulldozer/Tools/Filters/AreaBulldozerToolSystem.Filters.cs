@@ -326,68 +326,78 @@ namespace AreaBulldozer.Tools
         }
 
 
-        private bool IsMainRoadEdgeEntity(
-            Entity entity)
+        private bool TryGetNetworkPrefab(Entity entity, out Entity prefab)
         {
-            if (entity == Entity.Null ||
-                !EntityManager.Exists(entity) ||
+            prefab = Entity.Null;
+            if (entity == Entity.Null || !EntityManager.Exists(entity) ||
                 !EntityManager.HasComponent<Edge>(entity) ||
-                !EntityManager.HasComponent<Road>(entity))
+                !EntityManager.HasComponent<PrefabRef>(entity))
             {
                 return false;
             }
 
-            if (TryGetPrefabBase(
-                    entity,
-                    out PrefabBase prefabBase) &&
-                (IsPedestrianPathPrefab(prefabBase) ||
-                 IsRailwayTrackPrefab(prefabBase)))
-            {
-                return false;
-            }
-
-            if (EntityManager.HasComponent<Owner>(entity))
-            {
-                return IsAggregateOwner(entity);
-            }
-
-            return prefabBase is RoadPrefab;
+            prefab = EntityManager.GetComponentData<PrefabRef>(entity).m_Prefab;
+            return IsEntityUsable(prefab) && EntityManager.HasComponent<NetData>(prefab);
         }
 
-        private bool IsMainPedestrianPathEdgeEntity(
-            Entity entity)
+        private bool IsMainNetworkEdge(Entity entity)
         {
-            if (entity == Entity.Null ||
-                !EntityManager.Exists(entity) ||
-                !EntityManager.HasComponent<Edge>(entity) ||
-                !TryGetPrefabBase(
-                    entity,
-                    out PrefabBase prefabBase) ||
-                !IsPedestrianPathPrefab(prefabBase))
+            if (!EntityManager.HasComponent<Owner>(entity))
             {
-                return false;
+                return true;
             }
 
-            return !EntityManager.HasComponent<Owner>(entity) ||
-                   IsAggregateOwner(entity);
+            Entity owner = EntityManager.GetComponentData<Owner>(entity).m_Owner;
+            return owner == Entity.Null || IsAggregateOwner(entity);
         }
 
-        private bool IsMainRailwayEdgeEntity(
-            Entity entity)
+        private bool IsMainRoadEdgeEntity(Entity entity)
         {
-            if (entity == Entity.Null ||
-                !EntityManager.Exists(entity) ||
-                !EntityManager.HasComponent<Edge>(entity) ||
-                !TryGetPrefabBase(
-                    entity,
-                    out PrefabBase prefabBase) ||
-                !IsRailwayTrackPrefab(prefabBase))
+            if (!TryGetNetworkPrefab(entity, out Entity prefab) || !IsMainNetworkEdge(entity))
             {
                 return false;
             }
 
-            return !EntityManager.HasComponent<Owner>(entity) ||
-                   IsAggregateOwner(entity);
+            if (EntityManager.HasComponent<RoadData>(prefab))
+            {
+                return true;
+            }
+
+            Game.Net.Layer layers = EntityManager.GetComponentData<NetData>(prefab).m_RequiredLayers;
+            if ((layers & (Game.Net.Layer.Road | Game.Net.Layer.PublicTransportRoad)) != 0)
+            {
+                return true;
+            }
+
+            return EntityManager.HasComponent<Road>(entity) &&
+                TryGetPrefabBase(entity, out PrefabBase prefabBase) &&
+                !IsPedestrianPathPrefab(prefabBase) && !IsRailwayTrackPrefab(prefabBase);
+        }
+
+        private bool IsMainPedestrianPathEdgeEntity(Entity entity)
+        {
+            if (!TryGetNetworkPrefab(entity, out Entity prefab) || !IsMainNetworkEdge(entity) ||
+                EntityManager.HasComponent<RoadData>(prefab))
+            {
+                return false;
+            }
+
+            Game.Net.Layer layers = EntityManager.GetComponentData<NetData>(prefab).m_RequiredLayers;
+            return EntityManager.HasComponent<PathwayData>(prefab) || (layers & Game.Net.Layer.Pathway) != 0 ||
+                (TryGetPrefabBase(entity, out PrefabBase prefabBase) && IsPedestrianPathPrefab(prefabBase));
+        }
+
+        private bool IsMainRailwayEdgeEntity(Entity entity)
+        {
+            if (!TryGetNetworkPrefab(entity, out Entity prefab) || !IsMainNetworkEdge(entity) ||
+                EntityManager.HasComponent<RoadData>(prefab) || EntityManager.HasComponent<PathwayData>(prefab))
+            {
+                return false;
+            }
+
+            Game.Net.Layer layers = EntityManager.GetComponentData<NetData>(prefab).m_RequiredLayers;
+            return (layers & (Game.Net.Layer.TrainTrack | Game.Net.Layer.SubwayTrack | Game.Net.Layer.TramTrack)) != 0 ||
+                (TryGetPrefabBase(entity, out PrefabBase prefabBase) && IsRailwayTrackPrefab(prefabBase));
         }
 
         private bool IsAggregateOwner(

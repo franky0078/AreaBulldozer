@@ -199,7 +199,7 @@ namespace AreaBulldozer.Localization
                 { "AreaBulldozer.UI.ProfileRail", "地下の線路を除去" },
                 { "AreaBulldozer.UI.LoosePropsOnly", "単独の装飾のみ" },
                 { "AreaBulldozer.UI.UndoDeletion", "最後の撤去を元に戻す" },
-                { "AreaBulldozer.UI.UndoDeletionTooltip", "最後の撤去を取り消します（{count} 件）。建物を再建し、乗用車とそのトレーラーを可能な場合に復元します。" },
+                { "AreaBulldozer.UI.UndoDeletionTooltip", "最後の撤去を取り消します（{count} 件）。建物を再建し、乗用車とそのトレーラーを可能な場合に復元します。 道路、歩道、線路は接続も含めて復元します。" },
                 { "AreaBulldozer.UI.ToolOptionsClose", "閉じるオプション" },
                 { "AreaBulldozer.UI.CloseColorEditor", "カラーエディタを閉じる" },
                 { "AreaBulldozer.UI.ColorEditorTooltip", "選択,確認,削除フィードバック,選択された表面,無効な多角色をライブプレビューで調整します." },

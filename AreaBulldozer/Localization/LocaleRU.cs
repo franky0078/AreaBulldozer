@@ -199,7 +199,7 @@ namespace AreaBulldozer.Localization
                 { "AreaBulldozer.UI.ProfileRail", "Удалить подземные пути" },
                 { "AreaBulldozer.UI.LoosePropsOnly", "Только отдельные украшения" },
                 { "AreaBulldozer.UI.UndoDeletion", "Отменить последний снос" },
-                { "AreaBulldozer.UI.UndoDeletionTooltip", "Отменяет последний снос ({count}). Здания отстраиваются заново. Легковые автомобили и их прицепы восстанавливаются по возможности." },
+                { "AreaBulldozer.UI.UndoDeletionTooltip", "Отменяет последний снос ({count}). Здания отстраиваются заново. Легковые автомобили и их прицепы восстанавливаются по возможности. Дороги, пешеходные дорожки и рельсы восстанавливаются вместе с соединениями." },
                 { "AreaBulldozer.UI.ToolOptionsClose", "Закрыть настройки" },
                 { "AreaBulldozer.UI.CloseColorEditor", "Закрыть редактор цветов" },
                 { "AreaBulldozer.UI.ColorEditorTooltip", "Регулирует отбор, подтверждение, обратную связь с удалением, выбранную поверхность и недействительные цвета многоугольника с живым просмотром." },

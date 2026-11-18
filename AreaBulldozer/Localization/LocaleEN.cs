@@ -199,7 +199,7 @@ namespace AreaBulldozer.Localization
                 { "AreaBulldozer.UI.ProfileRail", "Remove underground tracks" },
                 { "AreaBulldozer.UI.LoosePropsOnly", "Loose props only" },
                 { "AreaBulldozer.UI.UndoDeletion", "Undo last deletion" },
-                { "AreaBulldozer.UI.UndoDeletionTooltip", "Undoes the last bulldoze action ({count}). Buildings are rebuilt. Passenger cars and their trailers are restored where possible." },
+                { "AreaBulldozer.UI.UndoDeletionTooltip", "Undoes the last bulldoze action ({count}). Buildings are rebuilt. Passenger cars and their trailers are restored where possible. Roads, pedestrian paths and railway tracks are restored with their connections." },
                 { "AreaBulldozer.UI.ToolOptionsClose", "Close options" },
                 { "AreaBulldozer.UI.CloseColorEditor", "Close color editor" },
                 { "AreaBulldozer.UI.ColorEditorTooltip", "Adjusts the selection, confirmation, deletion feedback, selected surface, and invalid polygon colors with a live preview." },

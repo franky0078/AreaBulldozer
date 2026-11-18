@@ -695,7 +695,7 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
                             tooltipTitle={text("UndoDeletion", "Letzte Löschaktion rückgängig")}
                             tooltipText={text(
                                 "UndoDeletionTooltip",
-                                "Macht die letzte Löschaktion rückgängig ({count}). Gebäude werden neu aufgebaut. Pkw und ihre Anhänger werden nach Möglichkeit wiederhergestellt."
+                                "Macht die letzte Löschaktion rückgängig ({count}). Gebäude werden neu aufgebaut. Pkw und ihre Anhänger werden nach Möglichkeit wiederhergestellt. Straßen, Fußwege und Schienen werden mit ihren Verbindungen wiederhergestellt."
                             ).replace("{count}", String(deletionUndoCount))}
                             onSelect={() => trigger(mod.id, BindingKeys.undoDeletion)}
                         />

@@ -33,7 +33,7 @@ namespace AreaBulldozer.Tools
         private bool m_DeletionUndoRequested;
 
         internal int DeletionUndoCount => m_VegetationUndo.Count + m_BuildingUndo.Count + m_CarUndo.Count +
-            m_DecorationUndo.Count + m_SurfaceUndo.Count;
+            m_DecorationUndo.Count + m_SurfaceUndo.Count + m_NetworkUndo.Count;
 
         private void ClearDeletionUndo()
         {
@@ -42,6 +42,9 @@ namespace AreaBulldozer.Tools
             m_CarUndo.Clear();
             m_DecorationUndo.Clear();
             m_SurfaceUndo.Clear();
+            m_NetworkUndo.Clear();
+            m_NetworkUndoNodes.Clear();
+            ClearNetworkTransitUndo();
         }
 
         internal void RequestDeletionUndo()
@@ -167,6 +170,11 @@ namespace AreaBulldozer.Tools
             }
 
             // Wait for the tool's deletion commands to be applied before adding replacements.
+            if (IsNetworkDeletionPending())
+            {
+                return true;
+            }
+
             foreach (BuildingSnapshot snapshot in m_BuildingUndo)
             {
                 if (m_PendingDeletion.Contains(snapshot.Original))
@@ -208,6 +216,7 @@ namespace AreaBulldozer.Tools
             HashSet<Entity> restoredChildren = new();
             try
             {
+                Dictionary<Entity, Entity> restoredNetworks = RestoreNetworksForUndo(ref restored, ref skipped);
                 if (m_BuildingUndo.Count > 0)
                 {
                     HashSet<float3> occupied = GetOccupiedBuildingPositions();
@@ -215,6 +224,10 @@ namespace AreaBulldozer.Tools
                     {
                         int last = m_BuildingUndo.Count - 1;
                         BuildingSnapshot snapshot = m_BuildingUndo[last];
+                        if (restoredNetworks.TryGetValue(snapshot.OriginalRoad, out Entity restoredRoad))
+                        {
+                            snapshot.OriginalRoad = restoredRoad;
+                        }
                         if (!occupied.Contains(snapshot.Transform.m_Position) && RestoreBuilding(snapshot))
                         {
                             occupied.Add(snapshot.Transform.m_Position);
@@ -383,7 +396,6 @@ namespace AreaBulldozer.Tools
                 return false;
             }
 
-            // The count overload also works with the game's .NET Framework toolchain.
             using NativeArray<Entity> plants = EntityManager.CreateEntity(archetype, 1, Allocator.Temp);
             Entity plant = plants[0];
 

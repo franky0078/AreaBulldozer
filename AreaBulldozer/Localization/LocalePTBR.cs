@@ -199,7 +199,7 @@ namespace AreaBulldozer.Localization
                 { "AreaBulldozer.UI.ProfileRail", "Remover trilhos subterrâneos" },
                 { "AreaBulldozer.UI.LoosePropsOnly", "Somente decorações avulsas" },
                 { "AreaBulldozer.UI.UndoDeletion", "Desfazer última demolição" },
-                { "AreaBulldozer.UI.UndoDeletionTooltip", "Desfaz a última demolição ({count}). Os edifícios são reconstruídos. Carros de passeio e seus reboques são restaurados quando possível." },
+                { "AreaBulldozer.UI.UndoDeletionTooltip", "Desfaz a última demolição ({count}). Os edifícios são reconstruídos. Carros de passeio e seus reboques são restaurados quando possível. Ruas, caminhos de pedestres e trilhos são restaurados com suas conexões." },
                 { "AreaBulldozer.UI.ToolOptionsClose", "Opções fechadas" },
                 { "AreaBulldozer.UI.CloseColorEditor", "Editor de cor fechado" },
                 { "AreaBulldozer.UI.ColorEditorTooltip", "Ajusta a seleção, a confirmação, o feedback de exclusão, a superfície selecionada e as cores de polígonos inválidos com uma visualização ao vivo." },

@@ -199,7 +199,7 @@ namespace AreaBulldozer.Localization
                 { "AreaBulldozer.UI.ProfileRail", "Usuń podziemne tory" },
                 { "AreaBulldozer.UI.LoosePropsOnly", "Tylko wolnostojące dekoracje" },
                 { "AreaBulldozer.UI.UndoDeletion", "Cofnij ostatnią rozbiórkę" },
-                { "AreaBulldozer.UI.UndoDeletionTooltip", "Cofa ostatnią operację rozbiórki ({count}). Budynki są odbudowywane. Samochody osobowe i ich przyczepy są przywracane w miarę możliwości." },
+                { "AreaBulldozer.UI.UndoDeletionTooltip", "Cofa ostatnią operację rozbiórki ({count}). Budynki są odbudowywane. Samochody osobowe i ich przyczepy są przywracane w miarę możliwości. Drogi, ścieżki piesze i tory są przywracane wraz z połączeniami." },
                 { "AreaBulldozer.UI.ToolOptionsClose", "Opcje zamknięte" },
                 { "AreaBulldozer.UI.CloseColorEditor", "Edytora kolorowego" },
                 { "AreaBulldozer.UI.ColorEditorTooltip", "Dostosowuje wybór, potwierdzenie, odbiór usunięcia, wybrane powierzchnie i nieprawidłowe kolory wielokątów z przeglądem na żywo." },

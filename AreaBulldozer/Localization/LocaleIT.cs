@@ -165,7 +165,7 @@ namespace AreaBulldozer.Localization
                 { "AreaBulldozer.UI.ProfileRail", "Rimuovi binari sotterranei" },
                 { "AreaBulldozer.UI.LoosePropsOnly", "Solo decorazioni indipendenti" },
                 { "AreaBulldozer.UI.UndoDeletion", "Annulla l’ultima rimozione" },
-                { "AreaBulldozer.UI.UndoDeletionTooltip", "Annulla l’ultima operazione di demolizione ({count}). Gli edifici vengono ricostruiti. Le auto e i relativi rimorchi vengono ripristinati quando possibile." },
+                { "AreaBulldozer.UI.UndoDeletionTooltip", "Annulla l’ultima operazione di demolizione ({count}). Gli edifici vengono ricostruiti. Le auto e i relativi rimorchi vengono ripristinati quando possibile. Strade, percorsi pedonali e binari vengono ripristinati con i relativi collegamenti." },
                 { "AreaBulldozer.UI.ToolOptionsClose", "Chiudi opzioni" },
                 { "AreaBulldozer.UI.CloseColorEditor", "Chiudi editor colori" },
                 { "AreaBulldozer.UI.ColorEditorTooltip", "Modifica i colori di selezione, conferma, eliminazione, superfici selezionate e poligoni non validi con un'anteprima immediata." },

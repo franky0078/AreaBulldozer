@@ -165,7 +165,7 @@ namespace AreaBulldozer.Localization
                 { "AreaBulldozer.UI.ProfileRail", "Eliminar vías subterráneas" },
                 { "AreaBulldozer.UI.LoosePropsOnly", "Solo adornos sueltos" },
                 { "AreaBulldozer.UI.UndoDeletion", "Deshacer la última eliminación" },
-                { "AreaBulldozer.UI.UndoDeletionTooltip", "Deshace la última demolición ({count}). Los edificios se reconstruyen. Los turismos y sus remolques se restauran cuando es posible." },
+                { "AreaBulldozer.UI.UndoDeletionTooltip", "Deshace la última demolición ({count}). Los edificios se reconstruyen. Los turismos y sus remolques se restauran cuando es posible. Las carreteras, los caminos peatonales y las vías férreas se restauran con sus conexiones." },
                 { "AreaBulldozer.UI.ToolOptionsClose", "Cerrar opciones" },
                 { "AreaBulldozer.UI.CloseColorEditor", "Cerrar editor de colores" },
                 { "AreaBulldozer.UI.ColorEditorTooltip", "Ajusta los colores de selección, confirmación, eliminación, superficies seleccionadas y polígonos no válidos con una vista previa inmediata." },

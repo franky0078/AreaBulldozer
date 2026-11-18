@@ -199,7 +199,7 @@ namespace AreaBulldozer.Localization
                 { "AreaBulldozer.UI.ProfileRail", "Unterirdische Gleise entfernen" },
                 { "AreaBulldozer.UI.LoosePropsOnly", "Nur lose Deko" },
                 { "AreaBulldozer.UI.UndoDeletion", "Letzte Löschaktion rückgängig" },
-                { "AreaBulldozer.UI.UndoDeletionTooltip", "Macht die letzte Löschaktion rückgängig ({count}). Gebäude werden neu aufgebaut. Pkw und ihre Anhänger werden nach Möglichkeit wiederhergestellt." },
+                { "AreaBulldozer.UI.UndoDeletionTooltip", "Macht die letzte Löschaktion rückgängig ({count}). Gebäude werden neu aufgebaut. Pkw und ihre Anhänger werden nach Möglichkeit wiederhergestellt. Straßen, Fußwege und Schienen werden mit ihren Verbindungen wiederhergestellt." },
                 { "AreaBulldozer.UI.ToolOptionsClose", "Optionen schließen" },
                 { "AreaBulldozer.UI.CloseColorEditor", "Farbeditor schließen" },
                 { "AreaBulldozer.UI.ColorEditorTooltip", "Passt die Farben der Auswahl, Bestätigung, Löschrückmeldung, ausgewählten Flächen und ungültigen Polygone mit direkter Vorschau an." },

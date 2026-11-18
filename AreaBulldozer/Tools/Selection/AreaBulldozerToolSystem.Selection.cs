@@ -55,6 +55,7 @@ namespace AreaBulldozer.Tools
             HashSet<Entity> selectedAssetLanes = new();
             HashSet<Entity> selectedDecorations = new();
             HashSet<Entity> selectedSurfaces = new();
+            HashSet<Entity> selectedNetworks = new();
 
             int vegetationCount = 0;
             int missingAssetCount = 0;
@@ -324,16 +325,19 @@ namespace AreaBulldozer.Tools
                 {
                     roadCount++;
                     networkEdgesToDelete.Add(entity);
+                    selectedNetworks.Add(entity);
                 }
                 else if (candidate.IsPedestrianPath)
                 {
                     pathCount++;
                     networkEdgesToDelete.Add(entity);
+                    selectedNetworks.Add(entity);
                 }
                 else if (candidate.IsRailway)
                 {
                     railwayCount++;
                     networkEdgesToDelete.Add(entity);
+                    selectedNetworks.Add(entity);
                 }
                 else if (candidate.IsSurfaceArea)
                 {
@@ -539,6 +543,8 @@ namespace AreaBulldozer.Tools
                 ClearDeletionUndo();
             }
 
+            RecordNetworkTransitForUndo(selectedNetworks);
+
             int queuedCount = 0;
 
             HashSet<Entity> deletedRoadNodes =
@@ -584,7 +590,11 @@ namespace AreaBulldozer.Tools
 
                 if (QueueDeletedComponent(entity, queuedDeletedEntities, commandBuffer))
                 {
-                    if (selectedBuildings.Contains(entity))
+                    if (selectedNetworks.Contains(entity))
+                    {
+                        RecordNetworkForUndo(entity);
+                    }
+                    else if (selectedBuildings.Contains(entity))
                     {
                         RecordBuildingForUndo(entity);
                     }

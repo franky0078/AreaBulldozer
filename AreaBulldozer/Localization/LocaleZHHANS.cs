@@ -199,7 +199,7 @@ namespace AreaBulldozer.Localization
                 { "AreaBulldozer.UI.ProfileRail", "移除地下轨道" },
                 { "AreaBulldozer.UI.LoosePropsOnly", "仅独立装饰" },
                 { "AreaBulldozer.UI.UndoDeletion", "撤销上次拆除" },
-                { "AreaBulldozer.UI.UndoDeletionTooltip", "撤销上一次拆除操作（{count} 项）。建筑将重新建造，并尽可能恢复乘用车及其拖车。" },
+                { "AreaBulldozer.UI.UndoDeletionTooltip", "撤销上一次拆除操作（{count} 项）。建筑将重新建造，并尽可能恢复乘用车及其拖车。 恢复道路、步行道和铁路及其连接。" },
                 { "AreaBulldozer.UI.ToolOptionsClose", "关闭选项" },
                 { "AreaBulldozer.UI.CloseColorEditor", "密切的颜色编辑器" },
                 { "AreaBulldozer.UI.ColorEditorTooltip", "调整选择、确认、删除反馈、选定表面和无效的多边形颜色,并预览。" },

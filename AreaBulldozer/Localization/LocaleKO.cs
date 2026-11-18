@@ -199,7 +199,7 @@ namespace AreaBulldozer.Localization
                 { "AreaBulldozer.UI.ProfileRail", "지하 선로 제거" },
                 { "AreaBulldozer.UI.LoosePropsOnly", "독립 장식물만" },
                 { "AreaBulldozer.UI.UndoDeletion", "마지막 철거 실행 취소" },
-                { "AreaBulldozer.UI.UndoDeletionTooltip", "마지막 철거를 실행 취소합니다({count}개). 건물을 다시 건설하고 가능한 경우 승용차와 트레일러를 복원합니다." },
+                { "AreaBulldozer.UI.UndoDeletionTooltip", "마지막 철거를 실행 취소합니다({count}개). 건물을 다시 건설하고 가능한 경우 승용차와 트레일러를 복원합니다. 도로, 보행로 및 철도는 연결과 함께 복원됩니다." },
                 { "AreaBulldozer.UI.ToolOptionsClose", "닫힌 옵션" },
                 { "AreaBulldozer.UI.CloseColorEditor", "꽉 차 있는 색상 편집기" },
                 { "AreaBulldozer.UI.ColorEditorTooltip", "선택, 확인, 삭제 피드백, 선택된 표면 및 라이브 미리보기를 가진 잘못된 다각형 색상을 조정합니다." },

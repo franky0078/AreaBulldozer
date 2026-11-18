@@ -174,8 +174,6 @@ namespace AreaBulldozer.Tools
                 UnityEngine.Time.unscaledTime +
                 kSpatialRefreshCheckInterval;
 
-            // Avoid constructing the large diagnostic strings entirely when
-            // info logging is disabled. The index itself is already rebuilt.
             if (!Mod.DiagnosticLoggingEnabled)
             {
                 return;
@@ -203,7 +201,7 @@ namespace AreaBulldozer.Tools
                 $"pedestrian paths: {m_SpatialPathCount}, " +
                 $"railway tracks: {m_SpatialRailwayCount}, " +
                 $"surfaces and spaces: {m_SpatialSurfaceAreaCount}. " +
-                $"Road diagnostics - Edge+Road queried: " +
+                $"Road diagnostics - Edge+PrefabRef queried: " +
                 $"{m_SpatialRoadQueryCount}, " +
                 $"non-aggregate owners rejected: " +
                 $"{m_SpatialRejectedRoadOwnerCount}, " +
@@ -570,7 +568,7 @@ namespace AreaBulldozer.Tools
         private void AddRoadEdgesToSpatialIndex()
         {
             NativeArray<Entity> roadEdges =
-                m_RoadEdgeQuery.ToEntityArray(
+                m_NetEdgeQuery.ToEntityArray(
                     Allocator.Temp);
 
             m_SpatialRoadQueryCount =
@@ -602,18 +600,8 @@ namespace AreaBulldozer.Tools
                         continue;
                     }
 
-                    AddSpatialCandidate(
-                        new(
-                            entity,
-                            new(
-                                startPosition.x,
-                                startPosition.z),
-                            new(
-                                endPosition.x,
-                                endPosition.z),
-                            SpatialCandidateKind.Road,
-                            StaticObjectCategory.None,
-                            true));
+                    AddNetworkCurveToSpatialIndex(entity, SpatialCandidateKind.Road,
+                        startPosition, endPosition);
                 }
             }
             finally
@@ -660,6 +648,12 @@ namespace AreaBulldozer.Tools
                         continue;
                     }
 
+                    if (IsMainRoadEdgeEntity(entity))
+                    {
+                        // Already indexed by AddRoadEdgesToSpatialIndex.
+                        continue;
+                    }
+
                     bool isPedestrianPath =
                         IsMainPedestrianPathEdgeEntity(entity);
 
@@ -696,25 +690,53 @@ namespace AreaBulldozer.Tools
                         continue;
                     }
 
-                    AddSpatialCandidate(
-                        new(
-                            entity,
-                            new(
-                                startPosition.x,
-                                startPosition.z),
-                            new(
-                                endPosition.x,
-                                endPosition.z),
-                            isPedestrianPath
-                                ? SpatialCandidateKind.PedestrianPath
-                                : SpatialCandidateKind.Railway,
-                            StaticObjectCategory.None,
-                            true));
+                    AddNetworkCurveToSpatialIndex(entity,
+                        isPedestrianPath ? SpatialCandidateKind.PedestrianPath : SpatialCandidateKind.Railway,
+                        startPosition, endPosition);
                 }
             }
             finally
             {
                 netEdges.Dispose();
+            }
+        }
+
+        private void AddNetworkCurveToSpatialIndex(
+            Entity entity, SpatialCandidateKind kind, float3 startPosition, float3 endPosition)
+        {
+            if (!EntityManager.HasComponent<Curve>(entity))
+            {
+                AddSpatialCandidate(new SpatialCandidate(entity, startPosition.xz, endPosition.xz,
+                    kind, StaticObjectCategory.None, true));
+                return;
+            }
+
+            Curve curve = EntityManager.GetComponentData<Curve>(entity);
+            if (!math.all(math.isfinite(curve.m_Bezier.a)) || !math.all(math.isfinite(curve.m_Bezier.b)) ||
+                !math.all(math.isfinite(curve.m_Bezier.c)) || !math.all(math.isfinite(curve.m_Bezier.d)))
+            {
+                return;
+            }
+
+            float length = math.distance(curve.m_Bezier.a, curve.m_Bezier.b) +
+                math.distance(curve.m_Bezier.b, curve.m_Bezier.c) +
+                math.distance(curve.m_Bezier.c, curve.m_Bezier.d);
+            int segments = math.clamp((int)math.ceil(length / 4f), 4, 256);
+            float2 start = curve.m_Bezier.a.xz;
+            for (int i = 1; i <= segments; i++)
+            {
+                float2 end = MathUtils.Position(curve.m_Bezier, (float)i / segments).xz;
+                var candidate = new SpatialCandidate(entity, start, end, kind, StaticObjectCategory.None, true);
+                if (i == 1)
+                {
+                    AddSpatialCandidate(candidate);
+                }
+                else
+                {
+                    // Statistics count entities, not their curve samples.
+                    m_SpatialIndex.Add(candidate);
+                }
+                start = end;
             }
         }
 
