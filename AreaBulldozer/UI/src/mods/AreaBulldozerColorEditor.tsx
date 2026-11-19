@@ -290,7 +290,7 @@ export function AreaBulldozerColorEditor({
 
                 <div className={styles.controlsColumn}>
                     <div className={styles.previewArea}>
-                        <div className={styles.previewShape} />
+                        <div className={styles.previewShape} style={{ borderColor: colorHex }} />
                         <div className={styles.previewText}>
                             <strong className={activeColor.label.length > 20 ? styles.longLabel : undefined}>{activeColor.label}</strong>
                             <span>{colorHex}</span>
