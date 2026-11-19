@@ -51,6 +51,11 @@ import {
     useToolWindow,
 } from "./AreaBulldozerColorEditorState";
 
+// Set to true only while debugging. Every UI console line goes through the game's logger,
+// which sometimes throws a NullReferenceException in UnityLogger.Internal_WriteStream.
+// Errors (console.error) are always written.
+const DEBUG_LOG = false;
+
 const UI_PREFIX = "AreaBulldozer.UI.";
 
 const SHAPE_CIRCLE = 0;
@@ -476,7 +481,7 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
             translate(`${UI_PREFIX}${key}`, fallback) ?? fallback;
 
         useEffect(() => {
-            if (!isToolActive) {
+            if (!isToolActive || !DEBUG_LOG) {
                 return;
             }
 
@@ -508,7 +513,7 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
             return result;
         }
 
-        if (result === null || result === undefined) {
+        if (DEBUG_LOG && (result === null || result === undefined)) {
             console.log(
                 "[AreaBulldozer] MouseToolOptions lieferte nichts - eigener Rahmen wird gebaut."
             );

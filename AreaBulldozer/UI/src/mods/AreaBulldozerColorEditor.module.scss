@@ -106,7 +106,10 @@
     width: 68rem;
     height: 38rem;
     min-width: 68rem;
-    border: 4rem solid var(--ab-current-color);
+    /* The colour is set inline in the TSX: the game UI (Coherent) ignores var() in
+       border shorthands and in border-color. */
+    border-width: 4rem;
+    border-style: solid;
     border-radius: 50%;
     box-shadow: 0 0 7rem var(--ab-current-color);
 }
@@ -205,7 +208,7 @@
     height: 15rem;
     border: 2rem solid #ffffff;
     border-radius: 50%;
-    background: var(--ab-current-color);
+    background-color: var(--ab-current-color);
     pointer-events: none;
     transform: translate(-50%, -50%);
 }
