@@ -21,6 +21,12 @@ const UI_BUILD =
     "r14-compact-color-button";
 
 
+// Set to true only while debugging. Every UI console line goes through the game's logger,
+// which sometimes throws a NullReferenceException in UnityLogger.Internal_WriteStream.
+// Errors (console.error) are always written.
+const DEBUG_LOG = false;
+
+
 const ENABLE = {
     LAUNCHER: true,
     MOD_MENU: true,
@@ -39,9 +45,11 @@ function safely(
     try {
         action();
 
-        console.log(
-            `[AreaBulldozer] ${label}: OK`
-        );
+        if (DEBUG_LOG) {
+            console.log(
+                `[AreaBulldozer] ${label}: OK`
+            );
+        }
     }
     catch (error) {
         console.error(
@@ -94,7 +102,7 @@ function validateBindings() {
             `[AreaBulldozer] Ungueltige Bindings: ${broken.join(", ")}.`
         );
     }
-    else {
+    else if (DEBUG_LOG) {
         console.log(
             "[AreaBulldozer] Bindings geprüft: alle in Ordnung."
         );
@@ -289,9 +297,11 @@ const register:
         }
 
 
-        console.log(
-            "[AreaBulldozer] UI-Registrierung abgeschlossen."
-        );
+        if (DEBUG_LOG) {
+            console.log(
+                "[AreaBulldozer] UI-Registrierung abgeschlossen."
+            );
+        }
     };
 
 
