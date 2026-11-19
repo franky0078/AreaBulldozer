@@ -1,7 +1,7 @@
 ﻿.navigationButtons .backButton {
     width: var(--ab-navigation-button-size);
     height: var(--ab-navigation-button-size);
-    flex: 0 0 var(--ab-navigation-button-size);
+    flex: 0 0 auto;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -48,7 +48,7 @@
 .navigationButtons .colorButton {
     width: var(--ab-navigation-button-size);
     height: var(--ab-navigation-button-size);
-    flex: 0 0 var(--ab-navigation-button-size);
+    flex: 0 0 auto;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -79,7 +79,7 @@
 .navigationButtons .anarchyButton {
     width: var(--ab-navigation-button-size);
     height: var(--ab-navigation-button-size);
-    flex: 0 0 var(--ab-navigation-button-size);
+    flex: 0 0 auto;
     display: flex;
     align-items: center;
     justify-content: center;
