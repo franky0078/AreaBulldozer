@@ -164,7 +164,7 @@
 	<ForumLink Value="https://forum.paradoxplaza.com/forum/threads/mod-area-bulldozer-area-deletion-tool-with-object-filters.1937211/" />
 
 	<!-- Mod version -->
-	<ModVersion Value="2.1.5" />
+	<ModVersion Value="2.1.7" />
 
 	<!--
 	Recommended game version.
@@ -195,8 +195,7 @@
 	<ChangeLog>
 		Latest changes
 
-		- added undo functionality for support roads, pedestrian paths, and railway tracks
-
+		- Reduced informational UI log output
 	</ChangeLog>
 
 	<!--Optional external links for your own mod.-->
