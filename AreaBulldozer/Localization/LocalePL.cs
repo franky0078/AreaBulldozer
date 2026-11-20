@@ -21,6 +21,26 @@ namespace AreaBulldozer.Localization
 
             return new Dictionary<string, string>
             {
+                { "AreaBulldozer.UI.AssetListUndo", "Cofnij zmianę listy" },
+                { "AreaBulldozer.UI.AssetListUndoHint", "Cofa ostatnią zmianę listy: wybór pipetą, usunięcie, wyczyszczenie lub przełączenie filtra zasobów. Strzałka cofania w narzędziu przywraca usunięte obiekty." },
+                { "AreaBulldozer.UI.AssetSelectionToggle", "Pokaż lub ukryj wybór zasobów. Ukrycie wyłącza pipetę i filtr; lista pozostaje dostępna w tej sesji." },
+                { "AreaBulldozer.UI.AssetListResize", "Zmień wysokość listy zasobów" },
+                { "AreaBulldozer.UI.AssetSelection", "Wybór zasobów" },
+                { "AreaBulldozer.UI.AssetList", "Lista zasobów" },
+                { "AreaBulldozer.UI.AssetListOpen", "Otwórz listę zasobów" },
+                { "AreaBulldozer.UI.AssetListClose", "Zamknij listę zasobów" },
+                { "AreaBulldozer.UI.AssetPicker", "Wybierz zasoby pipetą" },
+                { "AreaBulldozer.UI.AssetPickerFinish", "Zakończ wybieranie" },
+                { "AreaBulldozer.UI.AssetPickerHint", "Klikaj obiekty, aby dodać ich zasoby. Prawy przycisk myszy lub Esc kończy wybieranie." },
+                { "AreaBulldozer.UI.AssetListClear", "Wyczyść listę" },
+                { "AreaBulldozer.UI.AssetFilterEnabled", "Tylko wybrane zasoby" },
+                { "AreaBulldozer.UI.AssetFilterHint", "Lista dodatkowo ogranicza aktywne filtry obiektów. Filtry wysokości i ochrona nadal obowiązują." },
+                { "AreaBulldozer.UI.AssetFilterEmpty", "Lista jest pusta. Przy włączonym filtrze zasobów nic nie zostanie usunięte." },
+                { "AreaBulldozer.UI.AssetListEmpty", "Brak zasobów. Wybierz obiekty w grze za pomocą pipety." },
+                { "AreaBulldozer.UI.AssetUnavailable", "Zasób niedostępny" },
+                { "AreaBulldozer.UI.AssetRemove", "Usuń z listy" },
+                { "AreaBulldozer.UI.AssetProfileHint", "Bieżąca lista jest czyszczona przy następnym uruchomieniu gry. Własne profile filtrów mogą trwale przechowywać swoje listy zasobów." },
+                { "AreaBulldozer.UI.AssetListLimit", "Lista może zawierać do 128 zasobów. Usuń wpis, aby dodać kolejny." },
                 { m_Setting.GetSettingsLocaleID(), "Area Bulldozer" },
                 { m_Setting.GetOptionTabLocaleID(Setting.kSection), "Główny" },
 

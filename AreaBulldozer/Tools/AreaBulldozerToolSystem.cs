@@ -641,6 +641,8 @@ namespace AreaBulldozer.Tools
         {
             base.OnGameLoadingComplete(purpose, mode);
             ClearDeletionUndo();
+            ClearAssetSelectionUndo();
+            ResetAssetFilterRuntime();
             m_DeletionUndoRequested = false;
         }
 
@@ -716,6 +718,7 @@ namespace AreaBulldozer.Tools
 
         protected override void OnStopRunning()
         {
+            ResetAssetFilterRuntime();
             m_DeletionUndoRequested = false;
             requireUnderground = false;
             m_HeightClassifications.Clear();
@@ -829,6 +832,17 @@ namespace AreaBulldozer.Tools
         {
             base.InitializeRaycast();
 
+            if (AssetPickerActive)
+            {
+                m_ToolRaycastSystem.typeMask = TypeMask.StaticObjects | TypeMask.MovingObjects | TypeMask.Net | TypeMask.Areas;
+                m_ToolRaycastSystem.netLayerMask = Game.Net.Layer.All;
+                m_ToolRaycastSystem.areaTypeMask = Game.Areas.AreaTypeMask.Surfaces | Game.Areas.AreaTypeMask.Spaces;
+                m_ToolRaycastSystem.raycastFlags |= RaycastFlags.SubElements | RaycastFlags.Decals | RaycastFlags.Markers;
+                m_ToolRaycastSystem.collisionMask = UndergroundView ? CollisionMask.Underground :
+                    CollisionMask.OnGround | CollisionMask.Overground;
+                return;
+            }
+
             m_ToolRaycastSystem.typeMask =
                 TypeMask.Terrain;
 
@@ -937,6 +951,21 @@ namespace AreaBulldozer.Tools
         private JobHandle OnToolUpdate(
             JobHandle inputDeps)
         {
+            if (AssetPickerActive && m_DeletionUndoRequested) SetAssetPicker(false);
+            if (AssetPickerActive)
+            {
+                UpdateHeightView();
+                CleanupPendingDeletions();
+                UpdateMarkerVisibility();
+                return UpdateAssetPicker(inputDeps);
+            }
+            if (m_AssetDeleteWaitForRelease)
+            {
+                bool held = m_ApplyAction?.ReadValue<float>() >= 0.5f || Mouse.current?.leftButton.isPressed == true;
+                if (!held) m_AssetDeleteWaitForRelease = false;
+                return inputDeps;
+            }
+
             bool rotating = UpdateSquareRotationInput();
             UpdateHeightView();
             ObserveCarFilterPauseOverride();

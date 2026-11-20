@@ -21,6 +21,26 @@ namespace AreaBulldozer.Localization
 
             return new Dictionary<string, string>
             {
+                { "AreaBulldozer.UI.AssetListUndo", "撤销列表更改" },
+                { "AreaBulldozer.UI.AssetListUndoHint", "撤销上一次资产列表更改：吸管选择、移除、清空或切换资产筛选器。工具中的撤销箭头用于恢复已拆除的对象。" },
+                { "AreaBulldozer.UI.AssetSelectionToggle", "显示或隐藏资产选择。隐藏时会关闭吸管和资产筛选器；列表在本次游戏期间保留。" },
+                { "AreaBulldozer.UI.AssetListResize", "调整资产列表高度" },
+                { "AreaBulldozer.UI.AssetSelection", "资产选择" },
+                { "AreaBulldozer.UI.AssetList", "资产列表" },
+                { "AreaBulldozer.UI.AssetListOpen", "打开资产列表" },
+                { "AreaBulldozer.UI.AssetListClose", "关闭资产列表" },
+                { "AreaBulldozer.UI.AssetPicker", "使用吸管选择资产" },
+                { "AreaBulldozer.UI.AssetPickerFinish", "结束选择" },
+                { "AreaBulldozer.UI.AssetPickerHint", "点击物体以添加其资产。右键或 Esc 结束选择。" },
+                { "AreaBulldozer.UI.AssetListClear", "清空列表" },
+                { "AreaBulldozer.UI.AssetFilterEnabled", "仅限所选资产" },
+                { "AreaBulldozer.UI.AssetFilterHint", "列表会进一步限制当前物体筛选器。高度筛选和保护设置仍然生效。" },
+                { "AreaBulldozer.UI.AssetFilterEmpty", "列表为空。启用资产筛选时不会删除任何物体。" },
+                { "AreaBulldozer.UI.AssetListEmpty", "尚无资产。使用吸管选择游戏中的物体。" },
+                { "AreaBulldozer.UI.AssetUnavailable", "资产不可用" },
+                { "AreaBulldozer.UI.AssetRemove", "从列表移除" },
+                { "AreaBulldozer.UI.AssetProfileHint", "当前列表会在下次启动游戏时清空。自定义筛选配置可以永久保存其资产列表。" },
+                { "AreaBulldozer.UI.AssetListLimit", "列表最多可包含128项资产。移除一项后可继续添加。" },
                 { m_Setting.GetSettingsLocaleID(), "Area Bulldozer" },
                 { m_Setting.GetOptionTabLocaleID(Setting.kSection), "主要" },
 

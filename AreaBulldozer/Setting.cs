@@ -81,6 +81,15 @@ namespace AreaBulldozer
             SetDefaults();
         }
 
+        // Session-only working selection. CustomFilterProfiles stores explicit snapshots.
+        [Colossal.Json.Exclude]
+        [SettingsUIHidden]
+        public bool AssetFilterEnabled { get; set; }
+
+        [Colossal.Json.Exclude]
+        [SettingsUIHidden]
+        public string AssetFilterPrefabs { get; set; } = "";
+
         [SettingsUIHidden]
         public string CustomFilterProfiles { get; set; } = "";
 
@@ -347,6 +356,8 @@ namespace AreaBulldozer
 
         public override void SetDefaults()
         {
+            AssetFilterEnabled = false;
+            AssetFilterPrefabs = "";
             HeightFilter = AreaBulldozerHeightFilter.All;
             DeleteTrees = true;
             TreeAgeFilter = AreaBulldozerTreeAgeFilter.All;

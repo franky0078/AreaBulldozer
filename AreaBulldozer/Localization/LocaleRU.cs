@@ -21,6 +21,26 @@ namespace AreaBulldozer.Localization
 
             return new Dictionary<string, string>
             {
+                { "AreaBulldozer.UI.AssetListUndo", "Отменить изменение списка" },
+                { "AreaBulldozer.UI.AssetListUndoHint", "Отменяет последнее изменение списка: выбор пипеткой, удаление, очистку или переключение фильтра. Стрелка отмены в инструменте восстанавливает снесённые объекты." },
+                { "AreaBulldozer.UI.AssetSelectionToggle", "Показать или скрыть выбор ассетов. При скрытии пипетка и фильтр отключаются; список сохраняется до конца сеанса." },
+                { "AreaBulldozer.UI.AssetListResize", "Изменить высоту списка ассетов" },
+                { "AreaBulldozer.UI.AssetSelection", "Выбор ассетов" },
+                { "AreaBulldozer.UI.AssetList", "Список ассетов" },
+                { "AreaBulldozer.UI.AssetListOpen", "Открыть список ассетов" },
+                { "AreaBulldozer.UI.AssetListClose", "Закрыть список ассетов" },
+                { "AreaBulldozer.UI.AssetPicker", "Выбрать ассеты пипеткой" },
+                { "AreaBulldozer.UI.AssetPickerFinish", "Завершить выбор" },
+                { "AreaBulldozer.UI.AssetPickerHint", "Нажимайте на объекты, чтобы добавить их ассеты. Правая кнопка мыши или Esc завершает выбор." },
+                { "AreaBulldozer.UI.AssetListClear", "Очистить список" },
+                { "AreaBulldozer.UI.AssetFilterEnabled", "Только выбранные ассеты" },
+                { "AreaBulldozer.UI.AssetFilterHint", "Список дополнительно ограничивает активные фильтры объектов. Фильтры высоты и защита продолжают действовать." },
+                { "AreaBulldozer.UI.AssetFilterEmpty", "Список пуст. При включённом фильтре ассетов ничего не удаляется." },
+                { "AreaBulldozer.UI.AssetListEmpty", "Ассетов пока нет. Выберите объекты в игре пипеткой." },
+                { "AreaBulldozer.UI.AssetUnavailable", "Ассет недоступен" },
+                { "AreaBulldozer.UI.AssetRemove", "Убрать из списка" },
+                { "AreaBulldozer.UI.AssetProfileHint", "Текущий список очищается при следующем запуске игры. Пользовательские профили фильтров могут хранить свои списки постоянно." },
+                { "AreaBulldozer.UI.AssetListLimit", "Список вмещает до 128 ассетов. Удалите запись, чтобы добавить другую." },
                 { m_Setting.GetSettingsLocaleID(), "Area Bulldozer" },
                 { m_Setting.GetOptionTabLocaleID(Setting.kSection), "Основное" },
 

@@ -31,6 +31,8 @@ namespace AreaBulldozer.UISystems
             RegisterValueBindings();
             RegisterTriggerBindings();
             RegisterFilterProfileBindings();
+            RegisterAssetFilterBindings();
+            m_Tool.AssetFilterChanged += OnAssetFilterChanged;
 
             Mod.LogDiagnosticInfo(
                 "Area Bulldozer UI bindings initialized.");
@@ -76,6 +78,7 @@ namespace AreaBulldozer.UISystems
                 }
             }
 
+            if (m_Tool != null) m_Tool.AssetFilterChanged -= OnAssetFilterChanged;
             m_Tool?.SetPointerOverUI(false);
             m_Tool = null;
 

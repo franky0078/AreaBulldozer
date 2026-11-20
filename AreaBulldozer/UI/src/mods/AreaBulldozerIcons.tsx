@@ -1,6 +1,7 @@
 import React from "react";
 
 export type AreaBulldozerIconType =
+    | "assetList"
     | "heightAll"
     | "heightAbove"
     | "heightBelow"
@@ -49,6 +50,8 @@ const common = {
 
 export function AreaBulldozerIcon({ type }: { type: AreaBulldozerIconType }) {
     switch (type) {
+        case "assetList":
+            return <svg {...common}><path d="M12 7h16M12 16h16M12 25h16M4 6h2v2H4V6Zm0 9h2v2H4v-2Zm0 9h2v2H4v-2Z" /></svg>;
         case "heightAll":
         case "heightAbove":
         case "heightBelow":

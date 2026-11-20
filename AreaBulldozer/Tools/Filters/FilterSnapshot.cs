@@ -9,6 +9,8 @@ namespace AreaBulldozer.Tools
     {
 
         public readonly AreaBulldozerHeightFilter HeightFilter;
+        public readonly bool AssetFilterEnabled;
+        public readonly string AssetFilterPrefabs;
 
         // Primäre Objektfilter
         public readonly bool DeleteTrees;
@@ -44,6 +46,8 @@ namespace AreaBulldozer.Tools
             Setting settings)
         {
             HeightFilter = settings.HeightFilter;
+            AssetFilterEnabled = settings.AssetFilterEnabled;
+            AssetFilterPrefabs = settings.AssetFilterPrefabs ?? "";
             DeleteTrees =
                 settings.DeleteTrees;
             TreeAgeFilter = DeleteTrees ? settings.TreeAgeFilter : AreaBulldozerTreeAgeFilter.All;
@@ -128,6 +132,8 @@ namespace AreaBulldozer.Tools
             FilterSnapshot other)
         {
             return
+                AssetFilterEnabled == other.AssetFilterEnabled &&
+                string.Equals(AssetFilterPrefabs, other.AssetFilterPrefabs, StringComparison.Ordinal) &&
                 HeightFilter == other.HeightFilter &&
                 DeleteMissingAssets == other.DeleteMissingAssets &&
                 DeleteTrees == other.DeleteTrees &&
@@ -190,7 +196,8 @@ namespace AreaBulldozer.Tools
             hash |= ProtectOwnedObjects ? 1 << 16 : 0;
             hash |= IncludeOverriddenVegetation ? 1 << 17 : 0;
 
-            return hash;
+            return unchecked(hash * 397 ^ (AssetFilterEnabled ? 1 : 0) ^
+                (AssetFilterPrefabs?.GetHashCode() ?? 0));
         }
 
         public static bool operator ==(

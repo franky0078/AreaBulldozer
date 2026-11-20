@@ -1,0 +1,10 @@
+.tooltip {
+    position:fixed !important; z-index:20000 !important; display:block !important;
+    box-sizing:border-box; width:280rem; max-width:calc(100vw - 16px); max-height:calc(100vh - 16px);
+    padding:7rem 9rem; overflow:hidden; border:1rem solid rgba(211,231,235,.2);
+    border-radius:3rem; background:rgb(12,25,30); color:#e3ecef;
+    font-size:12rem; line-height:1.4; white-space:normal; pointer-events:none !important;
+}
+.tooltip * { display:block !important; pointer-events:none !important; white-space:normal; }
+.title { margin:0; padding:0; font-size:13rem; font-weight:bold; line-height:1.35; }
+.description { margin-top:4rem; color:#c4d0d3; font-size:12rem; line-height:1.4; }

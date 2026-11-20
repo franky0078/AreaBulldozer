@@ -115,6 +115,12 @@ namespace AreaBulldozer
                 Settings,
                 new Setting(this));
 
+            // The working list belongs to this game session. Explicitly saved
+            // lists in CustomFilterProfiles remain available when a profile is loaded.
+            // Also discard entries written by versions that persisted the working list.
+            Settings.AssetFilterEnabled = false;
+            Settings.AssetFilterPrefabs = "";
+
             if (DiagnosticLoggingEnabled)
             {
                 LogDiagnosticInfo("Area Bulldozer is loading.");

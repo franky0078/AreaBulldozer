@@ -64,6 +64,7 @@ namespace AreaBulldozer.Tools
         internal int Filters { get; set; }
 
         internal BrushSettings? Brush { get; set; }
+        internal string AssetSelection { get; set; } = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes("0\n"));
 
         internal FilterProfile(string id, string name, int filters)
         {
@@ -90,6 +91,12 @@ namespace AreaBulldozer.Tools
 
         internal void Apply(Setting setting)
         {
+            if (!AssetFilterSettings.TryApply(AssetSelection, setting))
+            {
+                // A damaged asset list must not turn into an unrestricted brush.
+                setting.AssetFilterEnabled = true;
+                setting.AssetFilterPrefabs = "";
+            }
             setting.HeightFilter = (AreaBulldozerHeightFilter)((Filters >> HeightShift) & 3);
             setting.TreeAgeFilter = (AreaBulldozerTreeAgeFilter)((Filters >> TreeAgeShift) & 7);
 
@@ -125,7 +132,7 @@ namespace AreaBulldozer.Tools
             foreach (string row in (stored ?? "").Split('\n'))
             {
                 string[] columns = row.Split('\t');
-                if ((columns.Length != 3 && columns.Length != 4) ||
+                if ((columns.Length < 3 || columns.Length > 5) ||
                     !Guid.TryParseExact(columns[0], "N", out _) ||
                     !IsValidName(columns[1]) ||
                     !int.TryParse(columns[2], NumberStyles.None, CultureInfo.InvariantCulture, out int filters) ||
@@ -140,11 +147,12 @@ namespace AreaBulldozer.Tools
                 ids.Add(columns[0]);
                 names.Add(columns[1]);
                 var profile = new FilterProfile(columns[0], columns[1], filters);
-                if (columns.Length == 4 && BrushSettings.TryParse(columns[3], out BrushSettings brush))
+                if (columns.Length >= 4 && BrushSettings.TryParse(columns[3], out BrushSettings brush))
                 {
                     profile.Brush = brush;
                 }
 
+                if (columns.Length == 5) profile.AssetSelection = columns[4];
                 profiles.Add(profile);
             }
 
@@ -154,7 +162,7 @@ namespace AreaBulldozer.Tools
         internal string Serialize()
         {
             string row = Id + "\t" + Name + "\t" + Filters.ToString(CultureInfo.InvariantCulture);
-            return Brush.HasValue ? row + "\t" + Brush.Value.Serialize() : row;
+            return row + "\t" + (Brush.HasValue ? Brush.Value.Serialize() : "") + "\t" + AssetSelection;
         }
 
         internal readonly struct BrushSettings

@@ -21,6 +21,26 @@ namespace AreaBulldozer.Localization
 
             return new Dictionary<string, string>
             {
+                { "AreaBulldozer.UI.AssetListUndo", "Desfazer alteração da lista" },
+                { "AreaBulldozer.UI.AssetListUndoHint", "Desfaz a última alteração na lista: seleção com conta-gotas, remoção, limpeza ou ativação do filtro. A seta Desfazer da ferramenta restaura objetos demolidos." },
+                { "AreaBulldozer.UI.AssetSelectionToggle", "Mostrar ou ocultar a seleção de recursos. Ao ocultar, o conta-gotas e o filtro são desativados; a lista é mantida nesta sessão." },
+                { "AreaBulldozer.UI.AssetListResize", "Alterar altura da lista de recursos" },
+                { "AreaBulldozer.UI.AssetSelection", "Seleção de recursos" },
+                { "AreaBulldozer.UI.AssetList", "Lista de recursos" },
+                { "AreaBulldozer.UI.AssetListOpen", "Abrir lista de recursos" },
+                { "AreaBulldozer.UI.AssetListClose", "Fechar lista de recursos" },
+                { "AreaBulldozer.UI.AssetPicker", "Selecionar recursos com conta-gotas" },
+                { "AreaBulldozer.UI.AssetPickerFinish", "Concluir seleção" },
+                { "AreaBulldozer.UI.AssetPickerHint", "Clique nos objetos para adicionar seus recursos. Botão direito ou Esc encerra a seleção." },
+                { "AreaBulldozer.UI.AssetListClear", "Limpar lista" },
+                { "AreaBulldozer.UI.AssetFilterEnabled", "Somente recursos selecionados" },
+                { "AreaBulldozer.UI.AssetFilterHint", "A lista restringe os filtros de objetos ativos. Os filtros de altura e as opções de proteção continuam válidos." },
+                { "AreaBulldozer.UI.AssetFilterEmpty", "A lista está vazia. Nada será removido enquanto o filtro de recursos estiver ativo." },
+                { "AreaBulldozer.UI.AssetListEmpty", "Nenhum recurso. Use o conta-gotas para selecionar objetos no jogo." },
+                { "AreaBulldozer.UI.AssetUnavailable", "Recurso indisponível" },
+                { "AreaBulldozer.UI.AssetRemove", "Remover da lista" },
+                { "AreaBulldozer.UI.AssetProfileHint", "A lista atual é limpa na próxima inicialização do jogo. Perfis de filtro personalizados podem armazenar suas listas permanentemente." },
+                { "AreaBulldozer.UI.AssetListLimit", "A lista aceita até 128 recursos. Remova uma entrada para adicionar outra." },
                 { m_Setting.GetSettingsLocaleID(), "Area Bulldozer" },
                 { m_Setting.GetOptionTabLocaleID(Setting.kSection), "Principais" },
 

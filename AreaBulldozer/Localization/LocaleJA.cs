@@ -21,6 +21,26 @@ namespace AreaBulldozer.Localization
 
             return new Dictionary<string, string>
             {
+                { "AreaBulldozer.UI.AssetListUndo", "リストの変更を元に戻す" },
+                { "AreaBulldozer.UI.AssetListUndoHint", "スポイトでの追加、削除、リストの消去、アセットフィルターの切り替えなど、直前の変更を元に戻します。ツールの元に戻す矢印は撤去したオブジェクトを復元します。" },
+                { "AreaBulldozer.UI.AssetSelectionToggle", "アセット選択を表示・非表示にします。非表示にするとスポイトとアセットフィルターが無効になり、リストは今回のセッション中保持されます。" },
+                { "AreaBulldozer.UI.AssetListResize", "アセット一覧の高さを変更" },
+                { "AreaBulldozer.UI.AssetSelection", "アセット選択" },
+                { "AreaBulldozer.UI.AssetList", "アセット一覧" },
+                { "AreaBulldozer.UI.AssetListOpen", "アセット一覧を開く" },
+                { "AreaBulldozer.UI.AssetListClose", "アセット一覧を閉じる" },
+                { "AreaBulldozer.UI.AssetPicker", "スポイトでアセットを選択" },
+                { "AreaBulldozer.UI.AssetPickerFinish", "選択を終了" },
+                { "AreaBulldozer.UI.AssetPickerHint", "オブジェクトをクリックしてアセットを追加します。右クリックまたは Esc で終了します。" },
+                { "AreaBulldozer.UI.AssetListClear", "一覧をクリア" },
+                { "AreaBulldozer.UI.AssetFilterEnabled", "選択したアセットのみ" },
+                { "AreaBulldozer.UI.AssetFilterHint", "一覧は有効なオブジェクトフィルターをさらに絞り込みます。高さフィルターと保護設定も適用されます。" },
+                { "AreaBulldozer.UI.AssetFilterEmpty", "一覧は空です。アセットフィルターが有効な間は何も削除されません。" },
+                { "AreaBulldozer.UI.AssetListEmpty", "アセットがありません。スポイトでゲーム内のオブジェクトを選択してください。" },
+                { "AreaBulldozer.UI.AssetUnavailable", "アセットを利用できません" },
+                { "AreaBulldozer.UI.AssetRemove", "一覧から削除" },
+                { "AreaBulldozer.UI.AssetProfileHint", "現在のリストは次回のゲーム起動時に空になります。カスタムフィルタープロファイルにはアセットリストを保存できます。" },
+                { "AreaBulldozer.UI.AssetListLimit", "一覧には最大128個のアセットを追加できます。別のアセットを追加するには項目を削除してください。" },
                 { m_Setting.GetSettingsLocaleID(), "Area Bulldozer" },
                 { m_Setting.GetOptionTabLocaleID(Setting.kSection), "メイン" },
 

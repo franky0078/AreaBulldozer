@@ -21,6 +21,26 @@ namespace AreaBulldozer.Localization
 
             return new Dictionary<string, string>
             {
+                { "AreaBulldozer.UI.AssetListUndo", "목록 변경 실행 취소" },
+                { "AreaBulldozer.UI.AssetListUndoHint", "스포이트 선택, 항목 제거, 목록 비우기 또는 에셋 필터 전환 등 마지막 변경을 취소합니다. 도구의 실행 취소 화살표는 철거된 오브젝트를 복원합니다." },
+                { "AreaBulldozer.UI.AssetSelectionToggle", "에셋 선택을 표시하거나 숨깁니다. 숨기면 스포이트와 에셋 필터가 꺼지며 목록은 현재 세션 동안 유지됩니다." },
+                { "AreaBulldozer.UI.AssetListResize", "에셋 목록 높이 조절" },
+                { "AreaBulldozer.UI.AssetSelection", "에셋 선택" },
+                { "AreaBulldozer.UI.AssetList", "에셋 목록" },
+                { "AreaBulldozer.UI.AssetListOpen", "에셋 목록 열기" },
+                { "AreaBulldozer.UI.AssetListClose", "에셋 목록 닫기" },
+                { "AreaBulldozer.UI.AssetPicker", "스포이트로 에셋 선택" },
+                { "AreaBulldozer.UI.AssetPickerFinish", "선택 종료" },
+                { "AreaBulldozer.UI.AssetPickerHint", "오브젝트를 클릭해 에셋을 추가합니다. 오른쪽 클릭 또는 Esc로 종료합니다." },
+                { "AreaBulldozer.UI.AssetListClear", "목록 비우기" },
+                { "AreaBulldozer.UI.AssetFilterEnabled", "선택한 에셋만" },
+                { "AreaBulldozer.UI.AssetFilterHint", "목록은 활성 오브젝트 필터를 추가로 제한합니다. 높이 필터와 보호 설정도 적용됩니다." },
+                { "AreaBulldozer.UI.AssetFilterEmpty", "목록이 비어 있습니다. 에셋 필터가 켜져 있는 동안 아무것도 삭제되지 않습니다." },
+                { "AreaBulldozer.UI.AssetListEmpty", "에셋이 없습니다. 스포이트로 게임 내 오브젝트를 선택하세요." },
+                { "AreaBulldozer.UI.AssetUnavailable", "에셋을 사용할 수 없음" },
+                { "AreaBulldozer.UI.AssetRemove", "목록에서 제거" },
+                { "AreaBulldozer.UI.AssetProfileHint", "현재 목록은 다음 게임 실행 시 비워집니다. 사용자 지정 필터 프로필에는 에셋 목록을 영구적으로 저장할 수 있습니다." },
+                { "AreaBulldozer.UI.AssetListLimit", "최대 128개 에셋을 추가할 수 있습니다. 다른 에셋을 추가하려면 항목을 제거하세요." },
                 { m_Setting.GetSettingsLocaleID(), "Area Bulldozer" },
                 { m_Setting.GetOptionTabLocaleID(Setting.kSection), "주요" },
 

@@ -7,6 +7,8 @@ import styles from "./AreaBulldozerCompact.module.scss";
 import { VanillaComponentResolver } from "./VanillaComponentResolver";
 import { AreaBulldozerIcon, AreaBulldozerIconType } from "./AreaBulldozerIcons";
 import { useSafeValue } from "./useSafeValue";
+import { AreaBulldozerTooltip } from "./AreaBulldozerTooltip";
+import { AreaBulldozerAssetSelectionButton, useAssetSelectionRow } from "./AreaBulldozerAssetSelection";
 import { AreaBulldozerFilterProfiles } from "./AreaBulldozerFilterProfiles";
 import {
     BindingKeys,
@@ -129,8 +131,6 @@ function IconToolButton({
 }: IconToolButtonProps) {
     const resolver = VanillaComponentResolver.instance;
     const theme = resolver.toolButtonTheme;
-    const tooltipTheme = resolver.descriptionTooltipTheme;
-    const Tooltip = resolver.Tooltip;
     const { scale, compact } = React.useContext(ToolPanelContext);
     const buttonSize = iconButtonSize(compact, scale);
 
@@ -181,20 +181,7 @@ function IconToolButton({
         </button>
     );
 
-    if (!Tooltip) {
-        return button;
-    }
-
-    const tooltipContent = (
-        <>
-            <div className={tooltipTheme?.title}>{tooltipTitle}</div>
-            {tooltipText ? (
-                <div className={tooltipTheme?.content}>{tooltipText}</div>
-            ) : null}
-        </>
-    );
-
-    return <Tooltip tooltip={tooltipContent}>{button}</Tooltip>;
+    return <AreaBulldozerTooltip title={tooltipTitle} description={tooltipText}>{button}</AreaBulldozerTooltip>;
 }
 
 export function CompactToolSection({
@@ -359,6 +346,7 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
             100
         );
 
+        const assetSelectionRow = useAssetSelectionRow();
         const heightFilter = useSafeValue("heightFilter$", heightFilter$, 0);
         const undergroundView = useSafeValue("undergroundView$", undergroundView$, false);
 
@@ -949,6 +937,10 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
                     </CompactToolSection>
                 )}
 
+                {assetSelectionRow.visible && <CompactToolSection title={text("AssetSelection", "Assetauswahl")}>
+                    <AreaBulldozerAssetSelectionButton text={text} scale={scale} compact={compact} />
+                </CompactToolSection>}
+
                 <CompactToolSection title={text("MainFilters", "Filter")}>
                     <div className={styles.filterButtons}>
                     <IconToolButton
@@ -1045,6 +1037,11 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
                             )
                         }
                     />
+
+                    <IconToolButton icon="assetList" selected={assetSelectionRow.visible}
+                        tooltipTitle={text("AssetSelection", "Assetauswahl")}
+                        tooltipText={text("AssetSelectionToggle", "Assetauswahl ein- oder ausblenden. Beim Ausblenden werden Pipette und Assetfilter ausgeschaltet; die Liste bleibt für diese Sitzung erhalten.")}
+                        onSelect={assetSelectionRow.toggle} />
 
                     <IconToolButton
                         icon="surface"

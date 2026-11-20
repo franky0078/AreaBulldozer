@@ -60,6 +60,8 @@
 		- Props and markers
 		- Missing Assets
 		- Vehicles (moving and parked road vehicles) (automatically paused while the tool is active)
+		- Eyedropper filter for selecting specific asset types with asset list, individual removal and clear-list button.
+		
 
 		Additional filters are available for:
 
@@ -164,7 +166,7 @@
 	<ForumLink Value="https://forum.paradoxplaza.com/forum/threads/mod-area-bulldozer-area-deletion-tool-with-object-filters.1937211/" />
 
 	<!-- Mod version -->
-	<ModVersion Value="2.1.7" />
+	<ModVersion Value="2.2.0" />
 
 	<!--
 	Recommended game version.
@@ -195,7 +197,9 @@
 	<ChangeLog>
 		Latest changes
 
-		- Reduced informational UI log output
+		- added new filter for asset selection with an eyedropper to target specific asset types.
+		- added an asset list with thumbnails, individual removal and a clear-list button.
+		- added undo for asset list removal.
 	</ChangeLog>
 
 	<!--Optional external links for your own mod.-->

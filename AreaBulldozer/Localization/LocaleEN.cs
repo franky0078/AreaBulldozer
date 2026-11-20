@@ -21,6 +21,26 @@ namespace AreaBulldozer.Localization
 
             return new Dictionary<string, string>
             {
+                { "AreaBulldozer.UI.AssetListUndo", "Undo list change" },
+                { "AreaBulldozer.UI.AssetListUndoHint", "Undo the last asset list change: picking, removing, clearing or toggling the asset filter. The undo arrow in the tool restores deleted objects." },
+                { "AreaBulldozer.UI.AssetSelectionToggle", "Show or hide asset selection. Hiding it disables the eyedropper and asset filter; the list is kept for this session." },
+                { "AreaBulldozer.UI.AssetListResize", "Resize asset list height" },
+                { "AreaBulldozer.UI.AssetSelection", "Asset selection" },
+                { "AreaBulldozer.UI.AssetList", "Asset list" },
+                { "AreaBulldozer.UI.AssetListOpen", "Open asset list" },
+                { "AreaBulldozer.UI.AssetListClose", "Close asset list" },
+                { "AreaBulldozer.UI.AssetPicker", "Pick assets with eyedropper" },
+                { "AreaBulldozer.UI.AssetPickerFinish", "Finish picking" },
+                { "AreaBulldozer.UI.AssetPickerHint", "Click objects to add their assets. Right-click or Esc ends picking." },
+                { "AreaBulldozer.UI.AssetListClear", "Clear list" },
+                { "AreaBulldozer.UI.AssetFilterEnabled", "Only selected assets" },
+                { "AreaBulldozer.UI.AssetFilterHint", "The list further restricts the active object filters. Height filters and protection settings still apply." },
+                { "AreaBulldozer.UI.AssetFilterEmpty", "The list is empty. Nothing is deleted while the asset filter is enabled." },
+                { "AreaBulldozer.UI.AssetListEmpty", "No assets yet. Use the eyedropper to pick objects in the game." },
+                { "AreaBulldozer.UI.AssetUnavailable", "Asset unavailable" },
+                { "AreaBulldozer.UI.AssetRemove", "Remove from list" },
+                { "AreaBulldozer.UI.AssetProfileHint", "The current list is cleared at the next game launch. Custom filter profiles can permanently store their asset lists." },
+                { "AreaBulldozer.UI.AssetListLimit", "The list can contain up to 128 assets. Remove an entry to add another." },
                 { m_Setting.GetSettingsLocaleID(), "Area Bulldozer" },
                 { m_Setting.GetOptionTabLocaleID(Setting.kSection), "Main" },
 

@@ -76,6 +76,7 @@ namespace AreaBulldozer.UISystems
             FilterProfilesEnabled && Mod.Settings is Setting setting && m_ActiveFilterProfileId.Length > 0 &&
             FindFilterProfile(m_ActiveFilterProfileId) is FilterProfile profile &&
             (FilterProfile.Capture(setting) != profile.Filters ||
+             GetAssetProfileSelection(setting) != profile.AssetSelection ||
              !profile.Brush.HasValue ||
              !profile.Brush.Value.Matches(ProfilePolygonSystem.CaptureProfileBrush(setting)));
 
@@ -110,6 +111,9 @@ namespace AreaBulldozer.UISystems
                 }
             });
             m_ActiveFilterProfileId = id;
+            m_Tool.ClearAssetSelectionUndo();
+            m_Tool.SetAssetPicker(false);
+            m_Tool.NotifyAssetFilterChanged();
 
             if (previousCarFilter != setting.DeleteCars)
             {
@@ -137,7 +141,8 @@ namespace AreaBulldozer.UISystems
 
             var profile = new FilterProfile(Guid.NewGuid().ToString("N"), name, FilterProfile.Capture(Mod.Settings))
             {
-                Brush = ProfilePolygonSystem.CaptureProfileBrush(Mod.Settings)
+                Brush = ProfilePolygonSystem.CaptureProfileBrush(Mod.Settings),
+                AssetSelection = AssetFilterSettings.Capture(Mod.Settings)
             };
             CustomFilterProfiles.Add(profile);
             m_ActiveFilterProfileId = profile.Id;
@@ -156,6 +161,7 @@ namespace AreaBulldozer.UISystems
             {
                 profile.Filters = FilterProfile.Capture(Mod.Settings);
                 profile.Brush = ProfilePolygonSystem.CaptureProfileBrush(Mod.Settings);
+                profile.AssetSelection = AssetFilterSettings.Capture(Mod.Settings);
                 SaveFilterProfiles();
             }
         }

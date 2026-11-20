@@ -21,6 +21,26 @@ namespace AreaBulldozer.Localization
 
             return new Dictionary<string, string>
             {
+                { "AreaBulldozer.UI.AssetListUndo", "Listenänderung rückgängig" },
+                { "AreaBulldozer.UI.AssetListUndoHint", "Letzte Änderung der Assetliste rückgängig machen: Pipettenauswahl, Entfernen, Leeren oder Assetfilter umschalten. Der Undo-Pfeil im Werkzeug stellt gelöschte Objekte wieder her." },
+                { "AreaBulldozer.UI.AssetSelectionToggle", "Assetauswahl ein- oder ausblenden. Beim Ausblenden werden Pipette und Assetfilter ausgeschaltet; die Liste bleibt für diese Sitzung erhalten." },
+                { "AreaBulldozer.UI.AssetListResize", "Höhe der Assetliste ändern" },
+                { "AreaBulldozer.UI.AssetSelection", "Assetauswahl" },
+                { "AreaBulldozer.UI.AssetList", "Assetliste" },
+                { "AreaBulldozer.UI.AssetListOpen", "Assetliste öffnen" },
+                { "AreaBulldozer.UI.AssetListClose", "Assetliste schließen" },
+                { "AreaBulldozer.UI.AssetPicker", "Assets mit Pipette aufnehmen" },
+                { "AreaBulldozer.UI.AssetPickerFinish", "Aufnahme beenden" },
+                { "AreaBulldozer.UI.AssetPickerHint", "Objekte anklicken, um ihre Assets aufzunehmen. Rechtsklick oder Esc beendet die Pipette." },
+                { "AreaBulldozer.UI.AssetListClear", "Liste leeren" },
+                { "AreaBulldozer.UI.AssetFilterEnabled", "Nur ausgewählte Assets" },
+                { "AreaBulldozer.UI.AssetFilterHint", "Die Liste schränkt die aktiven Objektfilter zusätzlich ein. Höhenfilter und Schutzoptionen gelten weiterhin." },
+                { "AreaBulldozer.UI.AssetFilterEmpty", "Die Liste ist leer. Mit aktivem Assetfilter wird nichts gelöscht." },
+                { "AreaBulldozer.UI.AssetListEmpty", "Noch keine Assets. Mit der Pipette Objekte im Spiel aufnehmen." },
+                { "AreaBulldozer.UI.AssetUnavailable", "Asset nicht verfügbar" },
+                { "AreaBulldozer.UI.AssetRemove", "Aus Liste entfernen" },
+                { "AreaBulldozer.UI.AssetProfileHint", "Die aktuelle Liste wird beim nächsten Spielstart geleert. Eigene Filterprofile können ihre Assetlisten dauerhaft speichern." },
+                { "AreaBulldozer.UI.AssetListLimit", "Die Liste kann bis zu 128 Assets enthalten. Zum Hinzufügen einen Eintrag entfernen." },
                 { m_Setting.GetSettingsLocaleID(), "Area Bulldozer" },
                 { m_Setting.GetOptionTabLocaleID(Setting.kSection), "Allgemein" },
 

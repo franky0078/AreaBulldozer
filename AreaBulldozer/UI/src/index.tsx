@@ -1,5 +1,6 @@
 import type { ModRegistrar } from "cs2/modding";
 
+import { AreaBulldozerAssetSelectionWindow } from "./mods/AreaBulldozerAssetSelection";
 import { AreaBulldozerSections } from "./mods/AreaBulldozerSections";
 import { AreaBulldozerColorEditorWindow } from "./mods/AreaBulldozerColorEditorWindow";
 import { BackToBulldozer } from "./mods/BackToBulldozer";
@@ -135,6 +136,10 @@ const register:
             }
         );
 
+
+        safely("Asset selection list", () => {
+            moduleRegistry.append("GameTopLeft", AreaBulldozerAssetSelectionWindow);
+        });
 
         if (
             ENABLE.COLOR_EDITOR

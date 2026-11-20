@@ -5,6 +5,7 @@ import mod from "mod.json";
 import { BindingKeys } from "../bindings";
 import styles from "./AreaBulldozerCompact.module.scss";
 import { useSafeValue } from "./useSafeValue";
+import { AreaBulldozerTooltip } from "./AreaBulldozerTooltip";
 
 const profiles$ = bindValue<string>(mod.id, "filterProfiles", "");
 const activeProfile$ = bindValue<string>(mod.id, "activeFilterProfile", "");
@@ -116,7 +117,8 @@ export function AreaBulldozerFilterProfiles({ text }: Props) {
             onMouseDown={event => event.stopPropagation()}
             onMouseUp={event => event.stopPropagation()}
             onClick={event => event.stopPropagation()}>
-            <button type="button" className={styles.profileToggle} title={selectedLabel}
+            <AreaBulldozerTooltip title={selectedLabel}>
+            <button type="button" className={styles.profileToggle}
                 aria-expanded={expanded} onClick={() => {
                     if (expanded) {
                         closeMenu();
@@ -127,7 +129,7 @@ export function AreaBulldozerFilterProfiles({ text }: Props) {
                 }}>
                 <span>{selectedLabel}</span>
                 <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m3 6 5 5 5-5" /></svg>
-            </button>
+            </button></AreaBulldozerTooltip>
             {expanded && (
                 <div className={styles.profileMenu}>
                     <div className={styles.profileChoices}>

@@ -1312,7 +1312,7 @@ namespace AreaBulldozer.Tools
             float2 selectionCenter,
             float selectionSize)
         {
-            if (!MatchesHeightFilter(indexedCandidate.Entity))
+            if (!MatchesAssetFilter(indexedCandidate.Entity) || !MatchesHeightFilter(indexedCandidate.Entity))
             {
                 return false;
             }
