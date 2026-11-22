@@ -197,9 +197,7 @@
 	<ChangeLog>
 		Latest changes
 
-		- added new filter for asset selection with an eyedropper to target specific asset types.
-		- added an asset list with thumbnails, individual removal and a clear-list button.
-		- added undo for asset list removal.
+		- optimized Area Bulldozer’s startup
 	</ChangeLog>
 
 	<!--Optional external links for your own mod.-->

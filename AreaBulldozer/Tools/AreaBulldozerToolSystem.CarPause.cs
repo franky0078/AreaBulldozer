@@ -10,7 +10,6 @@ namespace AreaBulldozer.Tools
 
         public void OnCarFilterChanged()
         {
-            MarkSpatialIndexStale();
             InvalidateSelectionGeometry();
             UpdateCarFilterPause();
         }
@@ -52,7 +51,6 @@ namespace AreaBulldozer.Tools
                 m_CarFilterSimulationSystem.selectedSpeed > 0f)
             {
                 m_CarFilterOwnsPause = false;
-                MarkSpatialIndexStale();
             }
         }
 

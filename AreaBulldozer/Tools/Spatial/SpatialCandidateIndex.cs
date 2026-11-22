@@ -51,6 +51,15 @@ namespace AreaBulldozer.Tools
         public void Add(
             in SpatialCandidate candidate)
         {
+            if (math.all(candidate.Position == candidate.EndPosition))
+            {
+                long key = GetCellKey(
+                    GetCellCoordinate(candidate.Position.x),
+                    GetCellCoordinate(candidate.Position.y));
+                GetOrCreateBucket(key).Add(candidate);
+                return;
+            }
+
             float2 minimum =
                 math.min(
                     candidate.Position,
@@ -92,35 +101,31 @@ namespace AreaBulldozer.Tools
                             cellX,
                             cellZ);
 
-                    if (!m_Buckets.TryGetValue(
-                            key,
-                            out List<SpatialCandidate> bucket))
-                    {
-                        int poolIndex =
-                            m_BucketPool.Count - 1;
-
-                        if (poolIndex >= 0)
-                        {
-                            bucket =
-                                m_BucketPool[poolIndex];
-
-                            m_BucketPool.RemoveAt(
-                                poolIndex);
-                        }
-                        else
-                        {
-                            bucket =
-                                new();
-                        }
-
-                        m_Buckets.Add(
-                            key,
-                            bucket);
-                    }
-
-                    bucket.Add(candidate);
+                    GetOrCreateBucket(key).Add(candidate);
                 }
             }
+        }
+
+        private List<SpatialCandidate> GetOrCreateBucket(long key)
+        {
+            if (m_Buckets.TryGetValue(key, out List<SpatialCandidate> bucket))
+            {
+                return bucket;
+            }
+
+            int poolIndex = m_BucketPool.Count - 1;
+            if (poolIndex >= 0)
+            {
+                bucket = m_BucketPool[poolIndex];
+                m_BucketPool.RemoveAt(poolIndex);
+            }
+            else
+            {
+                bucket = new();
+            }
+
+            m_Buckets.Add(key, bucket);
+            return bucket;
         }
 
         public List<SpatialCandidate> Query(

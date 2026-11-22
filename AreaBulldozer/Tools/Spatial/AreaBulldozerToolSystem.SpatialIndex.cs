@@ -35,8 +35,6 @@ namespace AreaBulldozer.Tools
         private float m_NextSpatialRefreshCheckTime;
 
         private int m_SpatialBuildingCount;
-        private int m_SpatialCarCount;
-        private bool m_SpatialCarsEnabled;
         private bool m_SpatialAssetLanesEnabled;
         private int m_SpatialRoadCount;
         private int m_SpatialRoadQueryCount;
@@ -105,33 +103,27 @@ namespace AreaBulldozer.Tools
                 InitializeSpatialIndex();
             }
 
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+
             ClearSpatialIndex();
             m_SpatialMissingAssetsEnabled = Mod.Settings?.DeleteMissingAssets ?? false;
-            m_SpatialCarsEnabled = Mod.Settings?.DeleteCars ?? false;
             m_SpatialAssetLanesEnabled = NeedsAssetLaneIndex;
             m_SpatialAssetVegetationIndexed = NeedsAssetVegetationIndex;
             m_SpatialLinkedPropsIndexed = NeedsLinkedPropIndex;
-
-            System.Diagnostics.Stopwatch stopwatch =
-                System.Diagnostics.Stopwatch.StartNew();
 
             if (m_SpatialAssetVegetationIndexed || m_SpatialLinkedPropsIndexed)
             {
                 IndexAssetSubObjects();
             }
 
-            AddQueryToSpatialIndex(
-                m_PlantQuery,
-                SpatialCandidateKind.Vegetation);
+            if (m_SpatialAssetVegetationIndexed)
+            {
+                AddVegetationToSpatialIndex();
+            }
 
             AddQueryToSpatialIndex(
                 m_BuildingQuery,
                 SpatialCandidateKind.Building);
-
-            if (m_SpatialCarsEnabled)
-            {
-                AddQueryToSpatialIndex(m_CarQuery, SpatialCandidateKind.Car);
-            }
 
             AddRoadEdgesToSpatialIndex();
             AddPathAndRailwayEdgesToSpatialIndex();
@@ -163,8 +155,6 @@ namespace AreaBulldozer.Tools
                     $"Missing-assets filter: {m_SpatialMissingAssetCount} confirmed missing object instances indexed.");
             }
 
-            stopwatch.Stop();
-
             m_SpatialIndexReady = true;
 
             m_SpatialSourceEntityCount =
@@ -173,6 +163,8 @@ namespace AreaBulldozer.Tools
             m_NextSpatialRefreshCheckTime =
                 UnityEngine.Time.unscaledTime +
                 kSpatialRefreshCheckInterval;
+
+            stopwatch.Stop();
 
             if (!Mod.DiagnosticLoggingEnabled)
             {
@@ -196,7 +188,6 @@ namespace AreaBulldozer.Tools
                 $"{m_SpatialIndex.CellCount} cells, " +
                 $"{stopwatch.ElapsedMilliseconds} ms. " +
                 $"Buildings: {m_SpatialBuildingCount}, " +
-                $"cars: {m_SpatialCarCount}, " +
                 $"roads: {m_SpatialRoadCount}, " +
                 $"pedestrian paths: {m_SpatialPathCount}, " +
                 $"railway tracks: {m_SpatialRailwayCount}, " +
@@ -281,7 +272,6 @@ namespace AreaBulldozer.Tools
         {
             if (!m_SpatialIndexReady ||
                 m_SpatialMissingAssetsEnabled != (Mod.Settings?.DeleteMissingAssets ?? false) ||
-                m_SpatialCarsEnabled != (Mod.Settings?.DeleteCars ?? false) ||
                 m_SpatialAssetLanesEnabled != NeedsAssetLaneIndex ||
                 m_SpatialAssetVegetationIndexed != NeedsAssetVegetationIndex ||
                 m_SpatialLinkedPropsIndexed != NeedsLinkedPropIndex)
@@ -294,10 +284,9 @@ namespace AreaBulldozer.Tools
         {
             return
                 (m_SpatialMissingAssetsEnabled ? m_MissingAssetObjectQuery.CalculateEntityCount() : 0) +
-                m_PlantQuery.CalculateEntityCount() +
+                (m_SpatialAssetVegetationIndexed ? m_PlantQuery.CalculateEntityCount() : 0) +
                 ((m_SpatialAssetVegetationIndexed || m_SpatialLinkedPropsIndexed) ? m_SubObjectOwnerQuery.CalculateEntityCount() : 0) +
                 m_BuildingQuery.CalculateEntityCount() +
-                (m_SpatialCarsEnabled ? m_CarQuery.CalculateEntityCount() : 0) +
                 m_RoadEdgeQuery.CalculateEntityCount() +
                 m_NetEdgeQuery.CalculateEntityCount() +
                 m_SurfaceAreaQuery.CalculateEntityCount() +
@@ -408,7 +397,6 @@ namespace AreaBulldozer.Tools
             m_SpatialIndexedObjectCount = 0;
 
             m_SpatialBuildingCount = 0;
-            m_SpatialCarCount = 0;
             m_SpatialRoadCount = 0;
             m_SpatialRoadQueryCount = 0;
             m_SpatialRejectedRoadOwnerCount = 0;
@@ -480,6 +468,28 @@ namespace AreaBulldozer.Tools
             }
         }
 
+        private void AddVegetationToSpatialIndex()
+        {
+            using NativeArray<Entity> plants = m_PlantQuery.ToEntityArray(Allocator.Temp);
+            using NativeArray<Transform> transforms = m_PlantQuery.ToComponentDataArray<Transform>(Allocator.Temp);
+
+            for (int index = 0; index < plants.Length; index++)
+            {
+                Entity plant = plants[index];
+                if (m_PendingDeletion.Contains(plant) ||
+                    (m_SpatialMissingAssetsEnabled && IsMissingAssetObject(plant)))
+                {
+                    continue;
+                }
+
+                AddSpatialCandidate(new SpatialCandidate(
+                    plant,
+                    transforms[index].m_Position.xz,
+                    SpatialCandidateKind.Vegetation,
+                    StaticObjectCategory.None));
+            }
+        }
+
         private void AddQueryToSpatialIndex(
             EntityQuery query,
             SpatialCandidateKind kind)
@@ -494,9 +504,7 @@ namespace AreaBulldozer.Tools
                 {
                     if (!IsEntityUsable(
                             entity,
-                            allowOverridden:
-                                kind == SpatialCandidateKind.Vegetation ||
-                                kind == SpatialCandidateKind.MissingAsset))
+                            allowOverridden: kind == SpatialCandidateKind.MissingAsset))
                     {
                         continue;
                     }
@@ -1107,8 +1115,6 @@ namespace AreaBulldozer.Tools
                 return false;
             }
 
-            // A building's travel lanes can exist without their own rendering
-            // layers. Their lane use is independent of their visual geometry.
             var flags = EntityManager.GetComponentData<NetLaneData>(prefab).m_Flags;
             if ((flags & (Game.Prefabs.LaneFlags.Road |
                           Game.Prefabs.LaneFlags.Pedestrian |
@@ -1229,10 +1235,6 @@ namespace AreaBulldozer.Tools
             {
                 m_SpatialBuildingCount++;
             }
-            else if (candidate.IsCar)
-            {
-                m_SpatialCarCount++;
-            }
             else if (candidate.IsRoad)
             {
                 m_SpatialRoadCount++;
@@ -1276,9 +1278,8 @@ namespace AreaBulldozer.Tools
             List<SpatialCandidate> candidates = m_SpatialIndex.Query(center, radius);
             if (Mod.Settings?.DeleteCars ?? false)
             {
-                // Vehicles can enter another cell without changing the entity count.
-                // Replace cached car positions before both preview and deletion.
-                candidates.RemoveAll(candidate => candidate.IsCar);
+                // Vehicles can change position between queries. Use their live positions
+                // for both preview and deletion.
                 NativeArray<Entity> cars = m_CarQuery.ToEntityArray(Allocator.Temp);
                 try
                 {
@@ -1312,15 +1313,13 @@ namespace AreaBulldozer.Tools
             float2 selectionCenter,
             float selectionSize)
         {
-            if (!MatchesAssetFilter(indexedCandidate.Entity) || !MatchesHeightFilter(indexedCandidate.Entity))
+            if (!MatchesHeightFilter(indexedCandidate.Entity))
             {
                 return false;
             }
 
             SpatialCandidate candidate = indexedCandidate;
 
-            // Missing vehicle placeholders may move after the index was built.
-            // Always validate the current position before previewing or deleting.
             if (candidate.IsCar)
             {
                 if (!TryGetVehicleSelectionPosition(candidate.Entity, out float3 visiblePosition))
