@@ -1,3 +1,4 @@
+using AreaBulldozer.Diagnostics;
 using Game.Common;
 using Game.Net;
 using System.Collections.Generic;
@@ -10,6 +11,13 @@ namespace AreaBulldozer.Tools
     {
 
         private void DeleteSelectedObjects(bool continueUndoStroke = false)
+        {
+            long deleteStart = PerfTrace.Begin();
+            DeleteSelectedObjectsCore(continueUndoStroke);
+            PerfTrace.End(PerfTrace.DeleteSelection, deleteStart);
+        }
+
+        private void DeleteSelectedObjectsCore(bool continueUndoStroke)
         {
             if (!HasValidPosition)
             {
@@ -84,11 +92,14 @@ namespace AreaBulldozer.Tools
             float radius =
                 CurrentRadius;
 
+            // Only used for diagnostic logging; skip the string work otherwise.
             string selectionDescription =
-                UseSquareBrush
-                    ? $"square with {radius:0} m half-side at " +
-                      $"{SquareRotationDegrees:0} degrees"
-                    : $"circle with {radius:0} m radius";
+                !Mod.DiagnosticLoggingEnabled
+                    ? string.Empty
+                    : UseSquareBrush
+                        ? $"square with {radius:0} m half-side at " +
+                          $"{SquareRotationDegrees:0} degrees"
+                        : $"circle with {radius:0} m radius";
 
             float2 selectionCenter =
                 new float2(
@@ -372,8 +383,7 @@ namespace AreaBulldozer.Tools
                 else if (candidate.IsAssetLane)
                 {
                     markerNetworkCount++;
-                    // The native lane references system removes deleted SubLanes from the owner.
-                    // An Updated owner would ask the game to regenerate the asset's lanes.
+
                     if (EntityManager.HasComponent<Edge>(entity))
                     {
                         networkEdgesToDelete.Add(entity);

@@ -307,7 +307,7 @@ namespace AreaBulldozer.Tools
                 if (restored > 0)
                 {
                     ClearSelectionPreview();
-                    MarkSpatialIndexStale();
+                    RequestSpatialIndexSync();
                 }
             }
 

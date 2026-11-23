@@ -14,6 +14,7 @@ import {
     launcherMode$,
     uiScale$,
     useCompactToolPanel$,
+    isEditorMode$,
 } from "../bindings";
 
 import styles from "./BackToBulldozer.module.scss";
@@ -99,6 +100,7 @@ export const BackToBulldozer:
             const toolWindow = useToolWindow();
             const colorEditorOpen = toolWindow === "colors";
             const optionsOpen = toolWindow === "options";
+            const isEditorMode = useSafeValue("isEditorMode$", isEditorMode$, false);
             const compact = useSafeValue("useCompactToolPanel$", useCompactToolPanel$, false);
             const scale = getToolPanelScale(useSafeValue("uiScale$", uiScale$, 100));
             const navigationStyle = {
@@ -433,14 +435,16 @@ export const BackToBulldozer:
                         }
                     >
                         <div className={styles.navigationButtons} style={navigationStyle}>
-                            <div className={styles.navigationColorButton}>
-                                {wrappedColorButton}
-                                {Tooltip ? (
-                                    <Tooltip tooltip={<div className={tooltipTheme?.title}>{optionsTitle}</div>}>
-                                        {optionsButton}
-                                    </Tooltip>
-                                ) : optionsButton}
-                            </div>
+                            {!isEditorMode && (
+                                <div className={styles.navigationColorButton}>
+                                    {wrappedColorButton}
+                                    {Tooltip ? (
+                                        <Tooltip tooltip={<div className={tooltipTheme?.title}>{optionsTitle}</div>}>
+                                            {optionsButton}
+                                        </Tooltip>
+                                    ) : optionsButton}
+                                </div>
+                            )}
 
                             <div className={styles.navigationRightButtons}>
                                 {wrappedButton}

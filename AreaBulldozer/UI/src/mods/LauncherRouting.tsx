@@ -1,5 +1,5 @@
 ﻿import React from "react";
-import { trigger, useValue } from "cs2/api";
+import { trigger } from "cs2/api";
 import { tool } from "cs2/bindings";
 import { useLocalization } from "cs2/l10n";
 import type { ModuleRegistryExtend } from "cs2/modding";
@@ -77,7 +77,9 @@ export const VanillaBulldozerLauncher: ModuleRegistryExtend = (Component: any) =
             false
         );
 
-        const activeTool = useValue(tool.activeTool$);
+        // Not available in every game mode (e.g. the editor) – never let a
+        // missing binding take the vanilla tool options down with it.
+        const activeTool = useSafeValue<any>("tool.activeTool$", tool.activeTool$, null);
 
         const { translate } = useLocalization();
 

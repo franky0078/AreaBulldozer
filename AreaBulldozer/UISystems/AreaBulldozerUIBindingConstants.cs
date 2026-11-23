@@ -14,6 +14,7 @@ namespace AreaBulldozer.UISystems
 
         // Values
         public const string IsToolActive = "isToolActive";
+        public const string IsEditorMode = "isEditorMode";
         public const string BrushRadius = "brushRadius";
         public const string UseSquareBrush = "useSquareBrush";
         public const string SelectionShape = "selectionShape";

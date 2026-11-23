@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.Entities;
 using Unity.Mathematics;
 
 namespace AreaBulldozer.Tools
@@ -106,6 +107,36 @@ namespace AreaBulldozer.Tools
             }
         }
 
+        public long AddPoint(
+            in SpatialCandidate candidate)
+        {
+            long key = GetCellKey(
+                GetCellCoordinate(candidate.Position.x),
+                GetCellCoordinate(candidate.Position.y));
+
+            GetOrCreateBucket(key).Add(candidate);
+            return key;
+        }
+
+        public void RemoveFromCell(
+            long key,
+            HashSet<Entity> entities)
+        {
+            if (entities.Count == 0 ||
+                !m_Buckets.TryGetValue(key, out List<SpatialCandidate> bucket))
+            {
+                return;
+            }
+
+            bucket.RemoveAll(candidate => entities.Contains(candidate.Entity));
+
+            if (bucket.Count == 0)
+            {
+                m_Buckets.Remove(key);
+                m_BucketPool.Add(bucket);
+            }
+        }
+
         private List<SpatialCandidate> GetOrCreateBucket(long key)
         {
             if (m_Buckets.TryGetValue(key, out List<SpatialCandidate> bucket))
@@ -133,7 +164,15 @@ namespace AreaBulldozer.Tools
             float radius)
         {
             m_QueryBuffer.Clear();
+            AppendQuery(center, radius, m_QueryBuffer);
+            return m_QueryBuffer;
+        }
 
+        public void AppendQuery(
+            float2 center,
+            float radius,
+            List<SpatialCandidate> target)
+        {
             int minCellX =
                 GetCellCoordinate(
                     center.x - radius);
@@ -172,12 +211,10 @@ namespace AreaBulldozer.Tools
                         continue;
                     }
 
-                    m_QueryBuffer.AddRange(
+                    target.AddRange(
                         bucket);
                 }
             }
-
-            return m_QueryBuffer;
         }
 
         private int GetCellCoordinate(

@@ -47,6 +47,7 @@ import {
     useCompactToolPanel$,
     useFilterProfiles$,
     deletionUndoCount$,
+    isEditorMode$,
 } from "../bindings";
 import {
     toggleToolWindow,
@@ -289,6 +290,7 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
 
         const toolWindow = useToolWindow();
         const colorEditorOpen = toolWindow === "colors";
+        const isEditorMode = useSafeValue("isEditorMode$", isEditorMode$, false);
         const compact = useSafeValue("useCompactToolPanel$", useCompactToolPanel$, false);
         const deletionUndoCount = useSafeValue("deletionUndoCount$", deletionUndoCount$, 0);
 
@@ -646,7 +648,7 @@ export const AreaBulldozerSections: ModuleRegistryExtend = (Component: any) => {
 
         const sections = (
             <ToolPanelContext.Provider value={{ scale, compact }}>
-                {launcherMode !== VANILLA_BULLDOZER_LAUNCHER_MODE && (
+                {launcherMode !== VANILLA_BULLDOZER_LAUNCHER_MODE && !isEditorMode && (
                     <div className={styles.compactColorToolbar}>
                         <IconToolButton
                             icon="palette"

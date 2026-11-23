@@ -1,3 +1,4 @@
+using AreaBulldozer.Diagnostics;
 using Colossal.Mathematics;
 using Game.Rendering;
 using System.Collections.Generic;
@@ -10,6 +11,8 @@ namespace AreaBulldozer.Tools
 {
     public partial class AreaBulldozerToolSystem
     {
+        private readonly List<float3> m_SurfaceOutlineSegmentPoints = new();
+
         private JobHandle DrawToolShape(
             JobHandle inputDeps)
         {
@@ -341,69 +344,70 @@ namespace AreaBulldozer.Tools
             const int maximumOutlineSegments = 12288;
             const float verticalOffset = 0.18f;
 
+            long outlineStart = PerfTrace.Begin();
+
             List<float3> segmentPoints =
-                new();
+                m_SurfaceOutlineSegmentPoints;
 
-            if (m_HighlightedEntities is not null)
+            segmentPoints.Clear();
+
+            List<Entity> highlightedAreas =
+                GetHighlightedAreaEntities();
+
+            foreach (Entity entity in
+                     highlightedAreas)
             {
-                foreach (Entity entity in
-                         m_HighlightedEntities)
+                if (segmentPoints.Count >=
+                    maximumOutlineSegments * 2)
                 {
-                    if (segmentPoints.Count >=
-                        maximumOutlineSegments * 2)
-                    {
-                        break;
-                    }
+                    break;
+                }
 
-                    if (entity == Entity.Null ||
-                        !EntityManager.Exists(entity) ||
-                        !EntityManager.HasComponent<Game.Areas.Area>(
-                            entity) ||
-                        !EntityManager.HasBuffer<Game.Areas.Node>(
-                            entity))
+                if (!EntityManager.Exists(entity) ||
+                    !EntityManager.HasBuffer<Game.Areas.Node>(
+                        entity))
+                {
+                    continue;
+                }
+
+                DynamicBuffer<Game.Areas.Node> nodes =
+                    EntityManager.GetBuffer<Game.Areas.Node>(
+                        entity,
+                        true);
+
+                if (nodes.Length < 3)
+                {
+                    continue;
+                }
+
+                for (int index = 0;
+                     index < nodes.Length &&
+                     segmentPoints.Count <
+                         maximumOutlineSegments * 2;
+                     index++)
+                {
+                    int nextIndex =
+                        index + 1 < nodes.Length
+                            ? index + 1
+                            : 0;
+
+                    float3 start =
+                        nodes[index].m_Position;
+
+                    float3 end =
+                        nodes[nextIndex].m_Position;
+
+                    if (!math.all(math.isfinite(start)) ||
+                        !math.all(math.isfinite(end)))
                     {
                         continue;
                     }
 
-                    DynamicBuffer<Game.Areas.Node> nodes =
-                        EntityManager.GetBuffer<Game.Areas.Node>(
-                            entity,
-                            true);
+                    start.y += verticalOffset;
+                    end.y += verticalOffset;
 
-                    if (nodes.Length < 3)
-                    {
-                        continue;
-                    }
-
-                    for (int index = 0;
-                         index < nodes.Length &&
-                         segmentPoints.Count <
-                             maximumOutlineSegments * 2;
-                         index++)
-                    {
-                        int nextIndex =
-                            index + 1 < nodes.Length
-                                ? index + 1
-                                : 0;
-
-                        float3 start =
-                            nodes[index].m_Position;
-
-                        float3 end =
-                            nodes[nextIndex].m_Position;
-
-                        if (!math.all(math.isfinite(start)) ||
-                            !math.all(math.isfinite(end)))
-                        {
-                            continue;
-                        }
-
-                        start.y += verticalOffset;
-                        end.y += verticalOffset;
-
-                        segmentPoints.Add(start);
-                        segmentPoints.Add(end);
-                    }
+                    segmentPoints.Add(start);
+                    segmentPoints.Add(end);
                 }
             }
 
@@ -421,6 +425,7 @@ namespace AreaBulldozer.Tools
                     segmentPoints[index];
             }
 
+            PerfTrace.End(PerfTrace.SurfaceOutline, outlineStart, highlightedAreas.Count);
             return result;
         }
 

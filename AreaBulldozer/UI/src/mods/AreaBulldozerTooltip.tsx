@@ -33,16 +33,40 @@ export function AreaBulldozerTooltip({ title, description, children }: {
             document.removeEventListener("mousedown", hide, true);
         };
     }, [anchor]);
+    // Gameface computes the layout of a freshly inserted element only in its
+    // next layout pass, so measuring right after rendering can return a size of
+    // 0. The card is therefore kept invisible and positioned once a real size is
+    // available (retried for a few frames); only then it is shown. With a known
+    // size it opens on the other side of the cursor when it would not fit.
     useLayoutEffect(() => {
         if (!anchor || !popup.current) return;
         const card = popup.current;
-        const rect = card.getBoundingClientRect();
-        const x = anchor.x + 14 + rect.width <= window.innerWidth - 8
-            ? anchor.x + 14 : anchor.x - rect.width - 14;
-        const y = anchor.y + 18 + rect.height <= window.innerHeight - 8
-            ? anchor.y + 18 : anchor.y - rect.height - 14;
-        card.style.left = `${Math.max(8, Math.min(x, window.innerWidth - rect.width - 8))}px`;
-        card.style.top = `${Math.max(8, Math.min(y, window.innerHeight - rect.height - 8))}px`;
+        card.style.visibility = "hidden";
+        let frame: number | null = null;
+        let attempts = 0;
+        const place = () => {
+            frame = null;
+            const rect = card.getBoundingClientRect();
+            const width = rect.width || card.offsetWidth;
+            const height = rect.height || card.offsetHeight;
+            if ((width <= 0 || height <= 0) && attempts++ < 6) {
+                frame = requestAnimationFrame(place);
+                return;
+            }
+            const viewWidth = window.innerWidth || document.documentElement.clientWidth;
+            const viewHeight = window.innerHeight || document.documentElement.clientHeight;
+            const x = anchor.x + 14 + width <= viewWidth - 8
+                ? anchor.x + 14 : anchor.x - width - 14;
+            const y = anchor.y + 18 + height <= viewHeight - 8
+                ? anchor.y + 18 : anchor.y - height - 14;
+            card.style.left = `${Math.max(8, Math.min(x, viewWidth - width - 8))}px`;
+            card.style.top = `${Math.max(8, Math.min(y, viewHeight - height - 8))}px`;
+            card.style.visibility = "visible";
+        };
+        place();
+        return () => {
+            if (frame !== null) cancelAnimationFrame(frame);
+        };
     }, [anchor, title, description]);
     return <>
         {React.cloneElement(children, {
@@ -68,7 +92,7 @@ export function AreaBulldozerTooltip({ title, description, children }: {
             },
         })}
         {anchor && createPortal(<div ref={popup} className={styles.tooltip} role="tooltip"
-            style={{ left: anchor.x + 14, top: anchor.y + 18 }}>
+            style={{ left: anchor.x + 14, top: anchor.y + 18, visibility: "hidden" }}>
             <div className={styles.title}>{title}</div>
             {description && <div className={styles.description}>{description}</div>}
         </div>, document.body)}

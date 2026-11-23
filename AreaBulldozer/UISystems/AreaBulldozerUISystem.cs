@@ -161,6 +161,11 @@ namespace AreaBulldozer.UISystems
                     group,
                     AreaBulldozerUIBindingConstants.UIScale,
                     () => math.clamp(Mod.Settings?.UIScale ?? 100, Setting.UIScaleMin, Setting.UIScaleMax)));
+            // Colour editor and options window do not work in the editor.
+            AddBooleanValueBinding(
+                AreaBulldozerUIBindingConstants.IsEditorMode,
+                () => Game.SceneFlow.GameManager.instance?.gameMode == GameMode.Editor);
+
             AddBooleanValueBinding(
                 AreaBulldozerUIBindingConstants.UseCompactToolPanel,
                 () => Mod.Settings?.UseCompactToolPanel ?? false);
@@ -681,8 +686,6 @@ namespace AreaBulldozer.UISystems
         private void SetSelectionShape(
             AreaBulldozerSelectionShape shape)
         {
-            // Older settings may still contain the former line value 3.
-            // Redirect it to the multi-point line.
             if (shape == AreaBulldozerSelectionShape.LegacyLine)
             {
                 shape = AreaBulldozerSelectionShape.Polyline;

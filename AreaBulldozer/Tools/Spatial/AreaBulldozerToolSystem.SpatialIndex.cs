@@ -1,3 +1,4 @@
+using AreaBulldozer.Diagnostics;
 using Colossal.Mathematics;
 using Game.Common;
 using Game.Net;
@@ -22,6 +23,10 @@ namespace AreaBulldozer.Tools
         private float m_SpatialLastBrushActivityTime;
         private float m_SpatialLastRefreshRebuildTime;
 
+        private uint m_SpatialMainIndexVersion;
+        private bool m_SpatialSyncRequested;
+        private readonly List<SpatialCandidate> m_SpatialQueryResult = new();
+
         private SpatialCandidateIndex m_SpatialIndex;
         private readonly Dictionary<Entity, Entity> m_SpatialAssetVegetation = new();
         private bool m_SpatialAssetVegetationIndexed;
@@ -31,7 +36,6 @@ namespace AreaBulldozer.Tools
         private bool m_SpatialIndexReady;
         private int m_SpatialIndexedObjectCount;
         private int m_SpatialMissingAssetCount;
-        private int m_SpatialSourceEntityCount = -1;
         private float m_NextSpatialRefreshCheckTime;
 
         private int m_SpatialBuildingCount;
@@ -103,51 +107,23 @@ namespace AreaBulldozer.Tools
                 InitializeSpatialIndex();
             }
 
+            if (m_SpatialLayers == null)
+            {
+                InitializeSpatialLayers();
+            }
+
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+            long rebuildStart = PerfTrace.Begin();
 
             ClearSpatialIndex();
+            ClearPrefabTraitsCache();
             m_SpatialMissingAssetsEnabled = Mod.Settings?.DeleteMissingAssets ?? false;
             m_SpatialAssetLanesEnabled = NeedsAssetLaneIndex;
             m_SpatialAssetVegetationIndexed = NeedsAssetVegetationIndex;
             m_SpatialLinkedPropsIndexed = NeedsLinkedPropIndex;
 
-            if (m_SpatialAssetVegetationIndexed || m_SpatialLinkedPropsIndexed)
-            {
-                IndexAssetSubObjects();
-            }
-
-            if (m_SpatialAssetVegetationIndexed)
-            {
-                AddVegetationToSpatialIndex();
-            }
-
-            AddQueryToSpatialIndex(
-                m_BuildingQuery,
-                SpatialCandidateKind.Building);
-
-            AddRoadEdgesToSpatialIndex();
-            AddPathAndRailwayEdgesToSpatialIndex();
-            AddSurfaceAreasToSpatialIndex();
-
-            AddQueryToSpatialIndex(
-                m_StaticObjectQuery,
-                SpatialCandidateKind.StaticObject);
-
-            AddQueryToSpatialIndex(
-                m_SpawnLocationQuery,
-                SpatialCandidateKind.SpawnLocation);
-
-            if (m_SpatialAssetLanesEnabled)
-            {
-                AddAssetLanesToSpatialIndex();
-            }
-
-            if (m_SpatialMissingAssetsEnabled)
-            {
-                AddQueryToSpatialIndex(
-                    m_MissingAssetObjectQuery,
-                    SpatialCandidateKind.MissingAsset);
-            }
+            BuildMainSpatialIndex();
+            BuildSpatialLayers();
 
             if (m_SpatialMissingAssetsEnabled)
             {
@@ -156,15 +132,16 @@ namespace AreaBulldozer.Tools
             }
 
             m_SpatialIndexReady = true;
-
-            m_SpatialSourceEntityCount =
-                ComputeSpatialSourceEntityCount();
+            m_SpatialSyncRequested = false;
 
             m_NextSpatialRefreshCheckTime =
                 UnityEngine.Time.unscaledTime +
                 kSpatialRefreshCheckInterval;
 
             stopwatch.Stop();
+            int totalObjectCount = m_SpatialIndexedObjectCount + SpatialLayerObjectCount;
+            int totalCellCount = m_SpatialIndex.CellCount + SpatialLayerCellCount;
+            PerfTrace.End(PerfTrace.SpatialRebuild, rebuildStart, totalObjectCount);
 
             if (!Mod.DiagnosticLoggingEnabled)
             {
@@ -175,8 +152,8 @@ namespace AreaBulldozer.Tools
             {
                 SafeLogInfo(
                     $"Spatial preview index refreshed: " +
-                    $"{m_SpatialIndexedObjectCount} objects in " +
-                    $"{m_SpatialIndex.CellCount} cells, " +
+                    $"{totalObjectCount} objects in " +
+                    $"{totalCellCount} cells, " +
                     $"{stopwatch.ElapsedMilliseconds} ms.");
 
                 return;
@@ -184,8 +161,8 @@ namespace AreaBulldozer.Tools
 
             SafeLogInfo(
                 $"Spatial preview index built: " +
-                $"{m_SpatialIndexedObjectCount} objects in " +
-                $"{m_SpatialIndex.CellCount} cells, " +
+                $"{totalObjectCount} objects in " +
+                $"{totalCellCount} cells, " +
                 $"{stopwatch.ElapsedMilliseconds} ms. " +
                 $"Buildings: {m_SpatialBuildingCount}, " +
                 $"roads: {m_SpatialRoadCount}, " +
@@ -268,7 +245,7 @@ namespace AreaBulldozer.Tools
         private bool NeedsAssetLaneIndex =>
             Mod.Settings is Setting setting && setting.DeleteStaticObjects && setting.DeleteMarkerNetworks;
 
-        private void EnsureSpatialIndexReady()
+        private bool EnsureSpatialIndexReady()
         {
             if (!m_SpatialIndexReady ||
                 m_SpatialMissingAssetsEnabled != (Mod.Settings?.DeleteMissingAssets ?? false) ||
@@ -277,22 +254,57 @@ namespace AreaBulldozer.Tools
                 m_SpatialLinkedPropsIndexed != NeedsLinkedPropIndex)
             {
                 RebuildSpatialIndex();
+                return true;
+            }
+
+            if (m_SpatialSyncRequested)
+            {
+                SyncSpatialIndex(allowMainRebuild: true);
+            }
+
+            return false;
+        }
+
+        private void PrepareSpatialIndexForActivation()
+        {
+            if (!EnsureSpatialIndexReady())
+            {
+                SyncSpatialIndex(allowMainRebuild: true);
+                m_SpatialLastRefreshRebuildTime = UnityEngine.Time.unscaledTime;
             }
         }
 
-        private int ComputeSpatialSourceEntityCount()
+        private void BuildMainSpatialIndex()
         {
-            return
-                (m_SpatialMissingAssetsEnabled ? m_MissingAssetObjectQuery.CalculateEntityCount() : 0) +
-                (m_SpatialAssetVegetationIndexed ? m_PlantQuery.CalculateEntityCount() : 0) +
-                ((m_SpatialAssetVegetationIndexed || m_SpatialLinkedPropsIndexed) ? m_SubObjectOwnerQuery.CalculateEntityCount() : 0) +
-                m_BuildingQuery.CalculateEntityCount() +
-                m_RoadEdgeQuery.CalculateEntityCount() +
-                m_NetEdgeQuery.CalculateEntityCount() +
-                m_SurfaceAreaQuery.CalculateEntityCount() +
-                m_StaticObjectQuery.CalculateEntityCount() +
-                m_SpawnLocationQuery.CalculateEntityCount() +
-                (m_SpatialAssetLanesEnabled ? m_SubLaneOwnerQuery.CalculateEntityCount() : 0);
+            if (m_SpatialAssetVegetationIndexed || m_SpatialLinkedPropsIndexed)
+            {
+                IndexAssetSubObjects();
+            }
+
+            AddRoadEdgesToSpatialIndex();
+            AddPathAndRailwayEdgesToSpatialIndex();
+            AddSurfaceAreasToSpatialIndex();
+
+            if (m_SpatialAssetLanesEnabled)
+            {
+                AddAssetLanesToSpatialIndex();
+            }
+
+            m_SpatialMainIndexVersion = EntityManager.GlobalSystemVersion;
+        }
+
+        private void RebuildMainSpatialIndex()
+        {
+            long mainStart = PerfTrace.Begin();
+
+            m_SpatialIndex.Clear();
+            m_SpatialAssetVegetation.Clear();
+            m_SpatialLinkedProps.Clear();
+            ResetMainSpatialCounters();
+
+            BuildMainSpatialIndex();
+
+            PerfTrace.End(PerfTrace.SpatialMainRebuild, mainStart, m_SpatialIndexedObjectCount);
         }
 
         private void RefreshSpatialIndexIfNeeded()
@@ -356,34 +368,27 @@ namespace AreaBulldozer.Tools
                 return;
             }
 
-            if (currentTime -
-                m_SpatialLastRefreshRebuildTime <
-                kSpatialRefreshMinRebuildInterval)
+            bool allowMainRebuild =
+                currentTime -
+                m_SpatialLastRefreshRebuildTime >=
+                kSpatialRefreshMinRebuildInterval;
+
+            if (allowMainRebuild)
             {
-                return;
+                m_SpatialLastRefreshRebuildTime =
+                    currentTime;
             }
 
-            int currentCount =
-                ComputeSpatialSourceEntityCount();
-
-            if (currentCount == m_SpatialSourceEntityCount &&
-                !m_SpatialMissingAssetsEnabled)
+            if (SyncSpatialIndex(allowMainRebuild))
             {
-                return;
+                m_LastPreviewRadius = -1f;
             }
-
-            m_SpatialLastRefreshRebuildTime =
-                currentTime;
-
-            RebuildSpatialIndex(
-                logDetails: false);
-
-            m_LastPreviewRadius = -1f;
         }
 
         private void ClearSpatialIndex()
         {
             m_SpatialIndex?.Clear();
+            ClearSpatialLayers();
             m_SpatialAssetVegetation.Clear();
             m_SpatialLinkedProps.Clear();
             m_SpatialMissingAssetCount = 0;
@@ -394,9 +399,22 @@ namespace AreaBulldozer.Tools
 
         private void ResetSpatialIndexCounters()
         {
+            m_SpatialBuildingCount = 0;
+            m_SpatialGeneralPropCount = 0;
+            m_SpatialStreetLightCount = 0;
+            m_SpatialQuantityObjectCount = 0;
+            m_SpatialBrandingObjectCount = 0;
+            m_SpatialActivityLocationCount = 0;
+            m_SpatialSpawnLocationCount = 0;
+            m_SpatialMissingAssetCount = 0;
+
+            ResetMainSpatialCounters();
+        }
+
+        private void ResetMainSpatialCounters()
+        {
             m_SpatialIndexedObjectCount = 0;
 
-            m_SpatialBuildingCount = 0;
             m_SpatialRoadCount = 0;
             m_SpatialRoadQueryCount = 0;
             m_SpatialRejectedRoadOwnerCount = 0;
@@ -414,12 +432,6 @@ namespace AreaBulldozer.Tools
             m_SpatialSurfaceAreaCount = 0;
             m_SpatialSurfaceAreaQueryCount = 0;
             m_SpatialInvalidSurfaceAreaCount = 0;
-            m_SpatialGeneralPropCount = 0;
-            m_SpatialStreetLightCount = 0;
-            m_SpatialQuantityObjectCount = 0;
-            m_SpatialBrandingObjectCount = 0;
-            m_SpatialActivityLocationCount = 0;
-            m_SpatialSpawnLocationCount = 0;
             m_SpatialAssetLaneCount = 0;
             m_SpatialAssetLaneOwnerCount = 0;
             m_SpatialSubLaneOwnerScanCount = 0;
@@ -448,7 +460,6 @@ namespace AreaBulldozer.Tools
 
                     if (m_SpatialAssetVegetationIndexed && EntityManager.HasComponent<Plant>(child))
                     {
-                        // A plant shared by multiple buffers has no unambiguous parent for Undo.
                         m_SpatialAssetVegetation[child] =
                             m_SpatialAssetVegetation.TryGetValue(child, out Entity indexedParent) &&
                             indexedParent != parent
@@ -465,111 +476,6 @@ namespace AreaBulldozer.Tools
                                 : parent;
                     }
                 }
-            }
-        }
-
-        private void AddVegetationToSpatialIndex()
-        {
-            using NativeArray<Entity> plants = m_PlantQuery.ToEntityArray(Allocator.Temp);
-            using NativeArray<Transform> transforms = m_PlantQuery.ToComponentDataArray<Transform>(Allocator.Temp);
-
-            for (int index = 0; index < plants.Length; index++)
-            {
-                Entity plant = plants[index];
-                if (m_PendingDeletion.Contains(plant) ||
-                    (m_SpatialMissingAssetsEnabled && IsMissingAssetObject(plant)))
-                {
-                    continue;
-                }
-
-                AddSpatialCandidate(new SpatialCandidate(
-                    plant,
-                    transforms[index].m_Position.xz,
-                    SpatialCandidateKind.Vegetation,
-                    StaticObjectCategory.None));
-            }
-        }
-
-        private void AddQueryToSpatialIndex(
-            EntityQuery query,
-            SpatialCandidateKind kind)
-        {
-            NativeArray<Entity> entities =
-                query.ToEntityArray(
-                    Allocator.Temp);
-
-            try
-            {
-                foreach (Entity entity in entities)
-                {
-                    if (!IsEntityUsable(
-                            entity,
-                            allowOverridden: kind == SpatialCandidateKind.MissingAsset))
-                    {
-                        continue;
-                    }
-
-                    if (m_PendingDeletion != null &&
-                        m_PendingDeletion.Contains(entity))
-                    {
-                        continue;
-                    }
-
-                    bool missingAsset = m_SpatialMissingAssetsEnabled && IsMissingAssetObject(entity);
-                    if (kind == SpatialCandidateKind.MissingAsset ? !missingAsset : missingAsset)
-                    {
-                        continue;
-                    }
-
-                    if (kind == SpatialCandidateKind.Building &&
-                        !IsRootBuildingEntity(entity))
-                    {
-                        continue;
-                    }
-
-                    if (kind == SpatialCandidateKind.StaticObject &&
-                        !IsActivityLocationTarget(entity) &&
-                        (TryGetPointMarkerPrefab(entity, out _) || !IsStaticObjectEntity(entity)))
-                    {
-                        continue;
-                    }
-
-                    if (kind == SpatialCandidateKind.SpawnLocation && !IsSpawnPointMarker(entity))
-                    {
-                        continue;
-                    }
-
-                    if (!EntityManager.HasComponent<Transform>(
-                            entity))
-                    {
-                        continue;
-                    }
-
-                    Transform transform =
-                        EntityManager.GetComponentData<Transform>(
-                            entity);
-
-                    float2 position =
-                        new float2(
-                            transform.m_Position.x,
-                            transform.m_Position.z);
-
-                    StaticObjectCategory staticCategory =
-                        kind == SpatialCandidateKind.StaticObject
-                            ? GetStaticObjectCategory(entity)
-                            : StaticObjectCategory.None;
-
-                    AddSpatialCandidate(
-                        new(
-                            entity,
-                            position,
-                            kind,
-                            staticCategory));
-                }
-            }
-            finally
-            {
-                entities.Dispose();
             }
         }
 
@@ -1224,12 +1130,18 @@ namespace AreaBulldozer.Tools
             m_SpatialIndex.Add(
                 candidate);
 
+            m_SpatialIndexedObjectCount++;
+            CountSpatialCandidate(candidate);
+        }
+
+        // Diagnostic per-category counters (not the object total).
+        private void CountSpatialCandidate(
+            in SpatialCandidate candidate)
+        {
             if (candidate.IsMissingAsset)
             {
                 m_SpatialMissingAssetCount++;
             }
-
-            m_SpatialIndexedObjectCount++;
 
             if (candidate.IsBuilding)
             {
@@ -1273,39 +1185,68 @@ namespace AreaBulldozer.Tools
                 float radius)
         {
             EnsureSpatialIndexReady();
+            long queryStart = PerfTrace.Begin();
             PrepareHeightFilter();
 
-            List<SpatialCandidate> candidates = m_SpatialIndex.Query(center, radius);
+            List<SpatialCandidate> candidates = m_SpatialQueryResult;
+            candidates.Clear();
+            m_SpatialIndex.AppendQuery(center, radius, candidates);
+            AppendSpatialLayerCandidates(center, radius, candidates);
             if (Mod.Settings?.DeleteCars ?? false)
             {
-                // Vehicles can change position between queries. Use their live positions
-                // for both preview and deletion.
-                NativeArray<Entity> cars = m_CarQuery.ToEntityArray(Allocator.Temp);
-                try
-                {
-                    float radiusSquared = radius * radius;
-                    foreach (Entity car in cars)
-                    {
-                        if (!IsEntityUsable(car) ||
-                            (m_PendingDeletion != null && m_PendingDeletion.Contains(car)) ||
-                            (m_SpatialMissingAssetsEnabled && IsMissingAssetObject(car)) ||
-                            !TryGetVehicleSelectionPosition(car, out float3 visiblePosition) ||
-                            math.distancesq(new float2(visiblePosition.x, visiblePosition.z), center) > radiusSquared)
-                        {
-                            continue;
-                        }
-
-                        candidates.Add(new SpatialCandidate(car,
-                            new float2(visiblePosition.x, visiblePosition.z), SpatialCandidateKind.Car, StaticObjectCategory.None));
-                    }
-                }
-                finally
-                {
-                    cars.Dispose();
-                }
+                AddNearbyCarCandidates(candidates, center, radius);
             }
 
+            PerfTrace.End(PerfTrace.SpatialQuery, queryStart, candidates.Count);
             return candidates;
+        }
+
+        private const float kCarPrefilterMargin = 16f;
+
+        private void AddNearbyCarCandidates(
+            List<SpatialCandidate> candidates,
+            float2 center,
+            float radius)
+        {
+            long scanStart = PerfTrace.Begin();
+            int nearbyCars = 0;
+
+            using NativeArray<Entity> cars = m_CarQuery.ToEntityArray(Allocator.Temp);
+            using NativeArray<Transform> carTransforms =
+                m_CarQuery.ToComponentDataArray<Transform>(Allocator.Temp);
+
+            float radiusSquared = radius * radius;
+            float coarseRadius = radius + kCarPrefilterMargin;
+            float coarseRadiusSquared = coarseRadius * coarseRadius;
+
+            for (int index = 0; index < cars.Length; index++)
+            {
+                float3 simulationPosition = carTransforms[index].m_Position;
+
+                // Written as "not inside" so non-finite positions are skipped too.
+                if (!(math.distancesq(simulationPosition.xz, center) <= coarseRadiusSquared))
+                {
+                    continue;
+                }
+
+                nearbyCars++;
+                Entity car = cars[index];
+
+                // Use the live, rendered position for both preview and deletion.
+                if (!IsEntityUsable(car) ||
+                    (m_PendingDeletion != null && m_PendingDeletion.Contains(car)) ||
+                    (m_SpatialMissingAssetsEnabled && IsMissingAssetObject(car)) ||
+                    !TryGetVehicleSelectionPosition(car, out float3 visiblePosition) ||
+                    math.distancesq(new float2(visiblePosition.x, visiblePosition.z), center) > radiusSquared)
+                {
+                    continue;
+                }
+
+                candidates.Add(new SpatialCandidate(car,
+                    new float2(visiblePosition.x, visiblePosition.z), SpatialCandidateKind.Car, StaticObjectCategory.None));
+            }
+
+            PerfTrace.End(PerfTrace.CarScan, scanStart, nearbyCars);
         }
 
         private bool IsCandidateInsideSelection(
@@ -1313,7 +1254,8 @@ namespace AreaBulldozer.Tools
             float2 selectionCenter,
             float selectionSize)
         {
-            if (!MatchesHeightFilter(indexedCandidate.Entity))
+            if (!MatchesAssetFilter(indexedCandidate.Entity) ||
+                !MatchesHeightFilter(indexedCandidate.Entity))
             {
                 return false;
             }

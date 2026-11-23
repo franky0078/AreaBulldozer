@@ -339,7 +339,9 @@ namespace AreaBulldozer.Tools
                     None = new ComponentType[]
                     {
                         ComponentType.ReadOnly<Deleted>(),
-                        ComponentType.ReadOnly<Temp>()
+                        ComponentType.ReadOnly<Temp>(),
+                        ComponentType.ReadOnly<Game.Vehicles.Vehicle>(),
+                        ComponentType.ReadOnly<Game.Creatures.Creature>()
                     }
                 });
 
@@ -455,7 +457,9 @@ namespace AreaBulldozer.Tools
                         ComponentType.ReadOnly<Plant>(),
                         ComponentType.ReadOnly<Tree>(),
                         ComponentType.ReadOnly<
-                            Game.Buildings.Building>()
+                            Game.Buildings.Building>(),
+                        ComponentType.ReadOnly<Game.Vehicles.Vehicle>(),
+                        ComponentType.ReadOnly<Game.Creatures.Creature>()
                     }
                 });
 
@@ -640,6 +644,9 @@ namespace AreaBulldozer.Tools
             GameMode mode)
         {
             base.OnGameLoadingComplete(purpose, mode);
+            // Entities of the previous city are gone: build from scratch.
+            MarkSpatialIndexStale();
+            ClearPrefabTraitsCache();
             ClearDeletionUndo();
             ClearAssetSelectionUndo();
             ResetAssetFilterRuntime();
@@ -662,7 +669,7 @@ namespace AreaBulldozer.Tools
             ResetPreviewState();
 
             UpdateCarFilterPause();
-            RebuildSpatialIndex();
+            PrepareSpatialIndexForActivation();
             UpdateMarkerVisibility();
 
             m_ApplyAction?.Enable();
@@ -740,7 +747,6 @@ namespace AreaBulldozer.Tools
             HasValidPosition = false;
             m_IsPointerOverUI = false;
 
-            MarkSpatialIndexStale();
             ReleaseCarFilterPause();
 
             SafeLogInfo(
@@ -985,8 +991,6 @@ namespace AreaBulldozer.Tools
             {
                 CancelLargeSelectionConfirmation();
 
-                // A right-button drag can briefly block the terrain raycast.
-                // Keep drawing around the last valid point during that drag.
                 if (!rotating || !HasValidPosition)
                 {
                     HasValidPosition = false;

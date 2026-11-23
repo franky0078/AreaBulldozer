@@ -76,6 +76,9 @@ export const isToolActive$ = bindValue<boolean>(
     false
 );
 
+// True in the editor: colour editor and options window are hidden there.
+export const isEditorMode$ = bindValue<boolean>(mod.id, "isEditorMode", false);
+
 export const deletionUndoCount$ = bindValue<number>(
     mod.id,
     "deletionUndoCount",

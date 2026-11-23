@@ -35,19 +35,10 @@ namespace AreaBulldozer.Tools
                 return StaticObjectCategory.QuantityObject;
             }
 
-            if (EntityManager.HasComponent<PrefabRef>(
-                    entity))
+            if (TryGetExistingPrefab(entity, out Entity prefab) &&
+                HasPrefabTrait(prefab, PrefabTraits.Brand))
             {
-                PrefabRef prefabRef =
-                    EntityManager.GetComponentData<PrefabRef>(
-                        entity);
-
-                if (prefabRef.m_Prefab != Entity.Null &&
-                    EntityManager.HasComponent<BrandObjectData>(
-                        prefabRef.m_Prefab))
-                {
-                    return StaticObjectCategory.BrandingObject;
-                }
+                return StaticObjectCategory.BrandingObject;
             }
 
             return StaticObjectCategory.GeneralProp;
@@ -66,43 +57,18 @@ namespace AreaBulldozer.Tools
                 return true;
             }
 
-            if (EntityManager.Exists(prefab) && EntityManager.HasComponent<ObjectGeometryData>(prefab))
-            {
-                ObjectGeometryData geometry = EntityManager.GetComponentData<ObjectGeometryData>(prefab);
-                if ((geometry.m_Flags & Game.Objects.GeometryFlags.Marker) != 0)
-                {
-                    return true;
-                }
-
-                if ((geometry.m_Layers & MeshLayer.Default) != 0 ||
-                    (geometry.m_Flags & Game.Objects.GeometryFlags.Physical) != 0)
-                {
-                    return false;
-                }
-
-                if ((geometry.m_Layers & MeshLayer.Marker) != 0)
-                {
-                    return true;
-                }
-            }
-
-            // Meshless position objects can define a real point without a marker mesh.
-            return EntityManager.Exists(prefab) &&
-                   EntityManager.HasComponent<Game.Prefabs.SpawnLocationData>(prefab) &&
-                   (!EntityManager.HasBuffer<Game.Prefabs.SubMesh>(prefab) ||
-                    EntityManager.GetBuffer<Game.Prefabs.SubMesh>(prefab, true).Length == 0);
+            // Geometry and spawn-location rules depend only on the prefab (cached).
+            return prefab != Entity.Null &&
+                   EntityManager.Exists(prefab) &&
+                   HasPrefabTrait(prefab, PrefabTraits.PointMarker);
         }
 
         private bool IsActivityLocationTarget(Entity entity)
         {
             bool hasActivity = EntityManager.HasComponent<Game.Objects.ActivityLocation>(entity);
-            if (!hasActivity && EntityManager.HasComponent<PrefabRef>(entity))
+            if (!hasActivity && TryGetExistingPrefab(entity, out Entity prefab))
             {
-                Entity prefab = EntityManager.GetComponentData<PrefabRef>(entity).m_Prefab;
-                hasActivity = EntityManager.Exists(prefab) &&
-                    (EntityManager.HasComponent<Game.Prefabs.ActivityLocationData>(prefab) ||
-                     (EntityManager.HasBuffer<Game.Prefabs.ActivityLocationElement>(prefab) &&
-                      EntityManager.GetBuffer<Game.Prefabs.ActivityLocationElement>(prefab, true).Length != 0));
+                hasActivity = HasPrefabTrait(prefab, PrefabTraits.ActivityLocation);
             }
 
             return hasActivity && (IsStaticObjectEntity(entity) || TryGetPointMarkerPrefab(entity, out _));
@@ -111,7 +77,8 @@ namespace AreaBulldozer.Tools
         private bool IsSpawnPointMarker(Entity entity) =>
             TryGetPointMarkerPrefab(entity, out Entity prefab) &&
             (EntityManager.HasComponent<Game.Objects.SpawnLocation>(entity) ||
-             (EntityManager.Exists(prefab) && EntityManager.HasComponent<Game.Prefabs.SpawnLocationData>(prefab)));
+             (prefab != Entity.Null && EntityManager.Exists(prefab) &&
+              HasPrefabTrait(prefab, PrefabTraits.SpawnLocation)));
 
         private bool MatchesCurrentMarkerType(in SpatialCandidate candidate)
         {

@@ -1,3 +1,4 @@
+using AreaBulldozer.Diagnostics;
 using System.Collections.Generic;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -129,8 +130,6 @@ namespace AreaBulldozer.Tools
                 return;
             }
 
-            // The brush can rotate every frame. Reuse the preview interval
-            // when a drag would otherwise rescan every vehicle on each frame.
             if (!radiusChanged &&
                 (!rotationChanged || (rotating && filters.DeleteCars)) &&
                 !lineWidthChanged &&
@@ -182,6 +181,8 @@ namespace AreaBulldozer.Tools
                 kPreviewUpdateInterval;
         }
 
+        private readonly HashSet<Entity> m_PreviewSelectedBuildings = new();
+
         private void UpdateSelectionPreview(
             in FilterSnapshot filters)
         {
@@ -190,6 +191,8 @@ namespace AreaBulldozer.Tools
             {
                 return;
             }
+
+            long previewStart = PerfTrace.Begin();
 
             m_NextHighlightedEntities.Clear();
 
@@ -205,7 +208,9 @@ namespace AreaBulldozer.Tools
                     CurrentSpatialQueryRadius);
 
             HashSet<Entity> selectedBuildings =
-                new();
+                m_PreviewSelectedBuildings;
+
+            selectedBuildings.Clear();
 
             if (filters.DeleteBuildings)
             {
@@ -423,7 +428,11 @@ namespace AreaBulldozer.Tools
                 AddEntityToNextPreview(entity);
             }
 
+            int previewCount = m_NextHighlightedEntities.Count;
             ApplyPreviewHighlightDiff();
+            selectedBuildings.Clear();
+
+            PerfTrace.End(PerfTrace.PreviewUpdate, previewStart, previewCount);
         }
     }
 }

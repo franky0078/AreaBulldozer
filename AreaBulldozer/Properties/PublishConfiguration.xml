@@ -166,7 +166,7 @@
 	<ForumLink Value="https://forum.paradoxplaza.com/forum/threads/mod-area-bulldozer-area-deletion-tool-with-object-filters.1937211/" />
 
 	<!-- Mod version -->
-	<ModVersion Value="2.2.0" />
+	<ModVersion Value="2.2.2" />
 
 	<!--
 	Recommended game version.
@@ -197,7 +197,9 @@
 	<ChangeLog>
 		Latest changes
 
-		- optimized Area Bulldozer’s startup
+		- fixed: the asset list ("Only selected assets") no longer deletes other assets, e.g. spawn locations of nearby buildings
+		- fixed: tooltips near the screen edge now open on the other side of the cursor instead of being cut off
+		- performance fixes	(making filter changes and index rebuilds faster)
 	</ChangeLog>
 
 	<!--Optional external links for your own mod.-->

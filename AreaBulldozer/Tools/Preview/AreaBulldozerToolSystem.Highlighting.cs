@@ -1,3 +1,4 @@
+using AreaBulldozer.Diagnostics;
 using Game;
 using Game.Common;
 using Game.Objects;
@@ -24,6 +25,16 @@ namespace AreaBulldozer.Tools
         private readonly List<Entity> m_HighlightNotOwnedBuffer =
             new();
 
+        private readonly List<Entity> m_HighlightBatchAdd = new();
+        private readonly List<Entity> m_HighlightBatchRemove = new();
+        private readonly List<Entity> m_HighlightBatchUpdated = new();
+        private readonly HashSet<Entity> m_HighlightBatchUpdatedSet = new();
+
+        private readonly HashSet<Entity> m_PreviewHierarchyVisited = new();
+
+        private readonly List<Entity> m_HighlightedAreaEntities = new();
+        private bool m_HighlightedAreaEntitiesDirty = true;
+
         private void AddEntityToNextPreview(
             Entity entity)
         {
@@ -43,15 +54,14 @@ namespace AreaBulldozer.Tools
             const int maximumDepth = 4;
             const int maximumEntities = 2048;
 
-            HashSet<Entity> visited =
-                new();
+            m_PreviewHierarchyVisited.Clear();
 
             AddBuildingPreviewHierarchyRecursive(
                 buildingEntity,
                 0,
                 maximumDepth,
                 maximumEntities,
-                visited);
+                m_PreviewHierarchyVisited);
         }
 
         private void AddBuildingPreviewHierarchyRecursive(
@@ -180,12 +190,20 @@ namespace AreaBulldozer.Tools
                 previousSet;
 
             m_NextHighlightedEntities.Clear();
+            m_HighlightedAreaEntitiesDirty = true;
         }
 
         private void ApplyHighlightComponentChanges(
             List<Entity> entitiesToHighlight,
             List<Entity> entitiesToUnhighlight)
         {
+            long applyStart = PerfTrace.Begin();
+
+            m_HighlightBatchAdd.Clear();
+            m_HighlightBatchRemove.Clear();
+            m_HighlightBatchUpdated.Clear();
+            m_HighlightBatchUpdatedSet.Clear();
+
             if (entitiesToHighlight != null)
             {
                 foreach (Entity entity in entitiesToHighlight)
@@ -199,16 +217,10 @@ namespace AreaBulldozer.Tools
                     if (!EntityManager.HasComponent<Highlighted>(
                             entity))
                     {
-                        EntityManager.AddComponent<Highlighted>(
-                            entity);
+                        m_HighlightBatchAdd.Add(entity);
                     }
 
-                    if (!EntityManager.HasComponent<BatchesUpdated>(
-                            entity))
-                    {
-                        EntityManager.AddComponent<BatchesUpdated>(
-                            entity);
-                    }
+                    QueueBatchesUpdated(entity);
                 }
             }
 
@@ -225,17 +237,78 @@ namespace AreaBulldozer.Tools
                     if (EntityManager.HasComponent<Highlighted>(
                             entity))
                     {
-                        EntityManager.RemoveComponent<Highlighted>(
-                            entity);
+                        m_HighlightBatchRemove.Add(entity);
                     }
 
-                    if (!EntityManager.HasComponent<BatchesUpdated>(
-                            entity))
-                    {
-                        EntityManager.AddComponent<BatchesUpdated>(
-                            entity);
-                    }
+                    QueueBatchesUpdated(entity);
                 }
+            }
+
+            ApplyComponentBatch(m_HighlightBatchAdd, ComponentType.ReadWrite<Highlighted>(), add: true);
+            ApplyComponentBatch(m_HighlightBatchRemove, ComponentType.ReadWrite<Highlighted>(), add: false);
+            ApplyComponentBatch(m_HighlightBatchUpdated, ComponentType.ReadWrite<BatchesUpdated>(), add: true);
+
+            PerfTrace.End(
+                PerfTrace.HighlightApply,
+                applyStart,
+                m_HighlightBatchAdd.Count + m_HighlightBatchRemove.Count);
+        }
+
+        private void QueueBatchesUpdated(Entity entity)
+        {
+            if (!EntityManager.HasComponent<BatchesUpdated>(entity) &&
+                m_HighlightBatchUpdatedSet.Add(entity))
+            {
+                m_HighlightBatchUpdated.Add(entity);
+            }
+        }
+
+        private void ApplyComponentBatch(
+            List<Entity> entities,
+            ComponentType componentType,
+            bool add)
+        {
+            if (entities.Count == 0)
+            {
+                return;
+            }
+
+            if (entities.Count == 1)
+            {
+                if (add)
+                {
+                    EntityManager.AddComponent(entities[0], componentType);
+                }
+                else
+                {
+                    EntityManager.RemoveComponent(entities[0], componentType);
+                }
+
+                return;
+            }
+
+            NativeArray<Entity> batch =
+                new(entities.Count, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
+
+            try
+            {
+                for (int index = 0; index < entities.Count; index++)
+                {
+                    batch[index] = entities[index];
+                }
+
+                if (add)
+                {
+                    EntityManager.AddComponent(batch, componentType);
+                }
+                else
+                {
+                    EntityManager.RemoveComponent(batch, componentType);
+                }
+            }
+            finally
+            {
+                batch.Dispose();
             }
         }
 
@@ -249,6 +322,8 @@ namespace AreaBulldozer.Tools
             }
 
             m_HighlightRemoveBuffer.Clear();
+
+            m_HighlightedAreaEntitiesDirty = true;
 
             foreach (Entity entity in entities)
             {
@@ -311,11 +386,42 @@ namespace AreaBulldozer.Tools
 
             m_HighlightedEntities.Clear();
             m_NextHighlightedEntities?.Clear();
+            m_HighlightedAreaEntities.Clear();
+            m_HighlightedAreaEntitiesDirty = false;
 
             if (resetPreviewState)
             {
                 ResetPreviewState();
             }
+        }
+
+        private List<Entity> GetHighlightedAreaEntities()
+        {
+            if (!m_HighlightedAreaEntitiesDirty)
+            {
+                return m_HighlightedAreaEntities;
+            }
+
+            m_HighlightedAreaEntities.Clear();
+            m_HighlightedAreaEntitiesDirty = false;
+
+            if (m_HighlightedEntities == null)
+            {
+                return m_HighlightedAreaEntities;
+            }
+
+            foreach (Entity entity in m_HighlightedEntities)
+            {
+                if (entity != Entity.Null &&
+                    EntityManager.Exists(entity) &&
+                    EntityManager.HasComponent<Game.Areas.Area>(entity) &&
+                    EntityManager.HasBuffer<Game.Areas.Node>(entity))
+                {
+                    m_HighlightedAreaEntities.Add(entity);
+                }
+            }
+
+            return m_HighlightedAreaEntities;
         }
 
         private void ResetPreviewState()

@@ -369,9 +369,11 @@ namespace AreaBulldozer.Tools
                 return true;
             }
 
+            // Name/type based path and railway detection is cached per prefab.
             return EntityManager.HasComponent<Road>(entity) &&
-                TryGetPrefabBase(entity, out PrefabBase prefabBase) &&
-                !IsPedestrianPathPrefab(prefabBase) && !IsRailwayTrackPrefab(prefabBase);
+                HasPrefabTrait(prefab, PrefabTraits.HasPrefabBase) &&
+                !HasPrefabTrait(prefab, PrefabTraits.PedestrianPath) &&
+                !HasPrefabTrait(prefab, PrefabTraits.RailwayTrack);
         }
 
         private bool IsMainPedestrianPathEdgeEntity(Entity entity)
@@ -384,7 +386,7 @@ namespace AreaBulldozer.Tools
 
             Game.Net.Layer layers = EntityManager.GetComponentData<NetData>(prefab).m_RequiredLayers;
             return EntityManager.HasComponent<PathwayData>(prefab) || (layers & Game.Net.Layer.Pathway) != 0 ||
-                (TryGetPrefabBase(entity, out PrefabBase prefabBase) && IsPedestrianPathPrefab(prefabBase));
+                HasPrefabTrait(prefab, PrefabTraits.PedestrianPath);
         }
 
         private bool IsMainRailwayEdgeEntity(Entity entity)
@@ -397,7 +399,7 @@ namespace AreaBulldozer.Tools
 
             Game.Net.Layer layers = EntityManager.GetComponentData<NetData>(prefab).m_RequiredLayers;
             return (layers & (Game.Net.Layer.TrainTrack | Game.Net.Layer.SubwayTrack | Game.Net.Layer.TramTrack)) != 0 ||
-                (TryGetPrefabBase(entity, out PrefabBase prefabBase) && IsRailwayTrackPrefab(prefabBase));
+                HasPrefabTrait(prefab, PrefabTraits.RailwayTrack);
         }
 
         private bool IsAggregateOwner(
@@ -591,20 +593,9 @@ namespace AreaBulldozer.Tools
                 return false;
             }
 
-            if (!TryGetPrefabBase(
-                    entity,
-                    out PrefabBase prefabBase))
-            {
-                return false;
-            }
-
-            // Second protection layer:
-            if (prefabBase is BuildingPrefab)
-            {
-                return false;
-            }
-
-            return prefabBase is StaticObjectPrefab;
+            // Second protection layer (cached per prefab): a StaticObjectPrefab that is not a BuildingPrefab.
+            return TryGetExistingPrefab(entity, out Entity prefab) &&
+                   HasPrefabTrait(prefab, PrefabTraits.StaticObject);
         }
     }
 }
